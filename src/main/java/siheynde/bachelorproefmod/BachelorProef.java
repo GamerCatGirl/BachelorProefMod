@@ -2,8 +2,11 @@ package siheynde.bachelorproefmod;
 
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import siheynde.bachelorproefmod.entity.ModEntities;
+import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 
 public class BachelorProef implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -19,5 +22,7 @@ public class BachelorProef implements ModInitializer {
 		// Proceed with mild caution.
 
 		LOGGER.info("Hello Fabric world!");
+
+		FabricDefaultAttributeRegistry.register(ModEntities.ROBOT, RobotEntity.createRobotAttributes());
 	}
 }

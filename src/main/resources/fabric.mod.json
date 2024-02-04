@@ -18,6 +18,9 @@
 		"main": [
 			"siheynde.bachelorproefmod.BachelorProef"
 		],
+		"client": [
+			"siheynde.bachelorproefmod.BachelorProefClient"
+		],
 		"fabric-datagen": [
 			"siheynde.bachelorproefmod.BachelorProefDataGenerator"
 		]

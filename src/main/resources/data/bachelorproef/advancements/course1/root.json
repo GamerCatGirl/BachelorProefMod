@@ -11,16 +11,16 @@
   },
   "display": {
     "announce_to_chat": true,
-    "background": "minecraft:textures/gui/advancements/backgrounds/end.png",
+    "background": "bachelorproef:textures/advancements/command.png",
     "description": {
-      "translate": "advancements.course1.root.description"
+      "translate": "Find a robot and make it yours!"
     },
     "icon": {
-      "item" : "minecraft:dragon_head"
+      "item" : "minecraft:command_block"
     },
     "show_toast": false,
     "title": {
-      "translate": "advancements.end.root.title"
+      "translate": "Robot"
     }
   },
   "requirements": [

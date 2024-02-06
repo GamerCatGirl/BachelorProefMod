@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "tame_animal": {
+      "conditions": {
+        "entity": {
+          "type": "bachelorproef:robot"
+        }
+      },
+      "trigger": "minecraft:tame_animal"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "background": "minecraft:textures/gui/advancements/backgrounds/end.png",
+    "description": {
+      "translate": "advancements.course1.root.description"
+    },
+    "icon": {
+      "item" : "minecraft:dragon_head"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "advancements.end.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "tame_animal"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

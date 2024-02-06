@@ -1,5 +1,10 @@
 package siheynde.bachelorproefmod.entity.robot;
 
+import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
+import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -9,16 +14,28 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.server.ServerAdvancementLoader;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.village.Merchant;
+import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
+import net.minecraft.village.TradeOffers;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -65,6 +82,9 @@ public class RobotEntity extends TameableEntity {
         }
         if (this.isOwner(player)) {
             // TODO: open GUI
+            //player.openHandledScreen(new AdvancementsScreen(player.getServer().getAdvancementLoader()) );
+            //player.op
+            //zie video min 22  Block Entity
             System.out.println("Owner");
         }
         else if (this.isTamed()) {
@@ -95,6 +115,7 @@ public class RobotEntity extends TameableEntity {
         super.initDataTracker();
     }
 
+
     @Override
     public EntityView method_48926() {
         return this.getWorld();
@@ -105,5 +126,8 @@ public class RobotEntity extends TameableEntity {
     public LivingEntity getOwner() {
         return super.getOwner();
     }
+
+
+
 
 }

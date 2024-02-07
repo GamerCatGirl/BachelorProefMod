@@ -5,8 +5,12 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import siheynde.bachelorproefmod.block.ModBlocks;
+import siheynde.bachelorproefmod.block.entity.ModBlockEntities;
 import siheynde.bachelorproefmod.entity.ModEntities;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
+import siheynde.bachelorproefmod.item.ModItemGroups;
+import siheynde.bachelorproefmod.item.ModItems;
 
 public class BachelorProef implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -20,6 +24,10 @@ public class BachelorProef implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
+		ModItemGroups.registerItemGroups();
+		ModItems.registerItems();
+		ModBlocks.registerModBlocks();
+		//ModBlockEntities.registerBlockEntities();
 
 		LOGGER.info("Hello Fabric world!");
 

@@ -1,12 +1,7 @@
 {
 
   "entity.robot": "Robot",
-
   "itemgroup.robot": "Robot Group",
 
-  "advancements.course1.root.description": "Assign yourself a robot",
-  "advancements.course1.root.title": "Course 1",
-
-
-
+  "block.bachelorproef.function_block": "Function Block"
 }

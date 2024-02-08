@@ -10,6 +10,7 @@ import siheynde.bachelorproefmod.entity.ModEntities;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.item.ModItemGroups;
 import siheynde.bachelorproefmod.item.ModItems;
+import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.world.gen.structure.ModStructureType;
 
 public class BachelorProef implements ModInitializer {
@@ -28,6 +29,7 @@ public class BachelorProef implements ModInitializer {
 		ModItems.registerItems();
 		ModBlocks.registerModBlocks();
 		ModStructureType.registerStructures();
+		ModPackets.registerS2CPackets();
 		//ModBlockEntities.registerBlockEntities();
 
 		LOGGER.info("Hello Fabric world!");

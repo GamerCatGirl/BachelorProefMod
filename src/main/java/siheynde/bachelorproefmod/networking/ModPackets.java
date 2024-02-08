@@ -7,9 +7,9 @@ import siheynde.bachelorproefmod.networking.packet.OpenAdvancementsS2CPacket;
 
 public class ModPackets {
 
-    public static final Identifier OPEN_ADVANCEMENTS = new Identifier(BachelorProef.MOD_ID, "open_advancements");
+    public static final Identifier OPEN_ADVANCEMENTS_ID = new Identifier(BachelorProef.MOD_ID, "open_advancements");
 
     public static void registerS2CPackets() {
-        ClientPlayNetworking.registerGlobalReceiver(OPEN_ADVANCEMENTS, OpenAdvancementsS2CPacket::receive);
+        ClientPlayNetworking.registerGlobalReceiver(OPEN_ADVANCEMENTS_ID, OpenAdvancementsS2CPacket::receive);
     }
 }

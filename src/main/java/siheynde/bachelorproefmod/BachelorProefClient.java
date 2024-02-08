@@ -6,6 +6,7 @@ import siheynde.bachelorproefmod.entity.ModEntities;
 import siheynde.bachelorproefmod.entity.client.ModModelLayers;
 import siheynde.bachelorproefmod.entity.client.RobotModel;
 import siheynde.bachelorproefmod.entity.client.RobotRenderer;
+import siheynde.bachelorproefmod.networking.ModPackets;
 
 public class BachelorProefClient implements ClientModInitializer {
     @Override
@@ -13,5 +14,6 @@ public class BachelorProefClient implements ClientModInitializer {
 
         EntityRendererRegistry.register(ModEntities.ROBOT, RobotRenderer::new);
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ROBOT, RobotModel::getTexturedModelData);
+        //ModPackets.registerC2SPackets();
     }
 }

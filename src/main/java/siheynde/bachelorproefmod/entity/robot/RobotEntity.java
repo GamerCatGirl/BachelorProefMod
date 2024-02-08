@@ -86,7 +86,7 @@ public class RobotEntity extends TameableEntity {
         }
         if (this.isOwner(player)) {
             // TODO: open GUI
-            ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.OPEN_ADVANCEMENTS, PacketByteBufs.empty());
+            ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.OPEN_ADVANCEMENTS_ID, PacketByteBufs.empty());
             //player.openHandledScreen(new AdvancementsScreen(player.getServer().getAdvancementLoader()) );
             //player.op
             //zie video min 22  Block Entity

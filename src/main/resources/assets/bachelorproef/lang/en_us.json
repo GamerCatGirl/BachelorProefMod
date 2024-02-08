@@ -3,5 +3,6 @@
   "entity.robot": "Robot",
   "itemgroup.robot": "Robot Group",
 
-  "block.bachelorproef.function_block": "Function Block"
+  "block.bachelorproef.function_block": "Function Block",
+  "structure.bachelorproef.shrine": "Shrine",
 }

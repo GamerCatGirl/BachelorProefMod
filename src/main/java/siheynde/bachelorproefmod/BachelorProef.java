@@ -6,11 +6,11 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import siheynde.bachelorproefmod.block.ModBlocks;
-import siheynde.bachelorproefmod.block.entity.ModBlockEntities;
 import siheynde.bachelorproefmod.entity.ModEntities;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.item.ModItemGroups;
 import siheynde.bachelorproefmod.item.ModItems;
+import siheynde.bachelorproefmod.world.gen.structure.ModStructureType;
 
 public class BachelorProef implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -27,6 +27,7 @@ public class BachelorProef implements ModInitializer {
 		ModItemGroups.registerItemGroups();
 		ModItems.registerItems();
 		ModBlocks.registerModBlocks();
+		ModStructureType.registerStructures();
 		//ModBlockEntities.registerBlockEntities();
 
 		LOGGER.info("Hello Fabric world!");

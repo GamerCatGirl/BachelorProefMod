@@ -1,5 +1,7 @@
 package siheynde.bachelorproefmod.entity.robot;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.client.gui.screen.Screen;
@@ -24,6 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -40,6 +43,7 @@ import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import siheynde.bachelorproefmod.entity.ModEntities;
+import siheynde.bachelorproefmod.networking.ModPackets;
 
 public class RobotEntity extends TameableEntity {
 
@@ -82,6 +86,7 @@ public class RobotEntity extends TameableEntity {
         }
         if (this.isOwner(player)) {
             // TODO: open GUI
+            ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.OPEN_ADVANCEMENTS, PacketByteBufs.empty());
             //player.openHandledScreen(new AdvancementsScreen(player.getServer().getAdvancementLoader()) );
             //player.op
             //zie video min 22  Block Entity

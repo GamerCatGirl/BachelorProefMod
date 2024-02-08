@@ -20,7 +20,8 @@ public class OpenAdvancementsS2CPacket {
             assert client.player != null;
             AdvancementsScreen screen = new AdvancementsScreen(handler.getAdvancementHandler());
             client.setScreen(screen);
-            //AdvancementManager manager //= client.player.networkHandler
+
+            //select robot tab
             Collection<PlacedAdvancement> advancements = handler.getAdvancementHandler().getManager().getAdvancements();
             advancements.forEach(advancement -> {
                 AdvancementEntry entry = advancement.getAdvancementEntry();

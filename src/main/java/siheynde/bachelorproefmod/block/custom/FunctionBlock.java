@@ -19,6 +19,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import siheynde.bachelorproefmod.screen.RobotScreenHandler;
 
 public class FunctionBlock extends Block {
     public FunctionBlock(AbstractBlock.Settings settings) {super(settings);}
@@ -65,7 +66,7 @@ public class FunctionBlock extends Block {
 
     @Override
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new CraftingScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), TITLE);
+        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new RobotScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), TITLE);
     }
 
 

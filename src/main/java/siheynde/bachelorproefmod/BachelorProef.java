@@ -11,7 +11,6 @@ import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.item.ModItemGroups;
 import siheynde.bachelorproefmod.item.ModItems;
 import siheynde.bachelorproefmod.networking.ModPackets;
-import siheynde.bachelorproefmod.world.gen.structure.ModStructureType;
 
 public class BachelorProef implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -28,7 +27,7 @@ public class BachelorProef implements ModInitializer {
 		ModItemGroups.registerItemGroups();
 		ModItems.registerItems();
 		ModBlocks.registerModBlocks();
-		ModStructureType.registerStructures();
+		//ModStructureType.registerStructures();
 		ModPackets.registerS2CPackets();
 		//ModBlockEntities.registerBlockEntities();
 

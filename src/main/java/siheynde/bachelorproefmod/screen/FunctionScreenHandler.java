@@ -1,6 +1,6 @@
 package siheynde.bachelorproefmod.screen;
 
-import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
@@ -8,6 +8,7 @@ import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.*;
 import net.minecraft.recipe.book.RecipeBookCategory;
@@ -20,7 +21,7 @@ import siheynde.bachelorproefmod.block.ModBlocks;
 
 import java.util.Optional;
 
-public class RobotScreenHandler extends AbstractRecipeScreenHandler<RecipeInputInventory> {
+public class FunctionScreenHandler extends AbstractRecipeScreenHandler<RecipeInputInventory> {
     public static final int RESULT_ID = 0;
     private static final int INPUT_START = 1;
     private static final int INPUT_END = 10;
@@ -30,34 +31,24 @@ public class RobotScreenHandler extends AbstractRecipeScreenHandler<RecipeInputI
     private static final int HOTBAR_END = 46;
     private final RecipeInputInventory input = new CraftingInventory(this, 3, 3);
     private final CraftingResultInventory result = new CraftingResultInventory();
-    private final ScreenHandlerContext context;
-    private final PlayerEntity player;
 
-    public RobotScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
+    public FunctionScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
+        this(syncId, inventory, inventory.player.getWorld().getBlockEntity(buf.readBlockPos()));
     }
 
-    public RobotScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
-        super(ScreenHandlerType.CRAFTING, syncId);
-        int j;
-        int i;
-        this.context = context;
-        this.player = playerInventory.player;
-        this.addSlot(new CraftingResultSlot(playerInventory.player, this.input, this.result, 0, 124, 35));
-        for (i = 0; i < 3; ++i) {
-            for (j = 0; j < 3; ++j) {
-                this.addSlot(new Slot(this.input, j + i * 3, 30 + j * 18, 17 + i * 18));
-            }
-        }
-        for (i = 0; i < 3; ++i) {
-            for (j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-            }
-        }
-        for (i = 0; i < 9; ++i) {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
-        }
+    public boolean isCrafting() {
+        return true;
     }
+
+    public int getScaledProgress() {
+        return 0;
+    };
+
+    public FunctionScreenHandler(int syncId, PlayerInventory playerInventory, BlockEntity blockEntity) {
+        super(ModScreenHandlers.FUNCTION_SCREEN, syncId);
+    }
+
+
 
     protected static void updateResult(ScreenHandler handler, World world, PlayerEntity player, RecipeInputInventory craftingInventory, CraftingResultInventory resultInventory) {
         if (world.isClient) {
@@ -80,11 +71,6 @@ public class RobotScreenHandler extends AbstractRecipeScreenHandler<RecipeInputI
     }
 
     @Override
-    public void onContentChanged(Inventory inventory) {
-        this.context.run((world, pos) -> RobotScreenHandler.updateResult(this, world, this.player, this.input, this.result));
-    }
-
-    @Override
     public void populateRecipeFinder(RecipeMatcher finder) {
         this.input.provideRecipeInputs(finder);
     }
@@ -97,19 +83,10 @@ public class RobotScreenHandler extends AbstractRecipeScreenHandler<RecipeInputI
 
     @Override
     public boolean matches(RecipeEntry<? extends Recipe<RecipeInputInventory>> recipe) {
-        return recipe.value().matches(this.input, this.player.getWorld());
+        //return recipe.value().matches(this.input, this.player.getWorld());
+        return false;
     }
 
-    @Override
-    public void onClosed(PlayerEntity player) {
-        super.onClosed(player);
-        this.context.run((world, pos) -> this.dropInventory(player, this.input));
-    }
-
-    @Override
-    public boolean canUse(PlayerEntity player) {
-        return RobotScreenHandler.canUse(this.context, player, ModBlocks.FUNCTION_BLOCK);
-    }
 
     @Override
     public ItemStack quickMove(PlayerEntity player, int slot) {
@@ -119,7 +96,7 @@ public class RobotScreenHandler extends AbstractRecipeScreenHandler<RecipeInputI
             ItemStack itemStack2 = slot2.getStack();
             itemStack = itemStack2.copy();
             if (slot == 0) {
-                this.context.run((world, pos) -> itemStack2.getItem().onCraftByPlayer(itemStack2, (World)world, player));
+                //this.context.run((world, pos) -> itemStack2.getItem().onCraftByPlayer(itemStack2, (World)world, player));
                 if (!this.insertItem(itemStack2, 10, 46, true)) {
                     return ItemStack.EMPTY;
                 }
@@ -146,6 +123,11 @@ public class RobotScreenHandler extends AbstractRecipeScreenHandler<RecipeInputI
     @Override
     public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
         return slot.inventory != this.result && super.canInsertIntoSlot(stack, slot);
+    }
+
+    @Override
+    public boolean canUse(PlayerEntity player) {
+        return true;
     }
 
     @Override

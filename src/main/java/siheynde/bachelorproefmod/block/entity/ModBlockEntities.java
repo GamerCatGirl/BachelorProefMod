@@ -14,6 +14,12 @@ public class ModBlockEntities {
                     FabricBlockEntityTypeBuilder.create(FunctionBlockEntity::new,
                             ModBlocks.FUNCTION_BLOCK).build());
 */
+
+    public static final BlockEntityType<FunctionBlockEntity> FUNCTION_BLOCK_ENTITY =
+            Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(BachelorProef.MOD_ID, "function_block"),
+                    FabricBlockEntityTypeBuilder.create(FunctionBlockEntity::new,
+                            ModBlocks.FUNCTION_BLOCK).build());
+
     public static void registerBlockEntities() {
         BachelorProef.LOGGER.info("Registering Mod Block Entities for " + BachelorProef.MOD_ID);
     }

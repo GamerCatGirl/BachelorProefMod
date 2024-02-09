@@ -18,7 +18,7 @@ public class ModItemGroups {
             new Identifier(BachelorProef.MOD_ID, "robot"),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.robot"))
                     .icon(() -> new ItemStack(Items.AMETHYST_BLOCK)).entries(((displayContext, entries) -> {
-                        entries.add(ModBlocks.FUNCTION_BLOCK);
+                        //entries.add(ModBlocks.FUNCTION_BLOCK);
                     })).build());
 
     public static void registerItemGroups() {

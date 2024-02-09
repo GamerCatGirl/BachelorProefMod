@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import siheynde.bachelorproefmod.block.ModBlocks;
+import siheynde.bachelorproefmod.block.entity.ModBlockEntities;
 import siheynde.bachelorproefmod.entity.ModEntities;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.item.ModItemGroups;
@@ -29,7 +30,7 @@ public class BachelorProef implements ModInitializer {
 		ModBlocks.registerModBlocks();
 		//ModStructureType.registerStructures();
 		ModPackets.registerS2CPackets();
-		//ModBlockEntities.registerBlockEntities();
+		ModBlockEntities.registerBlockEntities();
 
 		LOGGER.info("Hello Fabric world!");
 

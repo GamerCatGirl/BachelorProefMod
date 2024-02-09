@@ -1,5 +1,6 @@
-package siheynde.bachelorproefmod.client.gui.screen.ingame;
+package siheynde.bachelorproefmod.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
@@ -7,19 +8,20 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.screen.FunctionScreenHandler;
 
-@Environment(value= EnvType.CLIENT)
 public class FunctionScreen
         extends HandledScreen<FunctionScreenHandler>
         implements RecipeBookProvider {
-    private static final Identifier TEXTURE = new Identifier("textures/gui/container/crafting_table.png");
+    private static final Identifier TEXTURE = new Identifier(BachelorProef.MOD_ID, "textures/gui/function_screen.png");
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
     private boolean narrow;
 
@@ -30,44 +32,38 @@ public class FunctionScreen
     @Override
     protected void init() {
         super.init();
-        this.narrow = this.width < 379;
-        this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, (AbstractRecipeScreenHandler)this.handler);
-        this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-        this.addDrawableChild(new TexturedButtonWidget(this.x + 5, this.height / 2 - 49, 20, 18, RecipeBookWidget.BUTTON_TEXTURES, button -> {
-            this.recipeBook.toggleOpen();
-            this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-            button.setPosition(this.x + 5, this.height / 2 - 49);
-        }));
-        this.addSelectableChild(this.recipeBook);
-        this.setInitialFocus(this.recipeBook);
-        this.titleX = 29;
     }
 
     @Override
     public void handledScreenTick() {
         super.handledScreenTick();
-        this.recipeBook.update();
+        //this.recipeBook.update();
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        if (this.recipeBook.isOpen() && this.narrow) {
-            this.renderBackground(context, mouseX, mouseY, delta);
-            this.recipeBook.render(context, mouseX, mouseY, delta);
-        } else {
-            super.render(context, mouseX, mouseY, delta);
-            this.recipeBook.render(context, mouseX, mouseY, delta);
-            this.recipeBook.drawGhostSlots(context, this.x, this.y, true, delta);
-        }
-        this.drawMouseoverTooltip(context, mouseX, mouseY);
-        this.recipeBook.drawTooltip(context, this.x, this.y, mouseX, mouseY);
+        renderBackground(context, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
+        drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        int i = this.x;
-        int j = (this.height - this.backgroundHeight) / 2;
-        context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderTexture(0, TEXTURE);
+        int x = (width - backgroundWidth) / 2;
+        int y = (height - backgroundHeight) / 2;
+
+        context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
+
+        renderProgressArrow(context, x, y);
+    }
+
+    private void renderProgressArrow(DrawContext context, int x, int y) {
+        if(handler.isCrafting()) {
+            context.drawTexture(TEXTURE, x + 85, y + 30, 176, 0, 8, handler.getScaledProgress());
+        }
     }
 
     @Override

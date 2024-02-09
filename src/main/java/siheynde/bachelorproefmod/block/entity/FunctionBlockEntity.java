@@ -1,14 +1,15 @@
-package siheynde.bachelorproefmod.block.custom;
+package siheynde.bachelorproefmod.block.entity;
 
 import com.mojang.serialization.MapCodec;
-//import java.nio.
-import net.minecraft.block.*;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -16,55 +17,35 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import siheynde.bachelorproefmod.screen.FunctionScreenHandler;
 
-public class FunctionBlock extends BlockEntity {
-    public FunctionBlock(AbstractBlock.Settings settings) {super(settings);}
+public class FunctionBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory {
     private static final Text TITLE = Text.translatable("container.crafting");
-    public static final MapCodec<FunctionBlock> CODEC = FunctionBlock.createCodec(FunctionBlock::new);
 
-    //@Override
-    public MapCodec<? extends FunctionBlock> getCodec() {
-       return CODEC;
+    public FunctionBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.FUNCTION_BLOCK_ENTITY, pos, state);
+    }
+
+    @Override
+    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+        return new FunctionScreenHandler(syncId, playerInventory, this);
     }
 
 
-    //@Nullable
-    //@Override
-    //public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-     //   return new FunctionBlockEntity(pos, state);
-    //}
-
-    //@Override
-    //public BlockRenderType getRenderType(BlockState state) {
-    //    return BlockRenderType.MODEL;
-    //}
-
+    @Override
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeBlockPos(this.pos);
+    }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (world.isClient) {
-            return ActionResult.SUCCESS;
+    public Text getDisplayName() {
+        return Text.literal("Function Block");
+    }
+
+    public void tick(World world, BlockPos pos, BlockState state1) {
+        if(world.isClient()) {
+            return;
         }
-        //open file
-        //System.out.println("Block clicked");
-        player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-        player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
-        return ActionResult.CONSUME;
-        //player.openHandledScreen();
     }
-
-    //@Nullable
-    //@Override
-    //public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-    //    return validateTicker(type, ModBlockEntities.FUNCTION_BLOCK_ENTITY,
-    //            (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
-    //}
-
-    @Override
-    public ScreenHandler createMenu(BlockState state, World world, BlockPos pos) {
-        return new FunctionScreenHandler(syncId, inventory);
-    }
-
-
 }

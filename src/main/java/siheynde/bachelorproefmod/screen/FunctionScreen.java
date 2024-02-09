@@ -13,14 +13,21 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextContent;
 import net.minecraft.util.Identifier;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.screen.FunctionScreenHandler;
 
+import java.util.List;
+
 public class FunctionScreen
         extends HandledScreen<FunctionScreenHandler>
         implements RecipeBookProvider {
+
+    protected static final int backgroundWidth = 248;
     private static final Identifier TEXTURE = new Identifier(BachelorProef.MOD_ID, "textures/gui/function_screen.png");
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
     private boolean narrow;
@@ -58,6 +65,11 @@ public class FunctionScreen
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
 
         renderProgressArrow(context, x, y);
+    }
+
+    @Override
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY){
+
     }
 
     private void renderProgressArrow(DrawContext context, int x, int y) {

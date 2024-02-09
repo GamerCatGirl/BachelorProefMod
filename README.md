@@ -5,8 +5,8 @@
 
 
 ### In Minecraft 
-- Summon a robot: /summon bachelorproef:robot (only with sheats on)
-- Go to shrine: /locate structure bachelorproef:shrine (only with sheats on)
+- Summon a robot: /summon bachelorproef:robot (only with cheats on)
+- Go to shrine: /locate structure bachelorproef:shrine (only with cheats on)
 
 
 

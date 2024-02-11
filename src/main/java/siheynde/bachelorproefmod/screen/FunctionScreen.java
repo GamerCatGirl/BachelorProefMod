@@ -38,6 +38,7 @@ public class FunctionScreen
     protected static final int backgroundWidth = 248;
     private static final Identifier TEXTURE = new Identifier(BachelorProef.MOD_ID, "textures/gui/function_screen.png");
     private static final Identifier TEXT_FIELD_TEXTURE = new Identifier("container/anvil/text_field");
+    private static final Identifier TEXT_FIELD_DISABLED_TEXTURE = new Identifier("container/anvil/text_field_disabled");
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
     private TextFieldWidget predictField;
     private TextFieldWidget investigateField;
@@ -100,10 +101,10 @@ public class FunctionScreen
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             //this.client.player.closeHandledScreen();
         }
-        if (this.predictField.keyPressed(keyCode, scanCode, modifiers) || this.predictField.isActive()) {
+        if (this.predictField.isActive() && this.predictField.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (this.investigateField.keyPressed(keyCode, scanCode, modifiers) || this.investigateField.isActive()) {
+        if (this.investigateField.isActive() && this.investigateField.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -138,8 +139,8 @@ public class FunctionScreen
         int y = (height - backgroundHeight) / 2;
 
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
-        context.drawGuiTexture(TEXT_FIELD_TEXTURE, this.x + 31, this.y + 9, 110, 16);
-        context.drawGuiTexture(TEXT_FIELD_TEXTURE, this.x + 67, this.y + 73, 110, 16);
+        context.drawGuiTexture(getFocused() == predictField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 31, this.y + 9, 110, 16);
+        context.drawGuiTexture(getFocused() == investigateField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 67, this.y + 73, 110, 16);
 
 
         renderProgressArrow(context, x, y);
@@ -187,6 +188,7 @@ public class FunctionScreen
             this.setFocused(this.predictField);
             investigateField.setFocused(false);
             investigateField.setEditable(false);
+            //TODO zet cursor uit
             predictField.setFocused(true);
             predictField.setEditable(true);
             return true;
@@ -195,6 +197,7 @@ public class FunctionScreen
             this.setFocused(this.investigateField);
             predictField.setFocused(false);
             predictField.setEditable(false);
+            //predictField.setCursor(-1, false);
             investigateField.setFocused(true);
             investigateField.setEditable(true);
             return true;

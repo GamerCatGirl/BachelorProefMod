@@ -38,33 +38,39 @@ public class FunctionScreen
     protected static final int backgroundWidth = 248;
     private static final Identifier TEXTURE = new Identifier(BachelorProef.MOD_ID, "textures/gui/function_screen.png");
     private static final Identifier TEXT_FIELD_TEXTURE = new Identifier("container/anvil/text_field");
-    private TextFieldWidget predictInputField;
-    private TextFieldWidget InvestigateInputField;
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
     private TextFieldWidget predictField;
+    private TextFieldWidget investigateField;
     private boolean narrow;
 
     public FunctionScreen(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
     }
 
+    private void setupField(TextFieldWidget field) {
+        field.setFocusUnlocked(false);
+        field.setEditableColor(-1);
+        field.setUneditableColor(-1);
+        field.setDrawsBackground(false);
+        field.setMaxLength(50);
+        field.setChangedListener(this::onRenamed);
+        field.setText("testInput1");
+        this.addSelectableChild(field);
+        field.setEditable(true);
+    }
+
     @Override
     protected void init() {
         super.init();
         handler.addListener(this);
+        predictField = new TextFieldWidget(this.textRenderer, x + 33, y + 14, 102, 12, Text.translatable("container.repair"));
+        investigateField = new TextFieldWidget(this.textRenderer, x + 69, y + 78, 102, 12, Text.translatable("container.repair"));
+        setupField(this.predictField);
+        setupField(this.investigateField);
 
-
-        this.predictField = new TextFieldWidget(this.textRenderer, x + 33, y + 13, 103, 12, Text.translatable("container.repair"));
-        this.predictField.setFocusUnlocked(false);
-        this.predictField.setEditableColor(-1);
-        this.predictField.setUneditableColor(-1);
-        this.predictField.setDrawsBackground(false);
-        this.predictField.setMaxLength(50);
-        this.predictField.setChangedListener(this::onRenamed);
-        this.predictField.setText("testInput");
-        this.addSelectableChild(this.predictField);
         this.setInitialFocus(this.predictField);
-        this.predictField.setEditable(((FunctionScreenHandler)this.handler).getSlot(0).hasStack());
+        this.predictField.setEditable(true);
+        this.setFocused(this.predictField);
     }
 
     @Override
@@ -77,13 +83,16 @@ public class FunctionScreen
 
     public void renderForeground(DrawContext context, int mouseX, int mouseY, float delta) {
         this.predictField.render(context, mouseX, mouseY, delta);
+        this.investigateField.render(context, mouseX, mouseY, delta);
     }
 
     @Override
     public void resize(MinecraftClient client, int width, int height) {
         String string = this.predictField.getText();
+        String string2 = this.investigateField.getText();
         this.init(client, width, height);
         this.predictField.setText(string);
+        this.investigateField.setText(string2);
     }
 
     @Override
@@ -94,21 +103,24 @@ public class FunctionScreen
         if (this.predictField.keyPressed(keyCode, scanCode, modifiers) || this.predictField.isActive()) {
             return true;
         }
+        if (this.investigateField.keyPressed(keyCode, scanCode, modifiers) || this.investigateField.isActive()) {
+            return true;
+        }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void onRenamed(String name) {
-        Slot slot = ((FunctionScreenHandler)this.handler).getSlot(0);
-        if (!slot.hasStack()) {
-            return;
-        }
-        String string = name;
-        if (!slot.getStack().hasCustomName() && string.equals(slot.getStack().getName().getString())) {
-            string = "";
-        }
-        if (((FunctionScreenHandler)this.handler).setNewPredict(string)) {
+        //Slot slot = ((FunctionScreenHandler)this.handler).getSlot(0);
+        //if (!slot.hasStack()) {
+        //    return;
+        //}
+        //String string = name;
+        //if (!slot.getStack().hasCustomName() && string.equals(slot.getStack().getName().getString())) {
+        //    string = "";
+        //}
+        //if (((FunctionScreenHandler)this.handler).setNewPredict(string)) {
             //this.client.player.networkHandler.sendPacket(new RenameItemC2SPacket(string));
-        }
+        //}
     }
 
     @Override
@@ -127,6 +139,7 @@ public class FunctionScreen
 
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
         context.drawGuiTexture(TEXT_FIELD_TEXTURE, this.x + 31, this.y + 9, 110, 16);
+        context.drawGuiTexture(TEXT_FIELD_TEXTURE, this.x + 67, this.y + 73, 110, 16);
 
 
         renderProgressArrow(context, x, y);
@@ -168,6 +181,22 @@ public class FunctionScreen
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.recipeBook.mouseClicked(mouseX, mouseY, button)) {
             this.setFocused(this.recipeBook);
+            return true;
+        }
+        if(this.predictField.mouseClicked(mouseX, mouseY, button)) {
+            this.setFocused(this.predictField);
+            investigateField.setFocused(false);
+            investigateField.setEditable(false);
+            predictField.setFocused(true);
+            predictField.setEditable(true);
+            return true;
+        }
+        if(this.investigateField.mouseClicked(mouseX, mouseY, button)) {
+            this.setFocused(this.investigateField);
+            predictField.setFocused(false);
+            predictField.setEditable(false);
+            investigateField.setFocused(true);
+            investigateField.setEditable(true);
             return true;
         }
         if (this.narrow && this.recipeBook.isOpen()) {

@@ -73,8 +73,6 @@ public class RobotEntity extends TameableEntity {
         return ModEntities.ROBOT.create(world);
     }
 
-    //TODO: mob thinks his arm is the front of the mob
-
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
@@ -85,7 +83,6 @@ public class RobotEntity extends TameableEntity {
             return bl ? ActionResult.CONSUME : ActionResult.PASS;
         }
         if (this.isOwner(player)) {
-            // TODO: open GUI
             ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.OPEN_ADVANCEMENTS_ID, PacketByteBufs.empty());
             //player.openHandledScreen(new AdvancementsScreen(player.getServer().getAdvancementLoader()) );
             //player.op

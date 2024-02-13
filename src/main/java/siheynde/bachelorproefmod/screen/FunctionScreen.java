@@ -2,15 +2,12 @@ package siheynde.bachelorproefmod.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.types.Func;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.BeaconScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
@@ -18,21 +15,14 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
-import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextContent;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
-import siheynde.bachelorproefmod.screen.FunctionScreenHandler;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +30,14 @@ import java.util.Optional;
 @Environment(value=EnvType.CLIENT)
 public class FunctionScreen
         extends HandledScreen<FunctionScreenHandler>
-        implements RecipeBookProvider, ScreenHandlerListener {
+        implements ScreenHandlerListener {
+    protected static final int x_text = 2;
+
+    protected static final int y_predict_text = 15;
+    protected static final int y_run_text = 50;
+    protected static final int y_investigate_text = 85;
+    protected static final int y_modify_text = 120;
+    protected static final int y_create_text = 155;
 
     protected static final int backgroundWidth = 248;
     private static final Identifier TEXTURE = new Identifier(BachelorProef.MOD_ID, "textures/gui/function_screen.png");
@@ -56,6 +53,9 @@ public class FunctionScreen
     private final List<FunctionButtonWidget> buttons = Lists.newArrayList();
     private TextFieldWidget predictField;
     private TextFieldWidget investigateField;
+
+    private DrawContext context;
+    public String answerRun = "";
     private boolean narrow;
 
     public FunctionScreen(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -96,12 +96,7 @@ public class FunctionScreen
 
         //BUTTONS
         this.buttons.clear();
-        this.addButton(new ConfirmButtonWidget(this.x + 164, this.y + 107));
-    }
-
-    void tickButtons() {
-        //int i = handler.getProperties();
-        //this.buttons.forEach(button -> button.tick(i));
+        this.addButton(new ConfirmButtonWidget(this.x + 140, this.y + 14));
     }
 
     @Override
@@ -160,8 +155,11 @@ public class FunctionScreen
         //this.recipeBook.update();
     }
 
+
+
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+        this.context = context;
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, TEXTURE);
@@ -172,13 +170,22 @@ public class FunctionScreen
         context.drawGuiTexture(getFocused() == predictField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 31, this.y + 9, 110, 16);
         context.drawGuiTexture(getFocused() == investigateField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 67, this.y + 73, 110, 16);
 
-
-
     }
 
     @Override
     protected void drawForeground(DrawContext context, int mouseX, int mouseY){
+        context.drawCenteredTextWithShadow(this.textRenderer, "Predict", x_text, y_predict_text, 0x000000);
+        context.drawCenteredTextWithShadow(this.textRenderer, "Run", x_text, y_run_text, 0x000000);
+        context.drawCenteredTextWithShadow(this.textRenderer, "Investigate", x_text, y_investigate_text, 0x000000);
+        context.drawCenteredTextWithShadow(this.textRenderer, "Modify", x_text, y_modify_text, 0x000000);
+        context.drawCenteredTextWithShadow(this.textRenderer, "Create", x_text, y_create_text, 0x000000);
 
+        context.drawCenteredTextWithShadow(this.textRenderer, this.answerRun, 120, y_run_text, 0x000000);
+
+    }
+
+    public void drawText(String text, int x, int y) {
+        context.drawCenteredTextWithShadow(this.textRenderer, text, x, y, 0x000000);
     }
 
 
@@ -230,16 +237,6 @@ public class FunctionScreen
     }
 
     @Override
-    public void refreshRecipeBook() {
-        this.recipeBook.refresh();
-    }
-
-    @Override
-    public RecipeBookWidget getRecipeBookWidget() {
-        return this.recipeBook;
-    }
-
-    @Override
     public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
 
     }
@@ -253,19 +250,22 @@ public class FunctionScreen
 
     @Environment(value=EnvType.CLIENT)
     class ConfirmButtonWidget extends IconButtonWidget {
+
         public ConfirmButtonWidget(int x, int y) {
             super(x, y, CONFIRM_TEXTURE, ScreenTexts.DONE);
+            //this.visible = true;
         }
 
         @Override
         public void onPress() {
             System.out.println("Pressed on confirm button");
+            String predict = predictField.getText();
+            answerRun = "You pressed the confirm button";
+
         }
 
         @Override
-        public void tick(int level) {
-            this.active = true;
-        }
+        public void tick(int level) {}
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -281,6 +281,10 @@ public class FunctionScreen
         @Override
         protected void renderExtra(DrawContext context) {
             context.drawGuiTexture(this.texture, this.getX() + 2, this.getY() + 2, 18, 18);
+        }
+
+        public void drawText(Text text, int x, int y){
+            //super.drawText(context, text, x, y);
         }
     }
 

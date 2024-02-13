@@ -4,5 +4,6 @@
   "itemgroup.robot": "Robot Group",
 
   "block.bachelorproef.function_block": "Function Block",
+  "block.bachelorproef.function_block.predict": "Predict",
   "structure.bachelorproef.shrine": "Shrine",
 }

@@ -1,14 +1,19 @@
 package siheynde.bachelorproefmod.screen;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.types.Func;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ingame.BeaconScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.GameRenderer;
@@ -16,6 +21,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
 import net.minecraft.screen.*;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -29,6 +35,7 @@ import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.screen.FunctionScreenHandler;
 
 import java.util.List;
+import java.util.Optional;
 
 @Environment(value=EnvType.CLIENT)
 public class FunctionScreen
@@ -37,9 +44,16 @@ public class FunctionScreen
 
     protected static final int backgroundWidth = 248;
     private static final Identifier TEXTURE = new Identifier(BachelorProef.MOD_ID, "textures/gui/function_screen.png");
+    static final Identifier CONFIRM_TEXTURE = new Identifier("container/beacon/confirm");
+    static final Identifier BUTTON_DISABLED_TEXTURE = new Identifier("container/beacon/button_disabled");
+    static final Identifier BUTTON_SELECTED_TEXTURE = new Identifier("container/beacon/button_selected");
+    static final Identifier BUTTON_HIGHLIGHTED_TEXTURE = new Identifier("container/beacon/button_highlighted");
+    static final Identifier BUTTON_TEXTURE = new Identifier("container/beacon/button");
+    static final Identifier CANCEL_TEXTURE = new Identifier("container/beacon/cancel");
     private static final Identifier TEXT_FIELD_TEXTURE = new Identifier("container/anvil/text_field");
     private static final Identifier TEXT_FIELD_DISABLED_TEXTURE = new Identifier("container/anvil/text_field_disabled");
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
+    private final List<FunctionButtonWidget> buttons = Lists.newArrayList();
     private TextFieldWidget predictField;
     private TextFieldWidget investigateField;
     private boolean narrow;
@@ -60,10 +74,17 @@ public class FunctionScreen
         field.setEditable(true);
     }
 
+    private <T extends ClickableWidget> void addButton(T button) {
+        this.addDrawableChild(button);
+        this.buttons.add((FunctionButtonWidget)((Object)button));
+    }
+
     @Override
     protected void init() {
         super.init();
         handler.addListener(this);
+
+        //TEXTFIELDS
         predictField = new TextFieldWidget(this.textRenderer, x + 33, y + 14, 102, 12, Text.translatable("container.repair"));
         investigateField = new TextFieldWidget(this.textRenderer, x + 69, y + 78, 102, 12, Text.translatable("container.repair"));
         setupField(this.predictField);
@@ -72,6 +93,15 @@ public class FunctionScreen
         this.setInitialFocus(this.predictField);
         this.predictField.setEditable(true);
         this.setFocused(this.predictField);
+
+        //BUTTONS
+        this.buttons.clear();
+        this.addButton(new ConfirmButtonWidget(this.x + 164, this.y + 107));
+    }
+
+    void tickButtons() {
+        //int i = handler.getProperties();
+        //this.buttons.forEach(button -> button.tick(i));
     }
 
     @Override
@@ -143,23 +173,7 @@ public class FunctionScreen
         context.drawGuiTexture(getFocused() == investigateField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 67, this.y + 73, 110, 16);
 
 
-        renderProgressArrow(context, x, y);
-    }
 
-    private void onPredictInput(String name) {
-        Slot slot = handler.getSlot(0);
-        if (!slot.hasStack()) {
-            return;
-        }
-        String string = name;
-        if (!slot.getStack().hasCustomName() && string.equals(slot.getStack().getName().getString())) {
-            string = "";
-        }
-        if (handler.setNewPredict(string)) {
-            //this.client.player.networkHandler.sendPacket(new RenameItemC2SPacket(string));
-
-            //Rename item
-        }
     }
 
     @Override
@@ -167,11 +181,6 @@ public class FunctionScreen
 
     }
 
-    private void renderProgressArrow(DrawContext context, int x, int y) {
-        if(handler.isCrafting()) {
-            context.drawTexture(TEXTURE, x + 85, y + 30, 176, 0, 8, handler.getScaledProgress());
-        }
-    }
 
     @Override
     protected boolean isPointWithinBounds(int x, int y, int width, int height, double pointX, double pointY) {
@@ -238,5 +247,82 @@ public class FunctionScreen
     @Override
     public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
 
+    }
+
+
+
+    @Environment(value=EnvType.CLIENT)
+    class ConfirmButtonWidget extends IconButtonWidget {
+        public ConfirmButtonWidget(int x, int y) {
+            super(x, y, CONFIRM_TEXTURE, ScreenTexts.DONE);
+        }
+
+        @Override
+        public void onPress() {
+            System.out.println("Pressed on confirm button");
+        }
+
+        @Override
+        public void tick(int level) {
+            this.active = true;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static abstract class IconButtonWidget
+            extends BaseButtonWidget {
+        private final Identifier texture;
+
+        protected IconButtonWidget(int x, int y, Identifier texture, Text message) {
+            super(x, y, message);
+            this.texture = texture;
+        }
+
+        @Override
+        protected void renderExtra(DrawContext context) {
+            context.drawGuiTexture(this.texture, this.getX() + 2, this.getY() + 2, 18, 18);
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static interface FunctionButtonWidget {
+        public void tick(int var1);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static abstract class BaseButtonWidget
+            extends PressableWidget
+            implements FunctionButtonWidget {
+        private boolean disabled;
+
+        protected BaseButtonWidget(int x, int y) {
+            super(x, y, 22, 22, ScreenTexts.EMPTY);
+        }
+
+        protected BaseButtonWidget(int x, int y, Text message) {
+            super(x, y, 22, 22, message);
+        }
+
+        @Override
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+            Identifier identifier = !this.active ? BUTTON_DISABLED_TEXTURE : (this.disabled ? BUTTON_SELECTED_TEXTURE : (this.isSelected() ? BUTTON_HIGHLIGHTED_TEXTURE : BUTTON_TEXTURE));
+            context.drawGuiTexture(identifier, this.getX(), this.getY(), this.width, this.height);
+            this.renderExtra(context);
+        }
+
+        protected abstract void renderExtra(DrawContext var1);
+
+        public boolean isDisabled() {
+            return this.disabled;
+        }
+
+        public void setDisabled(boolean disabled) {
+            this.disabled = disabled;
+        }
+
+        @Override
+        public void appendClickableNarrations(NarrationMessageBuilder builder) {
+            this.appendDefaultNarrations(builder);
+        }
     }
 }

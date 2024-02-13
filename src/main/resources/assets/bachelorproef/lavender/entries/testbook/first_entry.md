@@ -13,6 +13,9 @@ supports most of the *standard* Markdown formatting syntax with some
 {green}minecraft-specific{} extensions, like this one for color
 
 ;;;;;
+```scheme
+ (define x 3)
 
+```
 This above page-break syntax (;;;;;) starts the next page.
 <recipe;minecraft:furnace>

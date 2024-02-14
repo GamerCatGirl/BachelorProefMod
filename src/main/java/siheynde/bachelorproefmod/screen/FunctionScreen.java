@@ -13,6 +13,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -23,6 +24,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.mixin.ClientPlayerMixin;
+import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import java.util.List;
 import java.util.Optional;
@@ -261,6 +264,12 @@ public class FunctionScreen
             System.out.println("Pressed on confirm button");
             String predict = predictField.getText();
             answerRun = "You pressed the confirm button";
+            ClientPlayerEntity player = client.player;
+            PlayerMixinInterface playerMixin = (PlayerMixinInterface)player;
+            //player.getFunction();
+            //player.getVisitedShrines();
+            System.out.println("Player" + player);
+
 
         }
 

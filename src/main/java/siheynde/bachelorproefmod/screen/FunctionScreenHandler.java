@@ -2,32 +2,14 @@ package siheynde.bachelorproefmod.screen;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.CraftingResultInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.recipe.*;
-import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.*;
-import net.minecraft.screen.slot.CraftingResultSlot;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import net.minecraft.world.World;
-import siheynde.bachelorproefmod.block.ModBlocks;
 
-import java.util.Map;
-import java.util.Optional;
 
 public class FunctionScreenHandler extends ScreenHandler {
     private String newPredict;
@@ -37,14 +19,6 @@ public class FunctionScreenHandler extends ScreenHandler {
     public FunctionScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
         this(syncId, inventory, inventory.player.getWorld().getBlockEntity(buf.readBlockPos()));
     }
-
-    public boolean isCrafting() {
-        return true;
-    }
-
-    public int getScaledProgress() {
-        return 0;
-    };
 
     public FunctionScreenHandler(int syncId, PlayerInventory playerInventory, BlockEntity blockEntity) {
         super(ModScreenHandlers.FUNCTION_SCREEN, syncId);

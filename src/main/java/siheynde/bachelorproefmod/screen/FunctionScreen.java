@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
@@ -24,11 +23,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
-import siheynde.bachelorproefmod.mixin.ClientPlayerMixin;
+import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import java.util.List;
-import java.util.Optional;
 
 @Environment(value=EnvType.CLIENT)
 public class FunctionScreen
@@ -54,6 +52,7 @@ public class FunctionScreen
     private static final Identifier TEXT_FIELD_DISABLED_TEXTURE = new Identifier("container/anvil/text_field_disabled");
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
     private final List<FunctionButtonWidget> buttons = Lists.newArrayList();
+    private final String shrineName;
     private TextFieldWidget predictField;
     private TextFieldWidget investigateField;
 
@@ -61,8 +60,21 @@ public class FunctionScreen
     public String answerRun = "";
     private boolean narrow;
 
+
     public FunctionScreen(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+
+        PlayerMixinInterface playerMixin = (PlayerMixinInterface) inventory.player;
+        Shrine shrine = playerMixin.getShrine();
+
+        this.shrineName = shrine.getName();
+
+
+        //TODO : get file(s) for shrine from player
+
+        //TODO : get result from function (dr Racket)
+
+        //TODO : ....
     }
 
     private void setupField(TextFieldWidget field) {

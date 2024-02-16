@@ -25,6 +25,7 @@ View lesson Book:
 - [x] Install lavender to make books in markdown 
 - [ ] Add books to get information for lessons
 - [ ] Make UI function block interactive (!)
+- [ ] racket parser to check if the function is correct (!!!) 
 - [ ] Keep track of how many shrine a user has visited to know which books or exercises to display, with coordinates 
 - [x] Add Robot
 - [x] Custom advancement tab for course -- easily editable with json for other courses

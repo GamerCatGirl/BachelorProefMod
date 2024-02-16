@@ -2,12 +2,17 @@ package siheynde.bachelorproefmod.mixin;
 
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
+import siheynde.bachelorproefmod.structure.shrine.Shrine;
 
 import java.util.ArrayList;
 
 @Mixin(ClientPlayerEntity.class)
 public class ClientPlayerMixin implements PlayerMixinInterface {
+    @Shadow private double lastX;
+    @Shadow private double lastZ;
+    @Shadow private double lastBaseY;
     public ArrayList<Shrine> visitedShrines = new ArrayList<>();
 
     public void addVisitedShrine(Shrine shrine) {
@@ -22,14 +27,19 @@ public class ClientPlayerMixin implements PlayerMixinInterface {
         return visitedShrines;
     }
 
-    public Shrine getShrine(int x, int y) {
+    public Shrine getShrine() {
+        double x = this.lastX;
+        double y = this.lastBaseY;
+        double z = this.lastZ;
+
         for (Shrine shrine : visitedShrines) {
-            if (shrine.x == x && shrine.y == y) {
+            if (shrine.isInRange(x, y, z)) {
                 return shrine;
             }
         }
-        Shrine newShrine = new Shrine(x, y, 0);
-        this.
+
+        int level = visitedShrines.size();
+        Shrine newShrine = new Shrine(x, y, z, level);
         addVisitedShrine(newShrine);
         return newShrine;
     }

@@ -42,3 +42,9 @@ View lesson Book:
 - [ ] Shrines cannot be broken down
 - [x] Add schrines to make exercises 
 - [ ] Add fun quests for students so they still have the game aspect of minecraft
+
+## Credits
+- [Lavender](https://github.com/wisp-forest/lavender)
+- [Scheme parser](https://norvig.com/jscheme.html)
+- [Minecraft Modding](https://www.youtube.com/channel/UCbzPhyLcO8VP25dZ7kaUyAw)
+- [Inspo Design Robot](https://sketchfab.com/3d-models/robot-mc-0f40c981c4ec4777b52bbc448e319a5c)

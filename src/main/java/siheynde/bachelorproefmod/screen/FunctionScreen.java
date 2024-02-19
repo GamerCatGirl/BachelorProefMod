@@ -17,6 +17,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.ScreenTexts;
@@ -25,18 +26,25 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
+import org.spongepowered.asm.mixin.struct.SourceMap;
+import org.w3c.dom.events.EventException;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import jscheme.JS;
 
 @Environment(value=EnvType.CLIENT)
 public class FunctionScreen
         extends HandledScreen<FunctionScreenHandler>
         implements ScreenHandlerListener {
     protected static final int x_text = 2;
-
     protected static final int y_predict_text = 15;
     protected static final int y_run_text = 50;
     protected static final int y_investigate_text = 85;
@@ -72,6 +80,20 @@ public class FunctionScreen
 
         this.shrineName = shrine.getName();
 
+        //example running scheme code
+        try {
+            //InputStream classLoader = getClass().getClassLoader().getResourceAsStream("assets");
+
+            //URI  uri = new URI("file:///src/main/resources/assests/bachelorproef/racket/introduction/predict.rkt");
+            //File file = new File("main/resources/assests/bachelorproef/racket/introduction/predict.rkt");
+            //JS.load();
+            //JS.load(new java.io.FileReader("src/main/resources/assests/bachelorproef/racket/introduction/predict.rkt"));
+        } catch (EventException e) {
+            e.printStackTrace();
+        }
+        //Object answer = JS.eval("(+ 5 2)");
+        //System.out.println(answer);
+        /// :)))
 
 
         //TODO : get file(s) for shrine from player

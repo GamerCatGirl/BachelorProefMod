@@ -1,3 +1,3 @@
-#lang racket
-
 (+ 5 3)
+
+(define (predict) (+ 5 2))

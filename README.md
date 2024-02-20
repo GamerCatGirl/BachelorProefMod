@@ -20,6 +20,11 @@
 View lesson Book:
 - /get-lavender-book bachelorproef:testbook
 
+### Add scheme code to shrines with lesson name 
+- in src/resources/assets/bachelorproef/racket/lesson_name/
+- file name: lesson.rkt
+- (define (predict) ....) where the student need to predict the outcome of the function
+
 
 ## TODO 
 - [x] Install lavender to make books in markdown 

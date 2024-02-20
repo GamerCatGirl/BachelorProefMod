@@ -37,6 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import jscheme.JS;
 
@@ -82,18 +83,25 @@ public class FunctionScreen
 
         //example running scheme code
         try {
-            //InputStream classLoader = getClass().getClassLoader().getResourceAsStream("assets");
+
+            InputStream classLoader = getClass().getClassLoader().getResourceAsStream("assets/bachelorproef/racket/introduction/predict.rkt");
+            URL resource = getClass().getClassLoader().getResource("assets/bachelorproef/racket/introduction/predict.rkt");
+            BachelorProef.LOGGER.info(classLoader.toString());
 
             //URI  uri = new URI("file:///src/main/resources/assests/bachelorproef/racket/introduction/predict.rkt");
             //File file = new File("main/resources/assests/bachelorproef/racket/introduction/predict.rkt");
             //JS.load();
+            Object object = JS.load(new java.io.FileReader(resource.getFile()));
+            BachelorProef.LOGGER.info(object.toString());
+            System.out.println(JS.call("predict"));
+            BachelorProef.LOGGER.info(JS.eval(object).toString());
+            BachelorProef.LOGGER.info(object.toString());
             //JS.load(new java.io.FileReader("src/main/resources/assests/bachelorproef/racket/introduction/predict.rkt"));
         } catch (EventException e) {
             e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
-        //Object answer = JS.eval("(+ 5 2)");
-        //System.out.println(answer);
-        /// :)))
 
 
         //TODO : get file(s) for shrine from player

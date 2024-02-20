@@ -39,6 +39,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.logging.Logger;
+
 import jscheme.JS;
 
 @Environment(value=EnvType.CLIENT)
@@ -65,6 +67,7 @@ public class FunctionScreen
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
     private final List<FunctionButtonWidget> buttons = Lists.newArrayList();
     private final String shrineName;
+    public Shrine shrine;
     private TextFieldWidget predictField;
     private TextFieldWidget investigateField;
 
@@ -77,31 +80,33 @@ public class FunctionScreen
         super(handler, inventory, title);
 
         PlayerMixinInterface playerMixin = (PlayerMixinInterface) inventory.player;
-        Shrine shrine = playerMixin.getShrine();
+        shrine = playerMixin.getShrine();
 
         this.shrineName = shrine.getName();
 
+        BachelorProef.LOGGER.info(shrine.predictAnswer());
+
         //example running scheme code
+        /*
         try {
 
             InputStream classLoader = getClass().getClassLoader().getResourceAsStream("assets/bachelorproef/racket/introduction/predict.rkt");
             URL resource = getClass().getClassLoader().getResource("assets/bachelorproef/racket/introduction/predict.rkt");
-            BachelorProef.LOGGER.info(classLoader.toString());
+            //BachelorProef.LOGGER.info(classLoader.toString());
 
             //URI  uri = new URI("file:///src/main/resources/assests/bachelorproef/racket/introduction/predict.rkt");
             //File file = new File("main/resources/assests/bachelorproef/racket/introduction/predict.rkt");
             //JS.load();
             Object object = JS.load(new java.io.FileReader(resource.getFile()));
-            BachelorProef.LOGGER.info(object.toString());
-            System.out.println(JS.call("predict"));
-            BachelorProef.LOGGER.info(JS.eval(object).toString());
-            BachelorProef.LOGGER.info(object.toString());
+            System.out.println(JS.call("predict")); //gives answer of predict function
+
             //JS.load(new java.io.FileReader("src/main/resources/assests/bachelorproef/racket/introduction/predict.rkt"));
         } catch (EventException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+        */
 
 
         //TODO : get file(s) for shrine from player
@@ -309,7 +314,8 @@ public class FunctionScreen
         public void onPress() {
             System.out.println("Pressed on confirm button");
             String predict = predictField.getText();
-            answerRun = "You pressed the confirm button";
+
+            answerRun = shrine.predictAnswer();
             ClientPlayerEntity player = client.player;
             PlayerMixinInterface playerMixin = (PlayerMixinInterface)player;
             //player.getFunction();

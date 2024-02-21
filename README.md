@@ -12,10 +12,11 @@
 
 ### Interactions with robot: 
 - tame robot to assign to a certain user with iron_ignot
-- right click on robot to view advancements (unlocked functions of robot)
+- right click on robot to view advancements (unlocked functions of robot) && let robot sit or follow
 
 ### Interactions with functionblock:
 - right click on functionblock to view the GUI 
+- get solotion of predict function when click on check mark 
 
 View lesson Book:
 - /get-lavender-book bachelorproef:testbook

@@ -5,6 +5,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -15,9 +17,9 @@ import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.resource.ResourceFinder;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.ScreenTexts;
@@ -26,22 +28,14 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
-import org.spongepowered.asm.mixin.struct.SourceMap;
-import org.w3c.dom.events.EventException;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.entity.robot.RobotEntity;
+import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
+import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
-import java.util.logging.Logger;
-
-import jscheme.JS;
 
 @Environment(value=EnvType.CLIENT)
 public class FunctionScreen
@@ -79,41 +73,19 @@ public class FunctionScreen
     public FunctionScreen(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
 
-        PlayerMixinInterface playerMixin = (PlayerMixinInterface) inventory.player;
-        shrine = playerMixin.getShrine();
+        ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface) inventory.player;
+
+        shrine = playerMixin.getShrine(); //TODO: put shrines in server player mixin
 
         this.shrineName = shrine.getName();
 
         BachelorProef.LOGGER.info(shrine.predictAnswer());
 
-        //example running scheme code
-        /*
-        try {
 
-            InputStream classLoader = getClass().getClassLoader().getResourceAsStream("assets/bachelorproef/racket/introduction/predict.rkt");
-            URL resource = getClass().getClassLoader().getResource("assets/bachelorproef/racket/introduction/predict.rkt");
-            //BachelorProef.LOGGER.info(classLoader.toString());
+        ClientPlayNetworking.send(ModPackets.MOVE_ROBOT,  PacketByteBufs.empty());
+        //robot.move(0, 0, 0);
 
-            //URI  uri = new URI("file:///src/main/resources/assests/bachelorproef/racket/introduction/predict.rkt");
-            //File file = new File("main/resources/assests/bachelorproef/racket/introduction/predict.rkt");
-            //JS.load();
-            Object object = JS.load(new java.io.FileReader(resource.getFile()));
-            System.out.println(JS.call("predict")); //gives answer of predict function
-
-            //JS.load(new java.io.FileReader("src/main/resources/assests/bachelorproef/racket/introduction/predict.rkt"));
-        } catch (EventException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        */
-
-
-        //TODO : get file(s) for shrine from player
-
-        //TODO : get result from function (dr Racket)
-
-        //TODO : ....
+        //TODO : primitive functions to let the robot move !!!!
     }
 
     private void setupField(TextFieldWidget field) {
@@ -317,7 +289,7 @@ public class FunctionScreen
 
             answerRun = shrine.predictAnswer();
             ClientPlayerEntity player = client.player;
-            PlayerMixinInterface playerMixin = (PlayerMixinInterface)player;
+            ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface)player;
             //player.getFunction();
             //player.getVisitedShrines();
             System.out.println("Player" + player);

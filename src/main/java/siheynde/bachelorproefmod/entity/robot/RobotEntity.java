@@ -2,11 +2,6 @@ package siheynde.bachelorproefmod.entity.robot;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
-import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -16,34 +11,24 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.village.Merchant;
-import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TradeOfferList;
-import net.minecraft.village.TradeOffers;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.entity.ModEntities;
 import siheynde.bachelorproefmod.networking.ModPackets;
+import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 public class RobotEntity extends TameableEntity {
 
@@ -65,6 +50,11 @@ public class RobotEntity extends TameableEntity {
         this.goalSelector.add(3, new FollowOwnerGoal(this, 1.0, 10.0f, 2.0f, false));
     }
 
+    public void move(int x, int y, int z) {
+        BachelorProef.LOGGER.info("Moving to " + x + " " + y + " " + z);
+       // this.updatePosition(x, y, z); ---> check if this is the right function
+    }
+
     //TODO: make happy Goal when new function received
 
     @Nullable
@@ -76,6 +66,11 @@ public class RobotEntity extends TameableEntity {
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
         Item item = itemStack.getItem();
+
+        PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
+
+        //ClientPlayerEntity serverPlayer = (ClientPlayerEntity) player;
+        //ClientPlayerMixinInterface playerInterface = (ClientPlayerMixinInterface) serverPlayer;
 
 
         if (this.getWorld().isClient) {
@@ -93,17 +88,18 @@ public class RobotEntity extends TameableEntity {
             // TODO: View progress other player
             System.out.println("Tamed");
         }
-        else if (item == Items.IRON_INGOT && !this.isTamed()) {
-            //super.interactMob(player, hand);
-
+        else if (item == Items.IRON_INGOT && !this.isTamed() && playerInterface.getRobot() == null) {
 
             if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
             this.setOwner(player);
+            playerInterface.setRobot(this);
+            BachelorProef.LOGGER.info(playerInterface.getRobot().toString());
+            BachelorProef.LOGGER.info(playerInterface.toString());
+
+            //TODO: save after game is closed and opened again
             this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
-
-
             player.addExperienceLevels(1);
         }
 

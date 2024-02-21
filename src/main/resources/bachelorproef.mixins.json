@@ -3,7 +3,8 @@
   "package": "siheynde.bachelorproefmod.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ClientPlayerMixin"
+    "ClientPlayerMixin",
+    "PlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

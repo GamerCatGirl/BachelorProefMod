@@ -3,13 +3,15 @@ package siheynde.bachelorproefmod.mixin;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import siheynde.bachelorproefmod.util.PlayerMixinInterface;
+import org.spongepowered.asm.mixin.Unique;
+import siheynde.bachelorproefmod.entity.robot.RobotEntity;
+import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 
 import java.util.ArrayList;
 
 @Mixin(ClientPlayerEntity.class)
-public class ClientPlayerMixin implements PlayerMixinInterface {
+public class ClientPlayerMixin implements ClientPlayerMixinInterface {
     @Shadow private double lastX;
     @Shadow private double lastZ;
     @Shadow private double lastBaseY;
@@ -43,6 +45,7 @@ public class ClientPlayerMixin implements PlayerMixinInterface {
         addVisitedShrine(newShrine);
         return newShrine;
     }
+
 
     //TODO: Save the player data --- example: how health is saved
     //this.dataTracker.set(HEALTH, Float.valueOf(MathHelper.clamp(health, 0.0f, this.getMaxHealth())));

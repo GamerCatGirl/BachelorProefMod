@@ -30,6 +30,7 @@ public class BachelorProef implements ModInitializer {
 		ModBlocks.registerModBlocks();
 		//ModStructureType.registerStructures();
 		ModPackets.registerS2CPackets();
+		ModPackets.registerC2SPackets();
 		ModBlockEntities.registerBlockEntities();
 
 		LOGGER.info("Hello Fabric world!");

@@ -2,13 +2,14 @@ package siheynde.bachelorproefmod.entity.robot;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.FollowOwnerGoal;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
@@ -22,6 +23,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -45,15 +47,17 @@ public class RobotEntity extends TameableEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this)); //lower the number to make it a higher priority
-        this.goalSelector.add(2, new WanderAroundFarGoal(this, 1.0));
+        this.goalSelector.add(2, new SitGoal(this));
+        this.goalSelector.add(4, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 4f));
         this.goalSelector.add(3, new FollowOwnerGoal(this, 1.0, 10.0f, 2.0f, false));
     }
 
     public void move(int x, int y, int z) {
-        BachelorProef.LOGGER.info("Moving to " + x + " " + y + " " + z);
-       // this.updatePosition(x, y, z); ---> check if this is the right function
+        //if (this.canTeleportTo(new BlockPos(x, y, z))) --- TODO: function from FollowOwnerGoal (make something similar)
+        this.refreshPositionAndAngles(this.getX() + x, this.getY() + y, this.getZ() + z, this.getYaw(), this.getPitch());
     }
+
 
     //TODO: make happy Goal when new function received
 
@@ -79,6 +83,10 @@ public class RobotEntity extends TameableEntity {
         }
         if (this.isOwner(player)) {
             ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.OPEN_ADVANCEMENTS_ID, PacketByteBufs.empty());
+
+            this.setSitting(!this.isSitting());
+            this.navigation.stop();
+            this.setTarget(null);
             //player.openHandledScreen(new AdvancementsScreen(player.getServer().getAdvancementLoader()) );
             //player.op
             //zie video min 22  Block Entity

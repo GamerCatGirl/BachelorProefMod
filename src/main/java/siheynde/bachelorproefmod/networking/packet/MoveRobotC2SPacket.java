@@ -27,5 +27,7 @@ public class MoveRobotC2SPacket {
         BachelorProef.LOGGER.info(robot.toString());
         //TEST IF ROBOT IS NULL!!!!!
 
+        robot.move(1, 1, 1);
+
     }
 }

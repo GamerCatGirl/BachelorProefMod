@@ -24,10 +24,18 @@ public class MoveRobotC2SPacket {
 
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
         RobotEntity robot = playerInterface.getRobot();
-        BachelorProef.LOGGER.info(robot.toString());
-        //TEST IF ROBOT IS NULL!!!!!
 
-        robot.move(1, 1, 1);
+        BachelorProef.LOGGER.info("Received move robot packet");
+        //buf.readInt();
+        BachelorProef.LOGGER.info(buf.toString());
+        int x = buf.readVarInt();
+        int y = buf.readVarInt();
+        int z = buf.readVarInt();
+        if (robot != null) {
+            robot.move(x, y, z);
+        }
+
+        //TODO: popup no assigned robot
 
     }
 }

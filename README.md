@@ -33,6 +33,7 @@ View lesson Book:
 - [ ] Make UI function block interactive (!) (predict works already)
 - [x] racket parser to check if the function is correct
 - [ ] Make robot move with code or place a certain block (!!!!)
+- [ ] Make racket package that students can run scheme code to test themself outside of the game (prints for the actions of the robot)  (!!)
 - [ ] Keep track of how many shrine a user has visited to know which books or exercises to display, with coordinates 
 - [x] Add Robot
 - [x] Custom advancement tab for course -- easily editable with json for other courses

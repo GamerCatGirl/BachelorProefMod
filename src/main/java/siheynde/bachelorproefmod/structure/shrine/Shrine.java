@@ -25,6 +25,10 @@ public class Shrine {
         }
     }
 
+    public Object Modify(){
+        return JS.call("modify");
+    }
+
     public String predictAnswer(){
         try {
             String path = level.path_rkt;

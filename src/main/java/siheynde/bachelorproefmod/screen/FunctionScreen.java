@@ -29,12 +29,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
+import javax.swing.plaf.basic.BasicHTML;
 import java.util.List;
 
 @Environment(value=EnvType.CLIENT)
@@ -80,9 +82,15 @@ public class FunctionScreen
         this.shrineName = shrine.getName();
 
         BachelorProef.LOGGER.info(shrine.predictAnswer());
+        BachelorProef.LOGGER.info(shrine.Modify().toString());
+        BachelorProef.LOGGER.info(shrine.Modify().getClass().toString());
+
+        RacketHandleClasses.execute(shrine.Modify());
+        //jsint.Pair pair = (jsint.Pair) shrine.predictModify();
 
 
-        ClientPlayNetworking.send(ModPackets.MOVE_ROBOT,  PacketByteBufs.empty());
+
+        //ClientPlayNetworking.send(ModPackets.MOVE_ROBOT,  PacketByteBufs.empty());
         //robot.move(0, 0, 0);
 
         //TODO : primitive functions to let the robot move !!!!

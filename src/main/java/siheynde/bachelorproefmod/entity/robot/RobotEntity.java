@@ -2,6 +2,7 @@ package siheynde.bachelorproefmod.entity.robot;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.EntityStatuses;
@@ -56,6 +57,17 @@ public class RobotEntity extends TameableEntity {
     public void move(int x, int y, int z) {
         //if (this.canTeleportTo(new BlockPos(x, y, z))) --- TODO: function from FollowOwnerGoal (make something similar)
         this.refreshPositionAndAngles(this.getX() + x, this.getY() + y, this.getZ() + z, this.getYaw(), this.getPitch());
+    }
+
+    public void placeBlock(BlockPos pos, Block block) {
+        if (this.getWorld().canSetBlock(pos)) {
+            //TODO: place robot close to the block
+            this.getWorld().setBlockState(pos, block.getDefaultState());
+
+        }
+        //if (this.canPlaceBlock(pos)) {
+        //    this.world.setBlockState(pos, block.getDefaultState());
+        //}
     }
 
 

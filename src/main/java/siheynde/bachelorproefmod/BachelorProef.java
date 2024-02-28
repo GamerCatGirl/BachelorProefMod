@@ -3,6 +3,9 @@ package siheynde.bachelorproefmod;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.Items;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import siheynde.bachelorproefmod.block.ModBlocks;
@@ -12,6 +15,7 @@ import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.item.ModItemGroups;
 import siheynde.bachelorproefmod.item.ModItems;
 import siheynde.bachelorproefmod.networking.ModPackets;
+import net.kyrptonaught.customportalapi.api.CustomPortalBuilder;
 
 public class BachelorProef implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
@@ -29,12 +33,20 @@ public class BachelorProef implements ModInitializer {
 		ModItems.registerItems();
 		ModBlocks.registerModBlocks();
 		//ModStructureType.registerStructures();
-		ModPackets.registerS2CPackets();
+		//ModPackets.registerS2CPackets();
 		ModPackets.registerC2SPackets();
 		ModBlockEntities.registerBlockEntities();
 
 		LOGGER.info("Hello Fabric world!");
 
 		FabricDefaultAttributeRegistry.register(ModEntities.ROBOT, RobotEntity.createRobotAttributes());
+
+		CustomPortalBuilder.beginPortal()
+				.frameBlock(Blocks.IRON_BLOCK)
+				.lightWithItem(Items.IRON_INGOT)
+				.destDimID(new Identifier(BachelorProef.MOD_ID, "bachelor_dimension"))
+				.tintColor(0xc76efa)
+				.registerPortal();
+
 	}
 }

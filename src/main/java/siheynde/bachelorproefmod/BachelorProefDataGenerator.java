@@ -2,7 +2,10 @@ package siheynde.bachelorproefmod;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.minecraft.registry.RegistryBuilder;
+import net.minecraft.registry.RegistryKeys;
 import siheynde.bachelorproefmod.datagen.*;
+import siheynde.bachelorproefmod.world.dimension.ModDimensions;
 
 public class BachelorProefDataGenerator implements DataGeneratorEntrypoint {
 	@Override
@@ -15,5 +18,12 @@ public class BachelorProefDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(ModModelProvider::new);
 		pack.addProvider(ModRecipeProvider::new);
 		pack.addProvider(ModPoiTagProvider::new);
+		pack.addProvider(ModWorldGenerator::new);
+
+	}
+
+	@Override
+	public void buildRegistry(RegistryBuilder registryBuilder) {
+		registryBuilder.addRegistry(RegistryKeys.DIMENSION_TYPE, ModDimensions::bootstrapType);
 	}
 }

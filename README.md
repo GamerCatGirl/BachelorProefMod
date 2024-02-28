@@ -50,6 +50,14 @@ View lesson Book:
 - [ ] Shrines cannot be broken down
 - [x] Add schrines to make exercises 
 - [ ] Add fun quests for students so they still have the game aspect of minecraft
+- [] Call java from scheme
+- [] use VScode call to highlight lines when executing -- in run fase
+- [] use unit test to test end of primm fase (ex modify/made) in real world
+- [] Implement a first lesson (example: sort colors of blocks, in a certain order - not really usefull in real world but good for testing)
+
+## Report
+- [ ] Connection between PRIMM, GAME-BASED learning, ....  and what we implemented
+- []  Technical information about the implementation
 
 ## Credits
 - [Lavender](https://github.com/wisp-forest/lavender)

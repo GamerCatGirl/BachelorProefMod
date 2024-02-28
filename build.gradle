@@ -19,6 +19,7 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 	maven { url 'https://maven.wispforest.io' }
+	maven {url = "https://maven.kyrptonaught.dev"}
 
 }
 
@@ -51,6 +52,9 @@ dependencies {
 	include "io.wispforest:owo-sentinel:${project.owo_version}" // check owo's page for this version
 
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+	modImplementation "net.kyrptonaught:customportalapi:${project.portal_api_version}"
+	include "net.kyrptonaught:customportalapi:${project.portal_api_version}"
 
 }
 

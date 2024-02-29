@@ -6,7 +6,10 @@
       "biome": "minecraft:plains",
       "lakes": true,
       "features": false,
-      "layers": [],
+      "layers": [{
+        "block": "minecraft:stone",
+        "height": 133
+      }],
       "structure_overrides": [
         "minecraft:ancient_cities"
       ]

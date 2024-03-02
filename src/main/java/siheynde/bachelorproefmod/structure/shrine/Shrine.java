@@ -1,7 +1,10 @@
 package siheynde.bachelorproefmod.structure.shrine;
 
 import jscheme.JS;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.w3c.dom.events.EventException;
+import siheynde.bachelorproefmod.BachelorProef;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -20,8 +23,10 @@ public class Shrine {
         this.y = y;
         this.z = z;
 
+        Levels levels = new Levels();
+
         switch (level){
-            case 0: this.level = Levels._0;
+            case 0: this.level = levels._0;
         }
     }
 
@@ -64,4 +69,22 @@ public class Shrine {
     }
 
 
+    public void setupUtilTestWorld(World world, BlockPos pos, int rangeArea) {
+        System.out.println("Setting up util test world");
+        level.blocks.forEach((blockPos, block) -> {
+            BachelorProef.LOGGER.info("Block: " + block);
+            BachelorProef.LOGGER.info("World: " + world);
+
+            int x = blockPos.getX();
+            int y = blockPos.getY();
+            int z = blockPos.getZ();
+
+            BlockPos blockPos1 = new BlockPos(pos.getX() + x, pos.getY() + y, pos.getY() + z);
+
+            if (x <= rangeArea && y <= rangeArea && z <= rangeArea) {
+                world.setBlockState(blockPos1, block.getDefaultState());
+            }
+        });
+
+    }
 }

@@ -6,6 +6,7 @@ import net.kyrptonaught.customportalapi.CustomPortalsMod;
 import net.kyrptonaught.customportalapi.portal.PortalIgnitionSource;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
@@ -19,6 +20,10 @@ import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.DimensionTypes;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.mixin.PlayerMixin;
+import siheynde.bachelorproefmod.structure.shrine.Shrine;
+import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
+import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import java.util.OptionalLong;
 
@@ -51,6 +56,10 @@ public class ModDimensions {
                 new DimensionType.MonsterSettings(false, false, UniformIntProvider.create(0, 0), 0)));
     }
 
+    public static void beforeThroughPortal(Entity entity) {
+        //todo: going back to overworld -> delete progress in test dimension & portal
+    }
+
     public static void throughPortal(Entity entity) {
         BachelorProef.LOGGER.info("Teleported to custom dimension type: " + entity);
         //todo: when in new structure -> check if structure already exists, if take correct level to know what to spawn when travelling
@@ -69,6 +78,13 @@ public class ModDimensions {
                 BachelorProef.LOGGER.info("in test world");
                 BachelorProef.LOGGER.info(entity.getChunkPos().toString());
                 BachelorProef.LOGGER.info(areaEmpty(pos, entity.getWorld()).toString());
+
+                if (areaEmpty(pos, entity.getWorld())) {
+                    PlayerMixinInterface playerMixin = (PlayerMixinInterface) entity;
+                    Shrine shrine = playerMixin.getShrine(pos);
+                    shrine.setupUtilTestWorld(entity.getWorld(), pos, rangeArea);
+                    BachelorProef.LOGGER.info("Shrine: " + shrine);
+                }
                 //entity.getWorld().setBlockState(new BlockPos(x + 50, pos.getY(), pos.getZ()), Blocks.ACACIA_FENCE.getDefaultState());
 
             }
@@ -100,14 +116,9 @@ public class ModDimensions {
 
     public static void newPortal(Entity player, World world, BlockPos portalPos, BlockPos framePos, PortalIgnitionSource portalIgnitionSource) {
         //TODO: register new portal activated in Shrine
-
-        //TODO: get link to other dimension to place correct blocks
-
-        BachelorProef.LOGGER.info("New portal");
-        BachelorProef.LOGGER.info("Player: " + player);
-        BachelorProef.LOGGER.info("World: " + world);
-        BachelorProef.LOGGER.info("PortalPos: " + portalPos);
-        BachelorProef.LOGGER.info("FramePos: " + framePos);
-        BachelorProef.LOGGER.info("PortalIgnitionSource: " + portalIgnitionSource);
+        BlockPos pos = player.getBlockPos();
+        PlayerMixinInterface playerMixin = (PlayerMixinInterface) player;
+        Shrine shrine = playerMixin.getShrine(pos);
+        BachelorProef.LOGGER.info("Shrine: " + shrine);
     }
 }

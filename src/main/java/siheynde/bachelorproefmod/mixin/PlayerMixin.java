@@ -12,7 +12,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
+import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
+
+import java.util.ArrayList;
 
 @Mixin(PlayerEntity.class)
 public class PlayerMixin implements PlayerMixinInterface {
@@ -38,5 +41,38 @@ public class PlayerMixin implements PlayerMixinInterface {
     @Override
     public RobotEntity getRobot() {
         return robot;
+    }
+
+    public ArrayList<Shrine> visitedShrines = new ArrayList<>();
+
+    public void addVisitedShrine(Shrine shrine) {
+        this.visitedShrines.add(shrine);
+    }
+
+    public Shrine getShrine(int level) {
+        return visitedShrines.get(level);
+    }
+
+    public ArrayList<Shrine> getVisitedShrines() {
+        return visitedShrines;
+    }
+
+    @Override
+    public Shrine getShrine(BlockPos pos) {
+
+        double x = pos.getX();
+        double y = pos.getY();
+        double z = pos.getZ();
+
+        for (Shrine shrine : visitedShrines) {
+            if (shrine.isInRange(x, y, z)) {
+                return shrine;
+            }
+        }
+
+        int level = visitedShrines.size();
+        Shrine newShrine = new Shrine(x, y, z, level);
+        addVisitedShrine(newShrine);
+        return newShrine;
     }
 }

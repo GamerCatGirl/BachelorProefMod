@@ -14,9 +14,16 @@ public class Levels {
     private Hashtable<BlockPos, Block> blocksLevel1 = new Hashtable<>();
 
     Levels() {
+        //run 1
         blocksLevel1.put(new BlockPos(0, 0, 10), Blocks.TINTED_GLASS);
         blocksLevel1.put(new BlockPos(-5, 0, 10), Blocks.GRAY_STAINED_GLASS);
         blocksLevel1.put(new BlockPos(5, 0, 10), Blocks.WHITE_STAINED_GLASS);
+
+        //run 2
+        blocksLevel1.put(new BlockPos(5, 0, -12), Blocks.TINTED_GLASS);
+        blocksLevel1.put(new BlockPos(0, 0, -12), Blocks.TINTED_GLASS);
+        blocksLevel1.put(new BlockPos(10, 0, -12), Blocks.GRAY_STAINED_GLASS);
+        blocksLevel1.put(new BlockPos(-5, 0, -12), Blocks.WHITE_STAINED_GLASS);
     }
 
     public final Level _0 = new Level(

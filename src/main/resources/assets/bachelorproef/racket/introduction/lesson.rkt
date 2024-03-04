@@ -3,14 +3,6 @@
 (define predict-vect-1 (vector 'white-stained-glass 'tinted-glass 'gray-stained-glass))
 (define predict-vect-2 (vector 'white-stained-glass 'tinted-glass 'tinted-glass 'gray-stained-glass))
 
-(define predict-1 (insertion-sort predict-vect-1 lighter-than))
-(define predict-2 (insertion-sort predict-vect-2 lighter-than))
-
-;;;;ordern blocks should be places in
-(define white-block 0)
-(define grey-block 1)
-(define black-block 2)
-
 
 (define (block-to-colorvalue block)
   (cond
@@ -27,7 +19,7 @@
 
 (define darker-than (lambda (block-1 block-2)
     ;;;TODO: implment this function
-    true)
+    true))
 
 
 
@@ -71,15 +63,23 @@
               (outer-loop (- outer-idx 1))))))
 
 
-(define (predict) (+ 5 2)) ;;TODO: use arguments for predict, make multiple predict functions,
+(define (predict)
+   (define test (method "test" "siheynde.bachelorproefmod.util.FunctionCalledByScheme"))
+   (test (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme"))
+   ;(display test)
+   (+ 5 2)
+
+) ;;TODO: use arguments for predict, make multiple predict functions,
                            ;; so you can also have predict that uses edge cases
 
+(define predict-1 (insertion-sort predict-vect-1 lighter-than))
+(define predict-2 (insertion-sort predict-vect-2 lighter-than))
                            ;;don't use function names "predict" but real function names
 
 (define (modify) ;;;or complete a certain function
    (vector 7 9 4 8 3 0 1 2)
    (vector 7 9 4 4 3 0 1 2)
-   (move 2 3 4))
+   (robot-move 2 3 4))
 
 (define (robot-move delta-x delta-y delta-z)
   (list "move" delta-x delta-y delta-z))

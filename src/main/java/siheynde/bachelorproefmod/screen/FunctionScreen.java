@@ -34,7 +34,9 @@ import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
+import siheynde.bachelorproefmod.util.FunctionCalledByScheme;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
+
 
 import javax.swing.plaf.basic.BasicHTML;
 import java.util.List;

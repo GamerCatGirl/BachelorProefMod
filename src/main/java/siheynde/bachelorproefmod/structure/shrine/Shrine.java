@@ -70,7 +70,6 @@ public class Shrine {
 
 
     public void setupUtilTestWorld(World world, BlockPos pos, int rangeArea) {
-        System.out.println("Setting up util test world");
         level.blocks.forEach((blockPos, block) -> {
             BachelorProef.LOGGER.info("Block: " + block);
             BachelorProef.LOGGER.info("World: " + world);

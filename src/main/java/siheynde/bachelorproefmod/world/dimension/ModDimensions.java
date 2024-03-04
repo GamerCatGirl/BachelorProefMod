@@ -104,8 +104,9 @@ public class ModDimensions {
                             !(world.getBlockState(new BlockPos(i, j, k)).getBlock() == Blocks.IRON_BLOCK) &&
                             !(world.getBlockState(new BlockPos(i, j, k)).getBlock() == CustomPortalsMod.getDefaultPortalBlock()))
                     {
-                        BachelorProef.LOGGER.info("Area not empty");
-                        return false;
+                        world.setBlockState(new BlockPos(i, j, k), Blocks.AIR.getDefaultState());
+                        //BachelorProef.LOGGER.info("Area not empty");
+                        //return false;
                     }
                 }
             }

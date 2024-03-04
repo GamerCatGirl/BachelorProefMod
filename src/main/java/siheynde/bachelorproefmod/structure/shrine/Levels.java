@@ -2,6 +2,7 @@ package siheynde.bachelorproefmod.structure.shrine;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
@@ -13,7 +14,9 @@ public class Levels {
     private Hashtable<BlockPos, Block> blocksLevel1 = new Hashtable<>();
 
     Levels() {
-        blocksLevel1.put(new BlockPos(10, 0, 0), Blocks.DIAMOND_BLOCK);
+        blocksLevel1.put(new BlockPos(0, 0, 10), Blocks.TINTED_GLASS);
+        blocksLevel1.put(new BlockPos(-5, 0, 10), Blocks.GRAY_STAINED_GLASS);
+        blocksLevel1.put(new BlockPos(5, 0, 10), Blocks.WHITE_STAINED_GLASS);
     }
 
     public final Level _0 = new Level(

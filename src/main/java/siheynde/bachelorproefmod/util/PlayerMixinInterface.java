@@ -8,6 +8,9 @@ import java.util.ArrayList;
 
 public interface PlayerMixinInterface {
     void setRobot(RobotEntity robot);
+
+    void setRunID(int runID);
+    int getRunID();
     RobotEntity getRobot();
     Shrine getShrine(BlockPos pos);
     ArrayList<Shrine> getVisitedShrines();

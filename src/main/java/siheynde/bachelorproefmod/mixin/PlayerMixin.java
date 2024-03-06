@@ -21,6 +21,17 @@ import java.util.ArrayList;
 public class PlayerMixin implements PlayerMixinInterface {
     @Unique
     RobotEntity robot = null;
+    int runID;
+
+    @Override
+    public void setRunID(int runID) {
+        this.runID = runID;
+    }
+
+    @Override
+    public int getRunID() {
+        return runID;
+    }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void injected(CallbackInfo info) {

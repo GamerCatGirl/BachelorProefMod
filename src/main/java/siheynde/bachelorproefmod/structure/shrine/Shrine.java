@@ -1,6 +1,7 @@
 package siheynde.bachelorproefmod.structure.shrine;
 
 import jscheme.JS;
+import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.w3c.dom.events.EventException;
@@ -9,6 +10,8 @@ import siheynde.bachelorproefmod.BachelorProef;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class Shrine {
     public double x;
@@ -33,6 +36,10 @@ public class Shrine {
 
     public Object Modify(){
         return JS.call("modify");
+    }
+
+    public ArrayList<Hashtable<BlockPos, Block>> getBlockSetups(){
+        return this.level.blocks;
     }
 
     public String predictAnswer(){
@@ -70,8 +77,9 @@ public class Shrine {
     }
 
 
-    public void setupUtilTestWorld(World world, BlockPos pos, int rangeArea) {
-        level.blocks.forEach((blockPos, block) -> {
+    public void setupUtilTestWorld(World world, BlockPos pos, int rangeArea, int idRun) {
+        BachelorProef.LOGGER.info("Setting up world with id " + idRun);
+        level.blocks.get(idRun).forEach((blockPos, block) -> {;
             BachelorProef.LOGGER.info("Block: " + block);
             BachelorProef.LOGGER.info("World: " + world);
 

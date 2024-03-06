@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -20,6 +21,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.ScreenTexts;
@@ -40,6 +42,7 @@ import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import javax.swing.plaf.basic.BasicHTML;
 import java.util.List;
+import java.util.logging.Handler;
 
 @Environment(value=EnvType.CLIENT)
 public class FunctionScreen
@@ -62,6 +65,8 @@ public class FunctionScreen
     static final Identifier CANCEL_TEXTURE = new Identifier("container/beacon/cancel");
     private static final Identifier TEXT_FIELD_TEXTURE = new Identifier("container/anvil/text_field");
     private static final Identifier TEXT_FIELD_DISABLED_TEXTURE = new Identifier("container/anvil/text_field_disabled");
+
+    private FunctionScreenHandler handler;
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
     private final List<FunctionButtonWidget> buttons = Lists.newArrayList();
     private final String shrineName;
@@ -71,11 +76,15 @@ public class FunctionScreen
 
     private DrawContext context;
     public String answerRun = "";
+
+    private int amountOfRunButtons;
     private boolean narrow;
 
 
     public FunctionScreen(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+        this.handler = handler;
+
 
         ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface) inventory.player;
 
@@ -83,11 +92,16 @@ public class FunctionScreen
 
         this.shrineName = shrine.getName();
 
+        this.amountOfRunButtons = shrine.getBlockSetups().size();
+
+        BachelorProef.LOGGER.info("Amount of run buttons: " + amountOfRunButtons);
+
         BachelorProef.LOGGER.info(shrine.predictAnswer());
         BachelorProef.LOGGER.info(shrine.Modify().toString());
         BachelorProef.LOGGER.info(shrine.Modify().getClass().toString());
 
         RacketHandleClasses.execute(shrine.Modify());
+
         //jsint.Pair pair = (jsint.Pair) shrine.predictModify();
 
 
@@ -133,6 +147,11 @@ public class FunctionScreen
         //BUTTONS
         this.buttons.clear();
         this.addButton(new ConfirmButtonWidget(this.x + 140, this.y + 14));
+
+        //RUN BUTTONS
+        for(int i = 0; i < amountOfRunButtons; i++) {
+            this.addButton(new RunButton(this.x + 50 + (i * 50), this.y + 50, i, this.textRenderer));
+        }
     }
 
     @Override
@@ -284,12 +303,56 @@ public class FunctionScreen
 
 
 
+
+    @Environment(value=EnvType.CLIENT)
+    class RunButton extends IconButtonWidget {
+        int runID;
+        TextRenderer textRenderer;
+        int x;
+        int y;
+        FunctionScreenHandler handler;
+
+        public RunButton(int x, int y, int runID, TextRenderer textRenderer) {
+            super(x, y, CONFIRM_TEXTURE, ScreenTexts.DONE);
+            this.runID = runID;
+            this.textRenderer = textRenderer;
+            this.x = x;
+            this.y = y;
+            //this.handler = handler;
+        }
+
+        @Override
+        public void onPress() {
+            System.out.println("Pressed on run button " + runID);
+            client.player.sendMessage(Text.of("Go through portal to visualise run " + runID));
+            PlayerMixinInterface player = (PlayerMixinInterface) client.player;
+            player.setRunID(runID);
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeVarInt(runID);
+            //TODO: send also to server player
+            ClientPlayNetworking.send(ModPackets.SET_RUN_ID,  buf);
+
+
+            close();
+
+
+        }
+
+        @Override
+        public void renderExtra(DrawContext context) {
+            //BachelorProef.LOGGER.info("Render x, y: ("  + x + ", " + y + ")");
+            context.drawCenteredTextWithShadow(this.textRenderer, "Run: " + runID, x, y, 0x000000);
+        }
+
+        @Override
+        public void tick(int level) {}
+    }
+
     @Environment(value=EnvType.CLIENT)
     class ConfirmButtonWidget extends IconButtonWidget {
 
         public ConfirmButtonWidget(int x, int y) {
             super(x, y, CONFIRM_TEXTURE, ScreenTexts.DONE);
-            //this.visible = true;
         }
 
         @Override
@@ -306,6 +369,7 @@ public class FunctionScreen
 
 
         }
+
 
         @Override
         public void tick(int level) {}
@@ -324,10 +388,6 @@ public class FunctionScreen
         @Override
         protected void renderExtra(DrawContext context) {
             context.drawGuiTexture(this.texture, this.getX() + 2, this.getY() + 2, 18, 18);
-        }
-
-        public void drawText(Text text, int x, int y){
-            //super.drawText(context, text, x, y);
         }
     }
 

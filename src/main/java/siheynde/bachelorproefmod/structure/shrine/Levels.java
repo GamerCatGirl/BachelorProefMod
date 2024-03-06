@@ -10,26 +10,30 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 public class Levels {
-
-    private Hashtable<BlockPos, Block> blocksLevel1 = new Hashtable<>();
+    private ArrayList<Hashtable<BlockPos, Block>> blockSetupsLevel1 = new ArrayList<>();
 
     Levels() {
         //run 1
-        blocksLevel1.put(new BlockPos(0, 0, 10), Blocks.TINTED_GLASS);
-        blocksLevel1.put(new BlockPos(-5, 0, 10), Blocks.GRAY_STAINED_GLASS);
-        blocksLevel1.put(new BlockPos(5, 0, 10), Blocks.WHITE_STAINED_GLASS);
+        Hashtable<BlockPos, Block> blocksSort3blocks = new Hashtable<>();
+        blocksSort3blocks.put(new BlockPos(0, 0, 10), Blocks.TINTED_GLASS);
+        blocksSort3blocks.put(new BlockPos(-5, 0, 10), Blocks.GRAY_STAINED_GLASS);
+        blocksSort3blocks.put(new BlockPos(5, 0, 10), Blocks.WHITE_STAINED_GLASS);
 
         //run 2
-        blocksLevel1.put(new BlockPos(5, 0, -12), Blocks.TINTED_GLASS);
-        blocksLevel1.put(new BlockPos(0, 0, -12), Blocks.TINTED_GLASS);
-        blocksLevel1.put(new BlockPos(10, 0, -12), Blocks.GRAY_STAINED_GLASS);
-        blocksLevel1.put(new BlockPos(-5, 0, -12), Blocks.WHITE_STAINED_GLASS);
+        Hashtable<BlockPos, Block> blocksSort4blocksNonStrict = new Hashtable<>();
+        blocksSort4blocksNonStrict.put(new BlockPos(5, 0, 10), Blocks.TINTED_GLASS);
+        blocksSort4blocksNonStrict.put(new BlockPos(0, 0, 10), Blocks.TINTED_GLASS);
+        blocksSort4blocksNonStrict.put(new BlockPos(10, 0, 10), Blocks.GRAY_STAINED_GLASS);
+        blocksSort4blocksNonStrict.put(new BlockPos(-5, 0, 10), Blocks.WHITE_STAINED_GLASS);
+
+        blockSetupsLevel1.add(blocksSort3blocks);
+        blockSetupsLevel1.add(blocksSort4blocksNonStrict);
     }
 
     public final Level _0 = new Level(
             "Introduction",
             "assets/bachelorproef/racket/introduction/lesson.rkt",
-            blocksLevel1);
+            blockSetupsLevel1);
 
 
 
@@ -37,9 +41,9 @@ public class Levels {
         public String name;
         public String path_rkt;
 
-        public Hashtable<BlockPos, Block> blocks;
+        public ArrayList<Hashtable<BlockPos, Block>> blocks;
 
-        public Level(String name, String path_rkt, Hashtable<BlockPos, Block> blocks) {
+        public Level(String name, String path_rkt, ArrayList<Hashtable<BlockPos, Block>> blocks) {
             this.name = name;
             this.path_rkt = path_rkt;
             this.blocks = blocks;

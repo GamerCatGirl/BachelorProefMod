@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +33,12 @@ import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.entity.ModEntities;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
+
+//TODO: motivition factor -> need to unlock first other shrine
+//TODO: robot need to activate the portal before can go through
+//TODO: get help from the robot when stuck
+//TODO: storyboard what the game will look like in global
+//TODO: exercises linked to storyline
 
 public class RobotEntity extends TameableEntity {
 
@@ -54,15 +61,23 @@ public class RobotEntity extends TameableEntity {
         this.goalSelector.add(3, new FollowOwnerGoal(this, 1.0, 10.0f, 2.0f, false));
     }
 
-    public void move(int x, int y, int z) {
+    public void move(int x, int y, int z) { //TODO: doens't work
         //if (this.canTeleportTo(new BlockPos(x, y, z))) --- TODO: function from FollowOwnerGoal (make something similar)
+        this.getOwner().sendMessage(Text.of("Your robot moved with x: " + + x + "y: " + y + "& z: " + z));
         this.refreshPositionAndAngles(this.getX() + x, this.getY() + y, this.getZ() + z, this.getYaw(), this.getPitch());
+    }
+
+    public void replace(BlockPos pos) { //TODO: doesn't work completely
+        this.refreshPositionAndAngles(pos, this.getYaw(), this.getPitch()); //TODO: doesn't work
+        //this.setPosition();
+        //this.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), this.getYaw(), this.getPitch());
     }
 
     public void placeBlock(BlockPos pos, Block block) {
         if (this.getWorld().canSetBlock(pos)) {
             //TODO: place robot close to the block
             this.getWorld().setBlockState(pos, block.getDefaultState());
+            this.getOwner().sendMessage(Text.of("Your robot placed ... block on pos ...."));
 
         }
         //if (this.canPlaceBlock(pos)) {
@@ -95,6 +110,15 @@ public class RobotEntity extends TameableEntity {
         }
         if (this.isOwner(player)) {
             ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.OPEN_ADVANCEMENTS_ID, PacketByteBufs.empty());
+
+            if (!this.isSitting()) {
+                Text text = Text.of("Robot set on sitting!");
+                player.sendMessage(text);
+            }
+            else {
+                Text text = Text.of("Robot set on standing!");
+                player.sendMessage(text);
+            }
 
             this.setSitting(!this.isSitting());
             this.navigation.stop();

@@ -27,6 +27,7 @@ public class Shrine {
 
         switch (level){
             case 0: this.level = levels._0;
+            default: this.level = levels._0;
         }
     }
 

@@ -60,7 +60,8 @@ public class BachelorProef implements ModInitializer {
 					//BachelorProef.LOGGER.info("DIMENSION before: " + entity.getWorld().getRegistryKey().getValue().getPath());
 					//LOGGER.info("Teleported to custom dimension type: " + entity);
 					//ModDimensions.throughPortal(entity);
-					return SHOULDTP.CONTINUE_TP;
+					return ModDimensions.beforeThroughPortal(entity);
+					//return SHOULDTP.CONTINUE_TP;
 				})
 				.registerIgniteEvent((player, world, portalPos, framePos, portalIgnitionSource)  -> {
 					ModDimensions.newPortal(player, world, portalPos, framePos, portalIgnitionSource);

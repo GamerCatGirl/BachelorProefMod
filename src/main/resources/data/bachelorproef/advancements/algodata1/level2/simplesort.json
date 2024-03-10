@@ -1,5 +1,5 @@
 {
-  "parent": "bachelorproef:course1/root",
+  "parent": "bachelorproef:algodata1/level1/positionallist",
   "criteria": {
     "killed_dragon": {
       "conditions": {
@@ -24,7 +24,7 @@
       "item": "minecraft:dragon_head"
     },
     "title": {
-      "translate": "advancements.end.kill_dragon.title"
+      "translate": "Simple Sort"
     }
   },
   "requirements": [

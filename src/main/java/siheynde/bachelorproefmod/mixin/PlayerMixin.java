@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
+import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
@@ -21,6 +22,9 @@ import java.util.ArrayList;
 public class PlayerMixin implements PlayerMixinInterface {
     @Unique
     RobotEntity robot = null;
+    //Levels levels = new Levels();
+    private ArrayList<Levels.Topic> topics = Levels.topics;
+    int amountShrinesUnlocked = 0;
     int runID;
 
     @Override
@@ -44,6 +48,11 @@ public class PlayerMixin implements PlayerMixinInterface {
     }
 
     @Override
+    public Levels.Topic getTopic() {
+        return topics.get(amountShrinesUnlocked);
+    }
+
+    @Override
     public void setRobot(RobotEntity robot) {
         BachelorProef.LOGGER.info("Setting robot");
         this.robot = robot;
@@ -59,6 +68,8 @@ public class PlayerMixin implements PlayerMixinInterface {
     public void addVisitedShrine(Shrine shrine) {
         this.visitedShrines.add(shrine);
     }
+
+    //TODO: add shrine completed function to increase amountShrinesUnlocked
 
     public Shrine getShrine(int level) {
         return visitedShrines.get(level);

@@ -1,6 +1,6 @@
 ```json
 {
-  "title": "1. Predict",
+  "title": "Strict comparison",
   "icon": "minecraft:white_stained_glass",
   "associated_items": [
     "minecraft:nether_quartz_ore"
@@ -8,7 +8,7 @@
 }
 ```
 
-Given the algorithm of insertion sort, but what is the difference between other sorting algorithms?
+[comment]: <> (Given the algorithm of insertion sort, but what is the difference between other sorting algorithms?)
 
 
 **Q1: what makes this algorithm different from other sorting algorithms?**
@@ -18,5 +18,5 @@ Given the algorithm of insertion sort, but what is the difference between other 
 **Q2: what happends when we don't have a strict compairson to sort the vector on?**
 
 ...
-
+)
 

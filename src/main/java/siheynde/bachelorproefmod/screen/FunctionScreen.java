@@ -2,6 +2,7 @@ package siheynde.bachelorproefmod.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.wispforest.lavender.book.BookLoader;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -36,6 +37,7 @@ import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
 import siheynde.bachelorproefmod.networking.ModPackets;
+import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
@@ -328,8 +330,21 @@ public class FunctionScreen
 
         @Override
         public void onPress() {
-            client.player.sendMessage(Text.of("Go through portal to visualise " + runID));
+            client.player.sendMessage(Text.of("Go through the portal to start lesson of " + runID));
+
+            //TODO: find the lectern and set the book (look range 6 from current player)
+            Levels.Topic topic = shrine.topic;
+            //TODO: this needs to be replaced when you choose the topic of the shrine
+            BookLoader.loadedBooks().forEach((book) -> {
+                if (book.id().toString().equals(topic.bookID)){
+                    topic.assignBook(book);
+                }
+            });
+            //client.player.inven
             PlayerMixinInterface player = (PlayerMixinInterface) client.player;
+
+
+
             //player.setRunID(runID);
             //PacketByteBuf buf = PacketByteBufs.create();
             //buf.writeVarInt(runID);

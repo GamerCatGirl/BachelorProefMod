@@ -1,9 +1,19 @@
 package siheynde.bachelorproefmod.structure.shrine;
 
+import io.wispforest.lavender.Lavender;
+import io.wispforest.lavender.LavenderCommands;
+import io.wispforest.lavender.book.Book;
+import io.wispforest.lavender.book.BookLoader;
+import io.wispforest.lavender.book.LavenderBookItem;
+import io.wispforest.lavender.client.LavenderBookScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.item.Items;
+import net.minecraft.item.MinecartItem;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import siheynde.bachelorproefmod.BachelorProef;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -11,6 +21,8 @@ import java.util.Hashtable;
 
 public class Levels {
     private ArrayList<Hashtable<BlockPos, Block>> blockSetupsLevel1 = new ArrayList<>();
+
+    //private ArrayList<MinecartItem> itemsSimpleSort = {};
     private Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blockSetupsSimpleSort = new Hashtable<>();
 
     private ArrayList<Topic> topics = new ArrayList<>();
@@ -34,6 +46,8 @@ public class Levels {
 
         //test
         Hashtable<String, Hashtable<BlockPos, Block>> blockSetupsStrictComparison = new Hashtable<>();
+
+
         Hashtable<BlockPos, Block> blocksPredict = new Hashtable<>();
         blocksPredict.put(new BlockPos(-5, 0, 10), Blocks.OBSIDIAN);
         blocksPredict.put(new BlockPos(0, 0, 10), Blocks.OBSIDIAN);
@@ -53,29 +67,22 @@ public class Levels {
         blockSetupsSimpleSort.put("Strict Comparison Insertion Sort", blockSetupsStrictComparison);
 
 
+        //TODO: link Lavender Book to the topic
+        BachelorProef.LOGGER.info("LoadedBooks books: " + BookLoader.loadedBooks());
+        BookLoader.loadedBooks();
+
         Topic simple_sort = new Topic (
                 "Simple Sort",
                 "assets/bachelorproef/racket/simple_sort_2/lesson.rkt",
                 blockSetupsSimpleSort,
-                new ArrayList<>()
+                new ArrayList<>(),
+                "bachelorproef:simple_sorting"
         );
 
         topics.add(simple_sort);
 
 
     }
-
-    public final Level _0 = new Level(
-            "Introduction",
-            "assets/bachelorproef/racket/introduction/lesson.rkt",
-            blockSetupsLevel1);
-
-    public final Topic simple_sort = new Topic (
-            "Simple Sort",
-            "assets/bachelorproef/racket/simple_sort_2/lesson.rkt",
-            blockSetupsSimpleSort,
-            new ArrayList<>()
-    );
 
     public ArrayList<Topic> getTopics() {
         return topics;
@@ -84,14 +91,33 @@ public class Levels {
     public static class Topic {
         public String name;
         public String path_rkt;
+        public String bookID;
+        public Book book;
 
         public Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks;
         public ArrayList<Topic> requirements;
-        public Topic(String name, String path_rkt, Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks, ArrayList<Topic> requirements) {
+        public ArrayList<MinecartItem> items;
+
+
+        //public getSubTopicBook() {
+
+        //}
+        public void assignBook(Book book){
+            this.book = book;
+        }
+
+        public Topic(String name,
+                     String path_rkt,
+                     Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks,
+                     ArrayList<Topic> requirements,
+                     String bookID) {
             this.name = name;
             this.path_rkt = path_rkt;
             this.blocks = blocks;
             this.requirements = requirements;
+            this.bookID = bookID;
+
+
         }
     }
 

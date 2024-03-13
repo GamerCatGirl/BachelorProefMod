@@ -22,10 +22,20 @@ import java.util.ArrayList;
 public class PlayerMixin implements PlayerMixinInterface {
     @Unique
     RobotEntity robot = null;
-    //Levels levels = new Levels();
-    private ArrayList<Levels.Topic> topics = Levels.topics;
-    int amountShrinesUnlocked = 0;
+    Levels levels = new Levels();
+    private ArrayList<Levels.Topic> topics = levels.getTopics();
+    public ArrayList<Shrine> visitedShrines = new ArrayList<>();
+    int amountShrinesUnlocked = -1;
     int runID;
+
+    @Override
+    public Shrine getShrine() {
+        int x = (int) ((PlayerEntity) (Object) this).getX();
+        int y = (int) ((PlayerEntity) (Object) this).getY();
+        int z = (int) ((PlayerEntity) (Object) this).getZ();
+        BlockPos pos = new BlockPos(x, y, z);
+        return  getShrine(pos);
+    }
 
     @Override
     public void setRunID(int runID) {
@@ -63,12 +73,6 @@ public class PlayerMixin implements PlayerMixinInterface {
         return robot;
     }
 
-    public ArrayList<Shrine> visitedShrines = new ArrayList<>();
-
-    public void addVisitedShrine(Shrine shrine) {
-        this.visitedShrines.add(shrine);
-    }
-
     //TODO: add shrine completed function to increase amountShrinesUnlocked
 
     public Shrine getShrine(int level) {
@@ -82,19 +86,31 @@ public class PlayerMixin implements PlayerMixinInterface {
     @Override
     public Shrine getShrine(BlockPos pos) {
 
+        BachelorProef.LOGGER.info("______________in getShrine_____________");
+
         double x = pos.getX();
         double y = pos.getY();
         double z = pos.getZ();
 
-        for (Shrine shrine : visitedShrines) {
+
+        for (Shrine shrine : this.visitedShrines) {
             if (shrine.isInRange(x, y, z)) {
                 return shrine;
             }
         }
 
-        int level = visitedShrines.size();
-        Shrine newShrine = new Shrine(x, y, z, level);
-        addVisitedShrine(newShrine);
+        amountShrinesUnlocked = amountShrinesUnlocked + 1;
+        BachelorProef.LOGGER.info("Amount shrines unlocked: " + amountShrinesUnlocked);
+        BachelorProef.LOGGER.info(topics.toString());
+        Levels.Topic topic = topics.get(amountShrinesUnlocked);
+
+
+        Shrine newShrine = new Shrine(x, y, z, topic);
+        BachelorProef.LOGGER.info("shrines before add: " + this.visitedShrines.size());
+        visitedShrines.add(newShrine);
+        BachelorProef.LOGGER.info("shrines after add: " + this.visitedShrines.size());
+
+
         return newShrine;
     }
 }

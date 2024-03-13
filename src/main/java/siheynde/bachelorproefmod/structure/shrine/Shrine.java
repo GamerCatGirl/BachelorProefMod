@@ -17,34 +17,27 @@ public class Shrine {
     public double x;
     public double y;
     public double z;
-    public Levels.Level level;
+    //public Levels.Level level;
+    public Levels.Topic topic;
 
     int maxRange = 20;
 
-    public Shrine(double x, double y, double z, int level) {
+    public Shrine(double x, double y, double z, Levels.Topic topic) {
         this.x = x;
         this.y = y;
         this.z = z;
-
-        Levels levels = new Levels();
-
-        switch (level){
-            case 0: this.level = levels._0;
-            default: this.level = levels._0;
-        }
+        this.topic = topic;
     }
+
 
     public Object Modify(){
         return JS.call("modify");
     }
 
-    public ArrayList<Hashtable<BlockPos, Block>> getBlockSetups(){
-        return this.level.blocks;
-    }
 
     public String predictAnswer(){
         try {
-            String path = level.path_rkt;
+            String path = topic.path_rkt;
             URL resource = getClass().getClassLoader().getResource(path);
 
             JS.load(new java.io.FileReader(resource.getFile()));
@@ -61,7 +54,7 @@ public class Shrine {
     }
 
     public String getName() {
-        return this.level.name;
+        return this.topic.name;
     }
 
     public boolean isInRange(double x, double y, double z) {
@@ -79,6 +72,7 @@ public class Shrine {
 
     public void setupUtilTestWorld(World world, BlockPos pos, int rangeArea, int idRun) {
         BachelorProef.LOGGER.info("Setting up world with id " + idRun);
+        /*
         level.blocks.get(idRun).forEach((blockPos, block) -> {;
             BachelorProef.LOGGER.info("Block: " + block);
             BachelorProef.LOGGER.info("World: " + world);
@@ -93,6 +87,8 @@ public class Shrine {
                 world.setBlockState(blockPos1, block.getDefaultState());
             }
         });
+
+         */
 
     }
 }

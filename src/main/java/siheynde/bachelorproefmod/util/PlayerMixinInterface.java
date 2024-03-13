@@ -14,7 +14,7 @@ public interface PlayerMixinInterface {
     int getRunID();
     RobotEntity getRobot();
     Shrine getShrine(BlockPos pos);
+    Shrine getShrine();
     ArrayList<Shrine> getVisitedShrines();
-    void addVisitedShrine(Shrine shrine);
 
 }

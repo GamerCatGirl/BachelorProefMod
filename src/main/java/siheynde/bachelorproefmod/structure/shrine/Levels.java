@@ -11,11 +11,11 @@ import java.util.Hashtable;
 
 public class Levels {
     private ArrayList<Hashtable<BlockPos, Block>> blockSetupsLevel1 = new ArrayList<>();
-    private Dictionary<String, Dictionary<String, Hashtable<BlockPos, Block>>> blockSetupsSimpleSort = new Hashtable<>();
+    private Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blockSetupsSimpleSort = new Hashtable<>();
 
-    public static ArrayList<Topic> topics = new ArrayList<>();
+    private ArrayList<Topic> topics = new ArrayList<>();
 
-    Levels() {
+    public Levels() {
         //run 1
         Hashtable<BlockPos, Block> blocksSort3blocks = new Hashtable<>();
         blocksSort3blocks.put(new BlockPos(0, 0, 10), Blocks.TINTED_GLASS);
@@ -33,7 +33,7 @@ public class Levels {
         blockSetupsLevel1.add(blocksSort4blocksNonStrict);
 
         //test
-        Dictionary<String, Hashtable<BlockPos, Block>> blockSetupsStrictComparison = new Hashtable<>();
+        Hashtable<String, Hashtable<BlockPos, Block>> blockSetupsStrictComparison = new Hashtable<>();
         Hashtable<BlockPos, Block> blocksPredict = new Hashtable<>();
         blocksPredict.put(new BlockPos(-5, 0, 10), Blocks.OBSIDIAN);
         blocksPredict.put(new BlockPos(0, 0, 10), Blocks.OBSIDIAN);
@@ -49,7 +49,9 @@ public class Levels {
         blockSetupsStrictComparison.put("Predict", blocksPredict);
         blockSetupsStrictComparison.put("Run", blocksRun);
 
-        blockSetupsSimpleSort.put("Strict Comparison", blockSetupsStrictComparison);
+        blockSetupsSimpleSort.put("Strict Comparison Bubble Sort", blockSetupsStrictComparison);
+        blockSetupsSimpleSort.put("Strict Comparison Insertion Sort", blockSetupsStrictComparison);
+
 
         Topic simple_sort = new Topic (
                 "Simple Sort",
@@ -75,13 +77,17 @@ public class Levels {
             new ArrayList<>()
     );
 
+    public ArrayList<Topic> getTopics() {
+        return topics;
+    }
+
     public static class Topic {
         public String name;
         public String path_rkt;
 
-        public Dictionary<String, Dictionary<String, Hashtable<BlockPos, Block>>> blocks;
+        public Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks;
         public ArrayList<Topic> requirements;
-        public Topic(String name, String path_rkt, Dictionary<String, Dictionary<String, Hashtable<BlockPos, Block>>> blocks, ArrayList<Topic> requirements) {
+        public Topic(String name, String path_rkt, Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks, ArrayList<Topic> requirements) {
             this.name = name;
             this.path_rkt = path_rkt;
             this.blocks = blocks;

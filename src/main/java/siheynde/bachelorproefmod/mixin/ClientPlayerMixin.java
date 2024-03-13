@@ -29,6 +29,7 @@ public class ClientPlayerMixin implements ClientPlayerMixinInterface {
         return visitedShrines;
     }
 
+    /*
     public Shrine getShrine() {
         double x = this.lastX;
         double y = this.lastBaseY;
@@ -45,6 +46,7 @@ public class ClientPlayerMixin implements ClientPlayerMixinInterface {
         addVisitedShrine(newShrine);
         return newShrine;
     }
+     */
 
 
     //TODO: Save the player data --- example: how health is saved

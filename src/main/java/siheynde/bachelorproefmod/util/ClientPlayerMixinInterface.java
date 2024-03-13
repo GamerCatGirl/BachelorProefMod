@@ -9,5 +9,5 @@ public interface ClientPlayerMixinInterface {
     ArrayList<Shrine> getVisitedShrines();
     void addVisitedShrine(Shrine shrine);
     Shrine getShrine(int level);
-    Shrine getShrine();
+    //Shrine getShrine();
 }

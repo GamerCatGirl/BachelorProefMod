@@ -3,10 +3,10 @@ package siheynde.bachelorproefmod.screen;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
+
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -26,12 +26,8 @@ import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextContent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
@@ -40,10 +36,12 @@ import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
-import java.util.*;
 
+import java.util.List;
+
+/*
 @Environment(value=EnvType.CLIENT)
-public class FunctionScreen
+public class FunctionScreenOld
         extends HandledScreen<FunctionScreenHandler>
         implements ScreenHandlerListener {
     protected static final int x_text = 2;
@@ -69,8 +67,8 @@ public class FunctionScreen
     private final List<FunctionButtonWidget> buttons = Lists.newArrayList();
     private final String shrineName;
     public Shrine shrine;
-    //private TextFieldWidget predictField;
-    //private TextFieldWidget investigateField;
+    private TextFieldWidget predictField;
+    private TextFieldWidget investigateField;
 
     private DrawContext context;
     public String answerRun = "";
@@ -79,26 +77,26 @@ public class FunctionScreen
     private boolean narrow;
 
 
-    public FunctionScreen(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
+    public FunctionScreenOld(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.handler = handler;
 
 
-        //TODO: get the shrine from the player not clientPlayer
-        PlayerMixinInterface playerMixin = (PlayerMixinInterface) inventory.player;
+        ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface) inventory.player;
 
         shrine = playerMixin.getShrine(); //TODO: put shrines in server player mixin
+
         this.shrineName = shrine.getName();
 
-        //this.amountOfRunButtons = shrine.getBlockSetups().size();
+        this.amountOfRunButtons = shrine.getBlockSetups().size();
 
-        //BachelorProef.LOGGER.info("Amount of run buttons: " + amountOfRunButtons);
+        BachelorProef.LOGGER.info("Amount of run buttons: " + amountOfRunButtons);
 
-        //BachelorProef.LOGGER.info(shrine.predictAnswer());
-        //BachelorProef.LOGGER.info(shrine.Modify().toString());
-        //BachelorProef.LOGGER.info(shrine.Modify().getClass().toString());
+        BachelorProef.LOGGER.info(shrine.predictAnswer());
+        BachelorProef.LOGGER.info(shrine.Modify().toString());
+        BachelorProef.LOGGER.info(shrine.Modify().getClass().toString());
 
-        //RacketHandleClasses.execute(shrine.Modify());
+        RacketHandleClasses.execute(shrine.Modify());
 
         //jsint.Pair pair = (jsint.Pair) shrine.predictModify();
 
@@ -131,36 +129,25 @@ public class FunctionScreen
     protected void init() {
         super.init();
         handler.addListener(this);
-        this.buttons.clear();
-
-        Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> topics =  this.shrine.topic.blocks;
-        int[] yText = {this.y + 60};
-
-        //TODO: look at buttons from menu -> better suited
-        topics.forEach((key, value) -> {
-            this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
-
-            yText[0] = yText[0] + 20;
-        });
 
         //TEXTFIELDS
-        //predictField = new TextFieldWidget(this.textRenderer, x + 33, y + 14, 102, 12, Text.translatable("container.repair"));
-        //investigateField = new TextFieldWidget(this.textRenderer, x + 69, y + 78, 102, 12, Text.translatable("container.repair"));
-        //setupField(this.predictField);
-        //setupField(this.investigateField);
+        predictField = new TextFieldWidget(this.textRenderer, x + 33, y + 14, 102, 12, Text.translatable("container.repair"));
+        investigateField = new TextFieldWidget(this.textRenderer, x + 69, y + 78, 102, 12, Text.translatable("container.repair"));
+        setupField(this.predictField);
+        setupField(this.investigateField);
 
-        //this.setInitialFocus(this.predictField);
-        //this.predictField.setEditable(true);
-        //this.setFocused(this.predictField);
+        this.setInitialFocus(this.predictField);
+        this.predictField.setEditable(true);
+        this.setFocused(this.predictField);
 
         //BUTTONS
-        //this.buttons.clear();
-        //this.addButton(new ConfirmButtonWidget(this.x + 140, this.y + 14));
+        this.buttons.clear();
+        this.addButton(new ConfirmButtonWidget(this.x + 140, this.y + 14));
 
         //RUN BUTTONS
-        //for(int i = 0; i < amountOfRunButtons; i++) {
-        //    this.addButton(new RunButton(this.x + 50 + (i * 50), this.y + 50, i, this.textRenderer));
-        //}
+        for(int i = 0; i < amountOfRunButtons; i++) {
+            this.addButton(new RunButton(this.x + 50 + (i * 50), this.y + 50, i, this.textRenderer));
+        }
     }
 
     @Override
@@ -172,17 +159,17 @@ public class FunctionScreen
     }
 
     public void renderForeground(DrawContext context, int mouseX, int mouseY, float delta) {
-        //this.predictField.render(context, mouseX, mouseY, delta);
-        //this.investigateField.render(context, mouseX, mouseY, delta);
+        this.predictField.render(context, mouseX, mouseY, delta);
+        this.investigateField.render(context, mouseX, mouseY, delta);
     }
 
     @Override
     public void resize(MinecraftClient client, int width, int height) {
-        //String string = this.predictField.getText();
-        //String string2 = this.investigateField.getText();
+        String string = this.predictField.getText();
+        String string2 = this.investigateField.getText();
         this.init(client, width, height);
-        //this.predictField.setText(string);
-        //this.investigateField.setText(string2);
+        this.predictField.setText(string);
+        this.investigateField.setText(string2);
     }
 
     @Override
@@ -190,14 +177,12 @@ public class FunctionScreen
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             //this.client.player.closeHandledScreen();
         }
-        /*
         if (this.predictField.isActive() && this.predictField.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
         if (this.investigateField.isActive() && this.investigateField.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-         */
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -233,14 +218,21 @@ public class FunctionScreen
         int y = (height - backgroundHeight) / 2;
 
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
-        //context.drawGuiTexture(getFocused() == predictField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 31, this.y + 9, 110, 16);
-        //context.drawGuiTexture(getFocused() == investigateField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 67, this.y + 73, 110, 16);
+        context.drawGuiTexture(getFocused() == predictField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 31, this.y + 9, 110, 16);
+        context.drawGuiTexture(getFocused() == investigateField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 67, this.y + 73, 110, 16);
 
     }
 
     @Override
     protected void drawForeground(DrawContext context, int mouseX, int mouseY){
-        context.drawCenteredTextWithShadow(this.textRenderer, this.shrineName, x_text, y_predict_text, 0x000000);
+        context.drawCenteredTextWithShadow(this.textRenderer, "Predict", x_text, y_predict_text, 0x000000);
+        context.drawCenteredTextWithShadow(this.textRenderer, "Run", x_text, y_run_text, 0x000000);
+        context.drawCenteredTextWithShadow(this.textRenderer, "Investigate", x_text, y_investigate_text, 0x000000);
+        context.drawCenteredTextWithShadow(this.textRenderer, "Modify", x_text, y_modify_text, 0x000000);
+        context.drawCenteredTextWithShadow(this.textRenderer, "Create", x_text, y_create_text, 0x000000);
+
+        context.drawCenteredTextWithShadow(this.textRenderer, this.answerRun, 120, y_run_text, 0x000000);
+
     }
 
     public void drawText(String text, int x, int y) {
@@ -259,7 +251,7 @@ public class FunctionScreen
             this.setFocused(this.recipeBook);
             return true;
         }
-/*        if(this.predictField.mouseClicked(mouseX, mouseY, button)) {
+        if(this.predictField.mouseClicked(mouseX, mouseY, button)) {
             this.setFocused(this.predictField);
             investigateField.setFocused(false);
             investigateField.setEditable(false);
@@ -277,8 +269,6 @@ public class FunctionScreen
             investigateField.setEditable(true);
             return true;
         }
-
- */
         if (this.narrow && this.recipeBook.isOpen()) {
             return true;
         }
@@ -312,12 +302,13 @@ public class FunctionScreen
 
     @Environment(value=EnvType.CLIENT)
     class RunButton extends IconButtonWidget {
-        String runID;
+        int runID;
         TextRenderer textRenderer;
         int x;
         int y;
         FunctionScreenHandler handler;
-        public RunButton(int x, int y, String runID, TextRenderer textRenderer) {
+
+        public RunButton(int x, int y, int runID, TextRenderer textRenderer) {
             super(x, y, CONFIRM_TEXTURE, ScreenTexts.DONE);
             this.runID = runID;
             this.textRenderer = textRenderer;
@@ -328,13 +319,14 @@ public class FunctionScreen
 
         @Override
         public void onPress() {
-            client.player.sendMessage(Text.of("Go through portal to visualise " + runID));
+            System.out.println("Pressed on run button " + runID);
+            client.player.sendMessage(Text.of("Go through portal to visualise run " + runID));
             PlayerMixinInterface player = (PlayerMixinInterface) client.player;
-            //player.setRunID(runID);
-            //PacketByteBuf buf = PacketByteBufs.create();
-            //buf.writeVarInt(runID);
+            player.setRunID(runID);
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeVarInt(runID);
             //TODO: send also to server player
-            //ClientPlayNetworking.send(ModPackets.SET_RUN_ID,  buf);
+            ClientPlayNetworking.send(ModPackets.SET_RUN_ID,  buf);
 
 
             close();
@@ -345,7 +337,7 @@ public class FunctionScreen
         @Override
         public void renderExtra(DrawContext context) {
             //BachelorProef.LOGGER.info("Render x, y: ("  + x + ", " + y + ")");
-            context.drawCenteredTextWithShadow(this.textRenderer, runID, x, y, 0x000000);
+            context.drawCenteredTextWithShadow(this.textRenderer, "Run: " + runID, x, y, 0x000000);
         }
 
         @Override
@@ -353,7 +345,6 @@ public class FunctionScreen
     }
 
     @Environment(value=EnvType.CLIENT)
-    //TODO: problem button is size of ICON
     class ConfirmButtonWidget extends IconButtonWidget {
 
         public ConfirmButtonWidget(int x, int y) {
@@ -363,7 +354,7 @@ public class FunctionScreen
         @Override
         public void onPress() {
             System.out.println("Pressed on confirm button");
-            //String predict = predictField.getText();
+            String predict = predictField.getText();
 
             answerRun = shrine.predictAnswer();
             ClientPlayerEntity player = client.player;
@@ -438,3 +429,4 @@ public class FunctionScreen
         }
     }
 }
+*/

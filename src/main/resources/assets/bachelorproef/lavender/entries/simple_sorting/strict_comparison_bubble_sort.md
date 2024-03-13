@@ -1,6 +1,6 @@
 ```json
 {
-  "title": "Strict comparison",
+  "title": "Strict Comparison Bubble Sort",
   "icon": "minecraft:white_stained_glass",
   "associated_items": [
     "minecraft:nether_quartz_ore"

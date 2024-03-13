@@ -1,17 +1,11 @@
 package siheynde.bachelorproefmod.structure.shrine;
 
-import io.wispforest.lavender.Lavender;
-import io.wispforest.lavender.LavenderCommands;
 import io.wispforest.lavender.book.Book;
 import io.wispforest.lavender.book.BookLoader;
-import io.wispforest.lavender.book.LavenderBookItem;
-import io.wispforest.lavender.client.LavenderBookScreen;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.item.Items;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.MinecartItem;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import siheynde.bachelorproefmod.BachelorProef;
 

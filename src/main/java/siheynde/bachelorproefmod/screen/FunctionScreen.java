@@ -2,7 +2,11 @@ package siheynde.bachelorproefmod.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.wispforest.lavender.book.Book;
 import io.wispforest.lavender.book.BookLoader;
+import io.wispforest.lavender.book.Entry;
+import io.wispforest.lavender.book.LavenderBookItem;
+import io.wispforest.lavender.client.LavenderBookScreen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -19,7 +23,10 @@ import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
@@ -340,8 +347,37 @@ public class FunctionScreen
                     topic.assignBook(book);
                 }
             });
+
+            close();
+
+            //PlayerEntity player = client.player;
+            Book book = topic.book;
+
+            //BachelorProef.LOGGER.info(book.entries().toString());
+
+            book.entries().forEach((entry) -> {
+                if(entry.title().toString().equalsIgnoreCase(runID)) {
+                    LavenderBookScreen.pushEntry(book, entry);
+                }
+            });
+
+            //LavenderBookScreen.pushEntry(book, book.entries().get(0));
+            //LavenderBookScreen screen = new LavenderBookScreen(book);
+            //screen.push
+            //screen
+
+            MinecraftClient.getInstance().setScreen(new LavenderBookScreen(book));
+            //LavenderBookItem.
+            //PlayerInventory inventory = player.getInventory();
+
+            //BachelorProef.LOGGER.info(player.getInventory());
+            //Item giveBook = (Book) topic.book;
+
+            //ItemStack
+            //player.giveItemStack(new ItemStack(topic.book));
+
             //client.player.inven
-            PlayerMixinInterface player = (PlayerMixinInterface) client.player;
+            //PlayerMixinInterface player = (PlayerMixinInterface) client.player;
 
 
 
@@ -351,8 +387,6 @@ public class FunctionScreen
             //TODO: send also to server player
             //ClientPlayNetworking.send(ModPackets.SET_RUN_ID,  buf);
 
-
-            close();
 
 
         }

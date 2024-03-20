@@ -12,6 +12,10 @@ public class ModScreenHandlers {
             Registry.register(Registries.SCREEN_HANDLER, new Identifier(BachelorProef.MOD_ID, "function_screen"),
                     new ExtendedScreenHandlerType<>(FunctionScreenHandler::new));
 
+    public static final ScreenHandlerType<TestScreenHandler> TEST_SCREEN =
+            Registry.register(Registries.SCREEN_HANDLER, new Identifier(BachelorProef.MOD_ID, "test_screen"),
+                    new ExtendedScreenHandlerType<>(TestScreenHandler::new));
+
     public static void registerScreenHandlers() {
         BachelorProef.LOGGER.info("Registering Screen Handlers for " + BachelorProef.MOD_ID);
     }

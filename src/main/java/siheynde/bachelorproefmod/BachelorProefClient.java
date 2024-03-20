@@ -10,6 +10,9 @@ import siheynde.bachelorproefmod.entity.client.RobotRenderer;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.screen.FunctionScreen;
 import siheynde.bachelorproefmod.screen.ModScreenHandlers;
+import siheynde.bachelorproefmod.screen.TestScreen;
+
+import java.util.Hashtable;
 
 public class BachelorProefClient implements ClientModInitializer {
     @Override
@@ -20,5 +23,6 @@ public class BachelorProefClient implements ClientModInitializer {
         ModPackets.registerS2CPackets();
 
         HandledScreens.register(ModScreenHandlers.FUNCTION_SCREEN, FunctionScreen::new);
+        HandledScreens.register(ModScreenHandlers.TEST_SCREEN, TestScreen::new);
     }
 }

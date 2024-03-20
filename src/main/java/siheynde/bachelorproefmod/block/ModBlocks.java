@@ -12,9 +12,13 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.block.custom.FunctionBlock;
+import siheynde.bachelorproefmod.block.custom.TestBlock;
 
 public class ModBlocks {
     public static final Block FUNCTION_BLOCK = registerBlock("function_block",
+            new FunctionBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).nonOpaque()));
+
+    public static final Block TEST_BLOCK = registerBlock("test_block",
             new FunctionBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).nonOpaque()));
 
     private static Block registerBlock(String name, Block block) {

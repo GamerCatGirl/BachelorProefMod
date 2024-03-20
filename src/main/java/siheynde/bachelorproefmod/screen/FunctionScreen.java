@@ -333,15 +333,15 @@ public class FunctionScreen
             this.x = x;
             this.y = y;
             //this.handler = handler;
+            //TODO: add a make this exercise button (this way we can delete the run button on the text but put it on correct one)
+            //TODO: visuale is the exercise is already done
         }
 
         @Override
         public void onPress() {
             client.player.sendMessage(Text.of("Go through the portal to start lesson of " + runID));
 
-            //TODO: find the lectern and set the book (look range 6 from current player)
-            Levels.Topic topic = shrine.topic;
-            //TODO: this needs to be replaced when you choose the topic of the shrine
+            Levels.Topic topic = shrine.topic; //TODO: this needs to be replaced when you choose the topic of the shrine
             BookLoader.loadedBooks().forEach((book) -> {
                 if (book.id().toString().equals(topic.bookID)){
                     topic.assignBook(book);
@@ -350,10 +350,7 @@ public class FunctionScreen
 
             close();
 
-            //PlayerEntity player = client.player;
             Book book = topic.book;
-
-            //BachelorProef.LOGGER.info(book.entries().toString());
 
             book.entries().forEach((entry) -> {
                 if(entry.title().toString().equalsIgnoreCase(runID)) {
@@ -361,33 +358,9 @@ public class FunctionScreen
                 }
             });
 
-            //LavenderBookScreen.pushEntry(book, book.entries().get(0));
-            //LavenderBookScreen screen = new LavenderBookScreen(book);
-            //screen.push
-            //screen
-
             MinecraftClient.getInstance().setScreen(new LavenderBookScreen(book));
-            //LavenderBookItem.
-            //PlayerInventory inventory = player.getInventory();
 
-            //BachelorProef.LOGGER.info(player.getInventory());
-            //Item giveBook = (Book) topic.book;
-
-            //ItemStack
-            //player.giveItemStack(new ItemStack(topic.book));
-
-            //client.player.inven
-            //PlayerMixinInterface player = (PlayerMixinInterface) client.player;
-
-
-
-            //player.setRunID(runID);
-            //PacketByteBuf buf = PacketByteBufs.create();
-            //buf.writeVarInt(runID);
             //TODO: send also to server player
-            //ClientPlayNetworking.send(ModPackets.SET_RUN_ID,  buf);
-
-
 
         }
 

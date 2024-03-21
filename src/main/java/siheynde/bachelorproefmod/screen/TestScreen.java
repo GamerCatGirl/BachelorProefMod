@@ -12,16 +12,21 @@ import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import siheynde.bachelorproefmod.BachelorProef;
 
 @Environment(value= EnvType.CLIENT)
 public class TestScreen
     extends HandledScreen<TestScreenHandler>
     implements ScreenHandlerListener {
 
+    private static final Identifier TEXTURE = new Identifier(BachelorProef.MOD_ID, "textures/gui/test_screen.png");
+
 
     public TestScreen(TestScreenHandler handler, PlayerInventory inventory, Text title){
         super(handler, inventory, title);
         //this.handler = handler;
+        BachelorProef.LOGGER.info("TestScreen opened");
     }
 
     @Override

@@ -24,7 +24,9 @@ import siheynde.bachelorproefmod.block.entity.FunctionBlockEntity;
 import siheynde.bachelorproefmod.block.entity.ModBlockEntities;
 import siheynde.bachelorproefmod.screen.FunctionScreenHandler;
 
-public class FunctionBlock extends BlockWithEntity implements BlockEntityProvider {
+public class FunctionBlock
+        extends BlockWithEntity
+        implements BlockEntityProvider {
     public FunctionBlock(AbstractBlock.Settings settings) {super(settings);}
     private static final Text TITLE = Text.translatable("container.crafting");
     public static final MapCodec<FunctionBlock> CODEC = FunctionBlock.createCodec(FunctionBlock::new);

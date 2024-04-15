@@ -39,7 +39,7 @@ public class ModDimensions {
     public static final RegistryKey<World> DIMENSION_LEVEL_KEY = RegistryKey.of(RegistryKeys.WORLD,
             new Identifier(BachelorProef.MOD_ID, "bachelor_dimension"));
     public static final RegistryKey<DimensionType> DIMENSION_TYPE = RegistryKey.of(RegistryKeys.DIMENSION_TYPE,
-            new Identifier(BachelorProef.MOD_ID, "bachelor_dimension_type"));
+            new Identifier(BachelorProef.MOD_ID, "bachelor_dimension"));
 
     private static int rangeArea = 32;
 

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.wispforest.lavender.book.Book;
 import io.wispforest.lavender.book.BookLoader;
-import io.wispforest.lavender.book.Entry;
 import io.wispforest.lavender.book.LavenderBookItem;
 import io.wispforest.lavender.client.LavenderBookScreen;
 import net.fabricmc.api.EnvType;
@@ -40,6 +39,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TextContent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTypes;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
@@ -48,6 +49,7 @@ import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
+import siheynde.bachelorproefmod.world.dimension.ModDimensions;
 
 import java.util.*;
 
@@ -78,6 +80,7 @@ public class FunctionScreen
     private final List<FunctionButtonWidget> buttons = Lists.newArrayList();
     private final String shrineName;
     public Shrine shrine;
+    private PlayerInventory inventory;
     //private TextFieldWidget predictField;
     //private TextFieldWidget investigateField;
 
@@ -90,6 +93,7 @@ public class FunctionScreen
 
     public FunctionScreen(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+        this.inventory = inventory;
         this.handler = handler;
 
 
@@ -339,7 +343,31 @@ public class FunctionScreen
 
         @Override
         public void onPress() {
+            //client.
+            DimensionType dimension = client.player.getWorld().getDimension();
+            Identifier dimensionOverworld = DimensionTypes.OVERWORLD.getValue();
+            Identifier dimensionMod = ModDimensions.DIMENSION_TYPE.getValue();
+            Identifier dimensionIn = client.world.getRegistryKey().getValue();
+
+            Boolean inOverworld = dimensionIn.equals(dimensionOverworld);
+            Boolean inMod = dimensionIn.equals(dimensionMod);
+
+            BachelorProef.LOGGER.info("Dimension: " + dimensionIn);
+            BachelorProef.LOGGER.info("Dimension overworld: " + dimensionOverworld);
+            BachelorProef.LOGGER.info("Dimension mod: " + dimensionMod);
+            BachelorProef.LOGGER.info("Dimension overworld?: " + dimensionIn.equals(dimensionOverworld));
+            BachelorProef.LOGGER.info("Dimension mod?: " + dimensionIn.equals(dimensionMod));
+
+            if (inOverworld) {
+                BachelorProef.LOGGER.info("in overworld");
+            } else if (inMod) {
+                BachelorProef.LOGGER.info("in test world");
+            }
+
+
             client.player.sendMessage(Text.of("Go through the portal to start lesson of " + runID));
+
+            //client.debugRenderer
 
             Levels.Topic topic = shrine.topic; //TODO: this needs to be replaced when you choose the topic of the shrine
             BookLoader.loadedBooks().forEach((book) -> {
@@ -359,6 +387,13 @@ public class FunctionScreen
             });
 
             MinecraftClient.getInstance().setScreen(new LavenderBookScreen(book));
+            //TODO: give the player the book if not in inventory
+
+            //TODO test first in which dimension the player is
+            ItemStack bookStack = LavenderBookItem.itemOf(book);
+            Boolean hasBook = inventory.contains(bookStack);
+            BachelorProef.LOGGER.info("Bookstack: " + hasBook.toString());
+            inventory.player.giveItemStack(bookStack);
 
             //TODO: send also to server player
 

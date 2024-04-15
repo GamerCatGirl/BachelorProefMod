@@ -6,11 +6,13 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
+import siheynde.bachelorproefmod.BachelorProef;
 
 public class TestScreenHandler extends ScreenHandler {
 
     public TestScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
         this(syncId, inventory, inventory.player.getWorld().getBlockEntity(buf.readBlockPos()));
+        BachelorProef.LOGGER.info("TestScreenHandler constructor");
     }
 
     public TestScreenHandler(int syncId, PlayerInventory playerInventory, BlockEntity blockEntity) {

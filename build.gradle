@@ -2,6 +2,7 @@ plugins {
 	id 'fabric-loom' version '1.5-SNAPSHOT'
 	id 'maven-publish'
 	id 'java-library'
+	//id "com.github.rzabini.gradle-jython" version "1.1.0"
 }
 
 version = project.mod_version
@@ -19,7 +20,8 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 	maven { url 'https://maven.wispforest.io' }
-	maven {url = "https://maven.kyrptonaught.dev"}
+	//maven { url "https://plugins.gradle.org/m2/" }
+	maven { url "https://maven.kyrptonaught.dev"}
 
 }
 
@@ -55,6 +57,11 @@ dependencies {
 
 	modImplementation "net.kyrptonaught:customportalapi:${project.portal_api_version}"
 	include "net.kyrptonaught:customportalapi:${project.portal_api_version}"
+
+	// https://mvnrepository.com/artifact/org.python/jython
+	//modImplementation 'org.python:jython:2.7.0'
+	//include 'org.python:jython:2.7.0'
+	//classpath "gradle.plugin.com.github.rzabini:gradle-jython:1.1.0"
 
 }
 
@@ -102,3 +109,5 @@ publishing {
 		// retrieving dependencies.
 	}
 }
+
+//apply plugin: "com.github.rzabini.gradle-jython"

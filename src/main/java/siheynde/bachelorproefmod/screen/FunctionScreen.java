@@ -2,6 +2,7 @@ package siheynde.bachelorproefmod.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.netty.buffer.ByteBuf;
 import io.wispforest.lavender.book.Book;
 import io.wispforest.lavender.book.BookLoader;
 import io.wispforest.lavender.book.LavenderBookItem;
@@ -10,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -43,7 +45,9 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.DimensionTypes;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.BachelorProefClient;
 import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
+import siheynde.bachelorproefmod.User;
 import siheynde.bachelorproefmod.mixin.PlayerMixin;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
@@ -53,6 +57,8 @@ import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 import siheynde.bachelorproefmod.world.dimension.ModDimensions;
 
 import java.util.*;
+
+import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.getReceived;
 
 @Environment(value=EnvType.CLIENT)
 public class FunctionScreen
@@ -146,18 +152,6 @@ public class FunctionScreen
         int[] yText = {this.y + 60};
 
         if (inOverworld) {
-            BachelorProef.LOGGER.info("in overworld");
-            BachelorProef.LOGGER.info(shrine.topic.name);
-
-            ClientPlayerEntity player = client.player;
-            ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface)player;
-            BachelorProef.LOGGER.info("Player: " + player);
-            playerMixin.setTopic(shrine.topic);
-            BachelorProef.LOGGER.info("Player: " + playerMixin.hashCode());
-            //BachelorProef.LOGGER.info("Assigned topic: " + playerMixin.getTopic().name);
-
-            //playerMixin.addVisitedShrine(shrine);
-
             Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> topics =  this.shrine.topic.blocks;
 
             //TODO: look at buttons from menu -> better suited
@@ -166,22 +160,44 @@ public class FunctionScreen
 
                 yText[0] = yText[0] + 20;
             });
+
         } else if (inMod) {
             BachelorProef.LOGGER.info("in test world");
             List<String> PRIMM = Arrays.asList("Predict", "Run", "Investigate", "Modify", "Make");
-            String subtopic = this.shrine.topic.subTopic;
-            //BachelorProef.LOGGER.info(shrine.topic.name);
-            //BachelorProef.LOGGER.info("Topic shrine: " + subtopic);
-            ClientPlayerEntity player = client.player;
-            BachelorProef.LOGGER.info("Player: " + player);
-            ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface)player;
-            BachelorProef.LOGGER.info("Player: " + playerMixin.hashCode());
-            Levels.Topic topic = playerMixin.getTopic();
-            BachelorProef.LOGGER.info("Topic: " + topic);
-            String subTopic =  playerMixin.getSelectedSubTopic();
 
-            PlayerMixinInterface playerMixinInterface = (PlayerMixinInterface) client.player;
-            BachelorProef.LOGGER.info("runID: "  + playerMixinInterface.getRunID());
+             ClientPlayNetworking.send(
+                    ModPackets.GET_RUN_ID,
+                    PacketByteBufs.empty());
+
+            ClientPlayerEntity player = client.player;
+            PlayerMixinInterface playerMixin = (PlayerMixinInterface) player;
+
+
+
+            //TODO: fix this so we don't create inf loop (maybe with a timeout)
+             while(playerMixin.getRunID() == null){
+                 BachelorProef.LOGGER.info("runID: " + playerMixin.getRunID());
+             }
+
+            BachelorProef.LOGGER.info("runID: " + playerMixin.getRunID());
+
+            //PlayerMixinInterface playerMixinInterface =  (PlayerMixinInterface) client.player;
+            //BachelorProef.LOGGER.info("runID: "  + playerMixinInterface.getRunID());
+
+            //String name = player.getName().getLiteralString();
+
+            //User user = BachelorProef.
+
+            //BachelorProef.LOGGER.info("Player: " + name);
+            //ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface)player;
+            //BachelorProef.LOGGER.info("Player: " + playerMixin.hashCode());
+
+            //Levels.Topic topic = playerMixin.getTopic();
+            //BachelorProef.LOGGER.info("Topic: " + topic);
+            //String subTopic =  playerMixin.getSelectedSubTopic();
+
+            //PlayerMixinInterface playerMixinInterface = (PlayerMixinInterface) client.player;
+            //BachelorProef.LOGGER.info("runID: "  + playerMixinInterface.getRunID());
             //BachelorProef.LOGGER.info("Subtopic: " + subTopic);
             //BachelorProef.LOGGER.info("Topic: " + playerMixin.getTopic());
 
@@ -318,18 +334,8 @@ public class FunctionScreen
             Boolean inOverworld = dimensionIn.equals(dimensionOverworld);
             Boolean inMod = dimensionIn.equals(dimensionMod);
 
-
-            PlayerMixinInterface player = (PlayerMixinInterface) client.player;
             Levels.Topic topic = shrine.topic;
-            topic.assignSubTopic(runID);
-            player.setRunID(runID);
 
-            ClientPlayerEntity playerClient = client.player;
-            BachelorProef.LOGGER.info("Player: " + playerClient);
-            ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface) playerClient;
-            playerMixin.setSelectedSubTopic(runID);
-
-            BachelorProef.LOGGER.info("SubTopic: " + topic.subTopic);
             BookLoader.loadedBooks().forEach((book) -> {
                 if (book.id().toString().equals(topic.bookID)){
                     topic.assignBook(book);
@@ -345,6 +351,18 @@ public class FunctionScreen
 
             if (inOverworld) {
                 BachelorProef.LOGGER.info("in overworld");
+
+
+
+
+                PacketByteBuf buf = PacketByteBufs.create();
+                buf.writeString(runID);
+
+
+                ClientPlayNetworking.send(
+                        ModPackets.SET_RUN_ID,
+                        buf);
+
                 client.player.sendMessage(Text.of("Go through the portal to start lesson of " + runID));
                 close();
                 MinecraftClient.getInstance().setScreen(new LavenderBookScreen(book));

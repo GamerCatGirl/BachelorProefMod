@@ -20,12 +20,26 @@ import siheynde.bachelorproefmod.networking.ModPackets;
 import net.kyrptonaught.customportalapi.api.CustomPortalBuilder;
 import siheynde.bachelorproefmod.world.dimension.ModDimensions;
 
+import java.util.HashMap;
+
 public class BachelorProef implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final String MOD_ID = "bachelorproef";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+	HashMap<String, User> usersClient = new HashMap<String, User>();
+
+
+	public User getUserClient(String username) {
+		if (!usersClient.containsKey(username)) {
+			User user = new User(username);
+			usersClient.put(username, user);
+			return user;
+		}
+		return usersClient.get(username);
+	}
 
 	@Override
 	public void onInitialize() {

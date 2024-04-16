@@ -14,9 +14,13 @@ import siheynde.bachelorproefmod.screen.ModScreenHandlers;
 import siheynde.bachelorproefmod.screen.TestScreen;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 //import io.wispforest.lavender
 
 public class BachelorProefClient implements ClientModInitializer {
+
+
     @Override
     public void onInitializeClient() {
 
@@ -28,7 +32,6 @@ public class BachelorProefClient implements ClientModInitializer {
         HandledScreens.register(ModScreenHandlers.TEST_SCREEN, TestScreen::new);
 
         try {
-            BachelorProef.LOGGER.info("Opening xterm");
             //TODO: works 1 only on mac and renamed the from Visual Studio Code.app to VSCode.app -> did not work
             //open -a "QuickTime Player" ~/Desktop/filename.mp4 -> to open a certain file in a certain app
             String currentPath = Paths.get("").toAbsolutePath().getParent().toString(); ///.toAbsolutePath().toString();

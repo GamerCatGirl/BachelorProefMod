@@ -11,8 +11,8 @@ public interface ClientPlayerMixinInterface {
     void addVisitedShrine(Shrine shrine);
     Shrine getShrine(int level);
     //Shrine getShrine();
-    void setSelectedSubTopic(String subTopic);
-    String getSelectedSubTopic();
+    void setRunID(String subTopic);
+    String getRunID();
 
     void setTopic(Levels.Topic topic);
     Levels.Topic getTopic();

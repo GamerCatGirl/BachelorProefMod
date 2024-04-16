@@ -3,9 +3,7 @@ package siheynde.bachelorproefmod.mixin;
 import net.minecraft.client.network.ClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import siheynde.bachelorproefmod.BachelorProef;
-import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
@@ -33,11 +31,11 @@ public class ClientPlayerMixin implements ClientPlayerMixinInterface {
         return visitedShrines;
     }
 
-    public void setSelectedSubTopic(String subTopic) {
+    public void setRunID(String subTopic) {
         this.selectedSubTopic = subTopic;
     }
 
-    public String getSelectedSubTopic() {
+    public String getRunID() {
         return this.selectedSubTopic;
     }
 

@@ -26,7 +26,7 @@ public class PlayerMixin implements PlayerMixinInterface {
     private ArrayList<Levels.Topic> topics = levels.getTopics();
     public ArrayList<Shrine> visitedShrines = new ArrayList<>();
     int amountShrinesUnlocked = -1;
-    int runID;
+    String runID;
 
     @Override
     public Shrine getShrine() {
@@ -38,12 +38,12 @@ public class PlayerMixin implements PlayerMixinInterface {
     }
 
     @Override
-    public void setRunID(int runID) {
+    public void setRunID(String runID) {
         this.runID = runID;
     }
 
     @Override
-    public int getRunID() {
+    public String getRunID() {
         return runID;
     }
 
@@ -85,9 +85,6 @@ public class PlayerMixin implements PlayerMixinInterface {
 
     @Override
     public Shrine getShrine(BlockPos pos) {
-
-        BachelorProef.LOGGER.info("______________in getShrine_____________");
-
         double x = pos.getX();
         double y = pos.getY();
         double z = pos.getZ();
@@ -100,16 +97,11 @@ public class PlayerMixin implements PlayerMixinInterface {
         }
 
         amountShrinesUnlocked = amountShrinesUnlocked + 1;
-        BachelorProef.LOGGER.info("Amount shrines unlocked: " + amountShrinesUnlocked);
-        BachelorProef.LOGGER.info(topics.toString());
         Levels.Topic topic = topics.get(amountShrinesUnlocked);
 
 
         Shrine newShrine = new Shrine(x, y, z, topic);
-        BachelorProef.LOGGER.info("shrines before add: " + this.visitedShrines.size());
         visitedShrines.add(newShrine);
-        BachelorProef.LOGGER.info("shrines after add: " + this.visitedShrines.size());
-
 
         return newShrine;
     }

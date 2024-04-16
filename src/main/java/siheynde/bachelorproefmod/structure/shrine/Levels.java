@@ -88,17 +88,17 @@ public class Levels {
         public String bookID;
         public Book book;
 
+        public String subTopic;
+
         public Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks;
         public ArrayList<Topic> requirements;
         public ArrayList<MinecartItem> items;
 
 
-        //public getSubTopicBook() {
-
-        //}
         public void assignBook(Book book){
             this.book = book;
         }
+        public void assignSubTopic(String subTopic){ this.subTopic = subTopic;}
 
         public Topic(String name,
                      String path_rkt,
@@ -110,8 +110,6 @@ public class Levels {
             this.blocks = blocks;
             this.requirements = requirements;
             this.bookID = bookID;
-
-
         }
     }
 

@@ -10,8 +10,8 @@ import java.util.ArrayList;
 public interface PlayerMixinInterface {
     Levels.Topic getTopic();
     void setRobot(RobotEntity robot);
-    void setRunID(int runID);
-    int getRunID();
+    void setRunID(String runID);
+    String getRunID();
     RobotEntity getRobot();
     Shrine getShrine(BlockPos pos);
     Shrine getShrine();

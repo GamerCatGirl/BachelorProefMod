@@ -44,6 +44,7 @@ import net.minecraft.world.dimension.DimensionTypes;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
+import siheynde.bachelorproefmod.mixin.PlayerMixin;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
@@ -84,6 +85,9 @@ public class FunctionScreen
     //private TextFieldWidget predictField;
     //private TextFieldWidget investigateField;
 
+    Identifier dimensionOverworld = DimensionTypes.OVERWORLD.getValue();
+    Identifier dimensionMod = ModDimensions.DIMENSION_TYPE.getValue();
+
     private DrawContext context;
     public String answerRun = "";
 
@@ -123,18 +127,6 @@ public class FunctionScreen
         //TODO : primitive functions to let the robot move !!!!
     }
 
-    private void setupField(TextFieldWidget field) {
-        field.setFocusUnlocked(false);
-        field.setEditableColor(-1);
-        field.setUneditableColor(-1);
-        field.setDrawsBackground(false);
-        field.setMaxLength(50);
-        field.setChangedListener(this::onRenamed);
-        field.setText("testInput1");
-        this.addSelectableChild(field);
-        field.setEditable(true);
-    }
-
     private <T extends ClickableWidget> void addButton(T button) {
         this.addDrawableChild(button);
         this.buttons.add((FunctionButtonWidget)((Object)button));
@@ -146,34 +138,60 @@ public class FunctionScreen
         handler.addListener(this);
         this.buttons.clear();
 
-        Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> topics =  this.shrine.topic.blocks;
+        //TODO: add first test for which dimension
+        Identifier dimensionIn = client.world.getRegistryKey().getValue();
+
+        Boolean inOverworld = dimensionIn.equals(dimensionOverworld);
+        Boolean inMod = dimensionIn.equals(dimensionMod);
         int[] yText = {this.y + 60};
 
-        //TODO: look at buttons from menu -> better suited
-        topics.forEach((key, value) -> {
-            this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
+        if (inOverworld) {
+            BachelorProef.LOGGER.info("in overworld");
+            BachelorProef.LOGGER.info(shrine.topic.name);
 
-            yText[0] = yText[0] + 20;
-        });
+            ClientPlayerEntity player = client.player;
+            ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface)player;
+            BachelorProef.LOGGER.info("Player: " + player);
+            playerMixin.setTopic(shrine.topic);
+            BachelorProef.LOGGER.info("Player: " + playerMixin.hashCode());
+            //BachelorProef.LOGGER.info("Assigned topic: " + playerMixin.getTopic().name);
 
-        //TEXTFIELDS
-        //predictField = new TextFieldWidget(this.textRenderer, x + 33, y + 14, 102, 12, Text.translatable("container.repair"));
-        //investigateField = new TextFieldWidget(this.textRenderer, x + 69, y + 78, 102, 12, Text.translatable("container.repair"));
-        //setupField(this.predictField);
-        //setupField(this.investigateField);
+            //playerMixin.addVisitedShrine(shrine);
 
-        //this.setInitialFocus(this.predictField);
-        //this.predictField.setEditable(true);
-        //this.setFocused(this.predictField);
+            Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> topics =  this.shrine.topic.blocks;
 
-        //BUTTONS
-        //this.buttons.clear();
-        //this.addButton(new ConfirmButtonWidget(this.x + 140, this.y + 14));
+            //TODO: look at buttons from menu -> better suited
+            topics.forEach((key, value) -> {
+                this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
 
-        //RUN BUTTONS
-        //for(int i = 0; i < amountOfRunButtons; i++) {
-        //    this.addButton(new RunButton(this.x + 50 + (i * 50), this.y + 50, i, this.textRenderer));
-        //}
+                yText[0] = yText[0] + 20;
+            });
+        } else if (inMod) {
+            BachelorProef.LOGGER.info("in test world");
+            List<String> PRIMM = Arrays.asList("Predict", "Run", "Investigate", "Modify", "Make");
+            String subtopic = this.shrine.topic.subTopic;
+            //BachelorProef.LOGGER.info(shrine.topic.name);
+            //BachelorProef.LOGGER.info("Topic shrine: " + subtopic);
+            ClientPlayerEntity player = client.player;
+            BachelorProef.LOGGER.info("Player: " + player);
+            ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface)player;
+            BachelorProef.LOGGER.info("Player: " + playerMixin.hashCode());
+            Levels.Topic topic = playerMixin.getTopic();
+            BachelorProef.LOGGER.info("Topic: " + topic);
+            String subTopic =  playerMixin.getSelectedSubTopic();
+
+            PlayerMixinInterface playerMixinInterface = (PlayerMixinInterface) client.player;
+            BachelorProef.LOGGER.info("runID: "  + playerMixinInterface.getRunID());
+            //BachelorProef.LOGGER.info("Subtopic: " + subTopic);
+            //BachelorProef.LOGGER.info("Topic: " + playerMixin.getTopic());
+
+            PRIMM.forEach((key) -> {
+                this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
+                yText[0] = yText[0] + 20;
+            });
+        }
+
+
     }
 
     @Override
@@ -203,29 +221,7 @@ public class FunctionScreen
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             //this.client.player.closeHandledScreen();
         }
-        /*
-        if (this.predictField.isActive() && this.predictField.keyPressed(keyCode, scanCode, modifiers)) {
-            return true;
-        }
-        if (this.investigateField.isActive() && this.investigateField.keyPressed(keyCode, scanCode, modifiers)) {
-            return true;
-        }
-         */
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    private void onRenamed(String name) {
-        //Slot slot = ((FunctionScreenHandler)this.handler).getSlot(0);
-        //if (!slot.hasStack()) {
-        //    return;
-        //}
-        //String string = name;
-        //if (!slot.getStack().hasCustomName() && string.equals(slot.getStack().getName().getString())) {
-        //    string = "";
-        //}
-        //if (((FunctionScreenHandler)this.handler).setNewPredict(string)) {
-            //this.client.player.networkHandler.sendPacket(new RenameItemC2SPacket(string));
-        //}
     }
 
     @Override
@@ -246,18 +242,11 @@ public class FunctionScreen
         int y = (height - backgroundHeight) / 2;
 
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
-        //context.drawGuiTexture(getFocused() == predictField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 31, this.y + 9, 110, 16);
-        //context.drawGuiTexture(getFocused() == investigateField ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 67, this.y + 73, 110, 16);
-
     }
 
     @Override
     protected void drawForeground(DrawContext context, int mouseX, int mouseY){
         context.drawCenteredTextWithShadow(this.textRenderer, this.shrineName, x_text, y_predict_text, 0x000000);
-    }
-
-    public void drawText(String text, int x, int y) {
-        context.drawCenteredTextWithShadow(this.textRenderer, text, x, y, 0x000000);
     }
 
 
@@ -272,26 +261,6 @@ public class FunctionScreen
             this.setFocused(this.recipeBook);
             return true;
         }
-/*        if(this.predictField.mouseClicked(mouseX, mouseY, button)) {
-            this.setFocused(this.predictField);
-            investigateField.setFocused(false);
-            investigateField.setEditable(false);
-            //TODO zet cursor uit
-            predictField.setFocused(true);
-            predictField.setEditable(true);
-            return true;
-        }
-        if(this.investigateField.mouseClicked(mouseX, mouseY, button)) {
-            this.setFocused(this.investigateField);
-            predictField.setFocused(false);
-            predictField.setEditable(false);
-            //predictField.setCursor(-1, false);
-            investigateField.setFocused(true);
-            investigateField.setEditable(true);
-            return true;
-        }
-
- */
         if (this.narrow && this.recipeBook.isOpen()) {
             return true;
         }
@@ -343,59 +312,64 @@ public class FunctionScreen
 
         @Override
         public void onPress() {
-            //client.
-            DimensionType dimension = client.player.getWorld().getDimension();
-            Identifier dimensionOverworld = DimensionTypes.OVERWORLD.getValue();
-            Identifier dimensionMod = ModDimensions.DIMENSION_TYPE.getValue();
+
             Identifier dimensionIn = client.world.getRegistryKey().getValue();
 
             Boolean inOverworld = dimensionIn.equals(dimensionOverworld);
             Boolean inMod = dimensionIn.equals(dimensionMod);
 
-            BachelorProef.LOGGER.info("Dimension: " + dimensionIn);
-            BachelorProef.LOGGER.info("Dimension overworld: " + dimensionOverworld);
-            BachelorProef.LOGGER.info("Dimension mod: " + dimensionMod);
-            BachelorProef.LOGGER.info("Dimension overworld?: " + dimensionIn.equals(dimensionOverworld));
-            BachelorProef.LOGGER.info("Dimension mod?: " + dimensionIn.equals(dimensionMod));
 
-            if (inOverworld) {
-                BachelorProef.LOGGER.info("in overworld");
-            } else if (inMod) {
-                BachelorProef.LOGGER.info("in test world");
-            }
+            PlayerMixinInterface player = (PlayerMixinInterface) client.player;
+            Levels.Topic topic = shrine.topic;
+            topic.assignSubTopic(runID);
+            player.setRunID(runID);
 
+            ClientPlayerEntity playerClient = client.player;
+            BachelorProef.LOGGER.info("Player: " + playerClient);
+            ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface) playerClient;
+            playerMixin.setSelectedSubTopic(runID);
 
-            client.player.sendMessage(Text.of("Go through the portal to start lesson of " + runID));
-
-            //client.debugRenderer
-
-            Levels.Topic topic = shrine.topic; //TODO: this needs to be replaced when you choose the topic of the shrine
+            BachelorProef.LOGGER.info("SubTopic: " + topic.subTopic);
             BookLoader.loadedBooks().forEach((book) -> {
                 if (book.id().toString().equals(topic.bookID)){
                     topic.assignBook(book);
                 }
             });
 
-            close();
-
             Book book = topic.book;
-
             book.entries().forEach((entry) -> {
                 if(entry.title().toString().equalsIgnoreCase(runID)) {
                     LavenderBookScreen.pushEntry(book, entry);
                 }
             });
 
-            MinecraftClient.getInstance().setScreen(new LavenderBookScreen(book));
+            if (inOverworld) {
+                BachelorProef.LOGGER.info("in overworld");
+                client.player.sendMessage(Text.of("Go through the portal to start lesson of " + runID));
+                close();
+                MinecraftClient.getInstance().setScreen(new LavenderBookScreen(book));
+            } else if (inMod) {
+                BachelorProef.LOGGER.info("in test world");
+                BachelorProef.LOGGER.info("Run function of: " + runID);
+                close();
+            }
+
+
+            //client.debugRenderer
+
             //TODO: give the player the book if not in inventory
 
             //TODO test first in which dimension the player is
             ItemStack bookStack = LavenderBookItem.itemOf(book);
             Boolean hasBook = inventory.contains(bookStack);
-            BachelorProef.LOGGER.info("Bookstack: " + hasBook.toString());
-            inventory.player.giveItemStack(bookStack);
 
-            //TODO: send also to server player
+            if (!hasBook){
+                BachelorProef.LOGGER.info("Bookstack: " + hasBook.toString());
+                inventory.player.giveItemStack(bookStack);
+
+                //TODO: give player correct blocks or run the code
+            }
+
 
         }
 
@@ -409,33 +383,6 @@ public class FunctionScreen
         public void tick(int level) {}
     }
 
-    @Environment(value=EnvType.CLIENT)
-    //TODO: problem button is size of ICON
-    class ConfirmButtonWidget extends IconButtonWidget {
-
-        public ConfirmButtonWidget(int x, int y) {
-            super(x, y, CONFIRM_TEXTURE, ScreenTexts.DONE);
-        }
-
-        @Override
-        public void onPress() {
-            System.out.println("Pressed on confirm button");
-            //String predict = predictField.getText();
-
-            answerRun = shrine.predictAnswer();
-            ClientPlayerEntity player = client.player;
-            ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface)player;
-            //player.getFunction();
-            //player.getVisitedShrines();
-            System.out.println("Player" + player);
-
-
-        }
-
-
-        @Override
-        public void tick(int level) {}
-    }
 
     @Environment(value=EnvType.CLIENT)
     static abstract class IconButtonWidget

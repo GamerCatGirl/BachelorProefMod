@@ -13,7 +13,7 @@ public class runIDC2SPacket {
     public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
                                PacketByteBuf buf, PacketSender responseSender) {
 
-        int idRun = buf.readVarInt();
+        String idRun = buf.readString();
         BachelorProef.LOGGER.info("Received runID packet with id: " + idRun);
 
 

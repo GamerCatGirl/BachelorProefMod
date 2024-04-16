@@ -106,7 +106,7 @@ public class ModDimensions {
                 if (areaEmpty(pos, entity.getWorld())) {
                     PlayerMixinInterface playerMixin = (PlayerMixinInterface) entity;
                     Shrine shrine = playerMixin.getShrine(pos);
-                    int idRun = playerMixin.getRunID();
+                    String idRun = playerMixin.getRunID();
                     //TODO: shrine.setupUtilTestWorld(entity.getWorld(), pos, rangeArea, idRun);
                     BachelorProef.LOGGER.info("Shrine: " + shrine);
                 }

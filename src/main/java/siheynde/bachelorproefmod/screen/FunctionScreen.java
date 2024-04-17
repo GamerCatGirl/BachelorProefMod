@@ -50,6 +50,7 @@ import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
 import siheynde.bachelorproefmod.User;
 import siheynde.bachelorproefmod.mixin.PlayerMixin;
 import siheynde.bachelorproefmod.networking.ModPackets;
+import siheynde.bachelorproefmod.structure.functions.SubTopic;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
@@ -96,8 +97,6 @@ public class FunctionScreen
 
     private DrawContext context;
     public String answerRun = "";
-
-    private int amountOfRunButtons;
     private boolean narrow;
 
 
@@ -144,7 +143,6 @@ public class FunctionScreen
         handler.addListener(this);
         this.buttons.clear();
 
-        //TODO: add first test for which dimension
         Identifier dimensionIn = client.world.getRegistryKey().getValue();
 
         Boolean inOverworld = dimensionIn.equals(dimensionOverworld);
@@ -169,45 +167,11 @@ public class FunctionScreen
                     ModPackets.GET_RUN_ID,
                     PacketByteBufs.empty());
 
-            ClientPlayerEntity player = client.player;
-            PlayerMixinInterface playerMixin = (PlayerMixinInterface) player;
-
-
-
-            //TODO: fix this so we don't create inf loop (maybe with a timeout)
-             while(playerMixin.getRunID() == null){
-                 BachelorProef.LOGGER.info("runID: " + playerMixin.getRunID());
-             }
-
-            BachelorProef.LOGGER.info("runID: " + playerMixin.getRunID());
-
-            //PlayerMixinInterface playerMixinInterface =  (PlayerMixinInterface) client.player;
-            //BachelorProef.LOGGER.info("runID: "  + playerMixinInterface.getRunID());
-
-            //String name = player.getName().getLiteralString();
-
-            //User user = BachelorProef.
-
-            //BachelorProef.LOGGER.info("Player: " + name);
-            //ClientPlayerMixinInterface playerMixin = (ClientPlayerMixinInterface)player;
-            //BachelorProef.LOGGER.info("Player: " + playerMixin.hashCode());
-
-            //Levels.Topic topic = playerMixin.getTopic();
-            //BachelorProef.LOGGER.info("Topic: " + topic);
-            //String subTopic =  playerMixin.getSelectedSubTopic();
-
-            //PlayerMixinInterface playerMixinInterface = (PlayerMixinInterface) client.player;
-            //BachelorProef.LOGGER.info("runID: "  + playerMixinInterface.getRunID());
-            //BachelorProef.LOGGER.info("Subtopic: " + subTopic);
-            //BachelorProef.LOGGER.info("Topic: " + playerMixin.getTopic());
-
             PRIMM.forEach((key) -> {
                 this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
                 yText[0] = yText[0] + 20;
             });
         }
-
-
     }
 
     @Override
@@ -353,8 +317,6 @@ public class FunctionScreen
                 BachelorProef.LOGGER.info("in overworld");
 
 
-
-
                 PacketByteBuf buf = PacketByteBufs.create();
                 buf.writeString(runID);
 
@@ -369,6 +331,27 @@ public class FunctionScreen
             } else if (inMod) {
                 BachelorProef.LOGGER.info("in test world");
                 BachelorProef.LOGGER.info("Run function of: " + runID);
+                ClientPlayerEntity player = client.player;
+                PlayerMixinInterface playerMixin = (PlayerMixinInterface) player;
+
+
+                BachelorProef.LOGGER.info("runID: " + playerMixin.getRunID());
+                SubTopic functions = topic.getFunctions(playerMixin.getRunID());
+                BachelorProef.LOGGER.info("Functions: " + functions);
+
+                if (runID.equals("Predict")) {
+                    functions.runPredict();
+                } else if (runID.equals("Run")) {
+                    functions.runRun();
+                } else if (runID.equals("Investigate")) {
+                    functions.runInvestigate();
+                } else if (runID.equals("Modify")) {
+                    functions.runModify();
+                } else if (runID.equals("Make")) {
+                    functions.runMake();
+                }
+
+                playerMixin.setRunID(null);
                 close();
             }
 

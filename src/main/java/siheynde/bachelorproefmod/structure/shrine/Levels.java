@@ -8,6 +8,8 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.MinecartItem;
 import net.minecraft.util.math.BlockPos;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.structure.functions.StrictComparisonBubbleSort;
+import siheynde.bachelorproefmod.structure.functions.SubTopic;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -60,6 +62,8 @@ public class Levels {
         blockSetupsSimpleSort.put("Strict Comparison Bubble Sort", blockSetupsStrictComparison);
         blockSetupsSimpleSort.put("Strict Comparison Insertion Sort", blockSetupsStrictComparison);
 
+        Hashtable<String, SubTopic> functionsStrictComparison = new Hashtable<>();
+        functionsStrictComparison.put("Strict Comparison Bubble Sort", new StrictComparisonBubbleSort());
 
         //TODO: link Lavender Book to the topic
         BachelorProef.LOGGER.info("LoadedBooks books: " + BookLoader.loadedBooks());
@@ -70,7 +74,8 @@ public class Levels {
                 "assets/bachelorproef/racket/simple_sort_2/lesson.rkt",
                 blockSetupsSimpleSort,
                 new ArrayList<>(),
-                "bachelorproef:simple_sorting"
+                "bachelorproef:simple_sorting",
+                functionsStrictComparison
         );
 
         topics.add(simple_sort);
@@ -87,8 +92,8 @@ public class Levels {
         public String path_rkt;
         public String bookID;
         public Book book;
+        public Hashtable<String, SubTopic> functions;
 
-        public String subTopic;
 
         public Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks;
         public ArrayList<Topic> requirements;
@@ -98,41 +103,26 @@ public class Levels {
         public void assignBook(Book book){
             this.book = book;
         }
-        public void assignSubTopic(String subTopic){ this.subTopic = subTopic;}
+
+        public SubTopic getFunctions(String functionname){
+            BachelorProef.LOGGER.info("functions: " + functions);
+            BachelorProef.LOGGER.info("functionname: " + functionname);
+            return functions.get(functionname);
+        }
 
         public Topic(String name,
                      String path_rkt,
                      Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks,
                      ArrayList<Topic> requirements,
-                     String bookID) {
+                     String bookID,
+                     Hashtable<String, SubTopic> functions){
             this.name = name;
             this.path_rkt = path_rkt;
             this.blocks = blocks;
             this.requirements = requirements;
             this.bookID = bookID;
+            this.functions = functions;
         }
-    }
-
-
-
-    public static class Level {
-        public String name;
-        public String path_rkt;
-
-        public ArrayList<Hashtable<BlockPos, Block>> blocks;
-
-        public Level(String name, String path_rkt, ArrayList<Hashtable<BlockPos, Block>> blocks) {
-            this.name = name;
-            this.path_rkt = path_rkt;
-            this.blocks = blocks;
-        }
-
-        public Level(String name, String path_rkt, Dictionary<String, Dictionary<String, Hashtable<BlockPos, Block>>> blocks) {
-            this.name = name;
-            this.path_rkt = path_rkt;
-            this.blocks = new ArrayList<>();
-        }
-
     }
 
 }

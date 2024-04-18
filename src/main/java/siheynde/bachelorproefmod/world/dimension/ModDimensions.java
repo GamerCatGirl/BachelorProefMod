@@ -107,7 +107,8 @@ public class ModDimensions {
                     PlayerMixinInterface playerMixin = (PlayerMixinInterface) entity;
                     Shrine shrine = playerMixin.getShrine(pos);
                     String idRun = playerMixin.getRunID();
-                    //TODO: shrine.setupUtilTestWorld(entity.getWorld(), pos, rangeArea, idRun);
+                    BachelorProef.LOGGER.info("Location player: " + pos);
+                    shrine.setupUtilTestWorld(entity.getWorld(), pos, rangeArea, "Predict" ,idRun);
                     BachelorProef.LOGGER.info("Shrine: " + shrine);
                 }
                 //entity.getWorld().setBlockState(new BlockPos(x + 50, pos.getY(), pos.getZ()), Blocks.ACACIA_FENCE.getDefaultState());

@@ -13,6 +13,12 @@ public interface PlayerMixinInterface {
     void setRunID(String runID);
     String getRunID();
     RobotEntity getRobot();
+    void setNameShrine(String name);
+    String getNameShrine();
+    void setTopicNames(ArrayList<String> topicNames);
+    ArrayList<String> getTopicNames();
+    void setBookID(String bookID);
+    String getBookID();
     Shrine getShrine(BlockPos pos);
     Shrine getShrine();
     ArrayList<Shrine> getVisitedShrines();

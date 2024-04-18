@@ -6,6 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.w3c.dom.events.EventException;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.structure.functions.SubTopic;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -70,25 +71,33 @@ public class Shrine {
     }
 
 
-    public void setupUtilTestWorld(World world, BlockPos pos, int rangeArea, int idRun) {
+    public void setupUtilTestWorld(World world, BlockPos pos, int rangeArea, String PRIMMfase ,String idRun) {
         BachelorProef.LOGGER.info("Setting up world with id " + idRun);
-        /*
-        level.blocks.get(idRun).forEach((blockPos, block) -> {;
+
+        Hashtable<BlockPos, Block> blocks = topic.blocks.get(idRun).get(PRIMMfase);
+
+        System.out.println("Blocks: " + blocks);
+
+        SubTopic subTopic = topic.getFunctions(idRun);
+
+        BachelorProef.LOGGER.info("Shrine: " + this);
+
+         blocks.forEach((blockPos, block) -> {;
             BachelorProef.LOGGER.info("Block: " + block);
-            BachelorProef.LOGGER.info("World: " + world);
+            BachelorProef.LOGGER.info("BlockPos: " + blockPos);
 
             int x = blockPos.getX();
             int y = blockPos.getY();
             int z = blockPos.getZ();
 
-            BlockPos blockPos1 = new BlockPos(pos.getX() + x, pos.getY() + y, pos.getY() + z);
+             BlockPos blockPos1 = new BlockPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+             BachelorProef.LOGGER.info("New BlockPos: " + blockPos1);
 
             if (x <= rangeArea && y <= rangeArea && z <= rangeArea) {
                 world.setBlockState(blockPos1, block.getDefaultState());
+                subTopic.addBlock(PRIMMfase, block, blockPos1);
             }
         });
-
-         */
 
     }
 }

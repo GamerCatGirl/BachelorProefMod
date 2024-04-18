@@ -27,6 +27,9 @@ public class PlayerMixin implements PlayerMixinInterface {
     public ArrayList<Shrine> visitedShrines = new ArrayList<>();
     int amountShrinesUnlocked = -1;
     String runID;
+    String nameShrine;
+    ArrayList<String> topicNames;
+    String bookID;
 
     @Override
     public Shrine getShrine() {
@@ -35,6 +38,16 @@ public class PlayerMixin implements PlayerMixinInterface {
         int z = (int) ((PlayerEntity) (Object) this).getZ();
         BlockPos pos = new BlockPos(x, y, z);
         return  getShrine(pos);
+    }
+
+    @Override
+    public void setNameShrine(String name) {
+        nameShrine = name;
+    }
+
+    @Override
+    public String getNameShrine() {
+        return nameShrine;
     }
 
     @Override
@@ -82,6 +95,12 @@ public class PlayerMixin implements PlayerMixinInterface {
     public ArrayList<Shrine> getVisitedShrines() {
         return visitedShrines;
     }
+
+    public void setTopicNames(ArrayList<String> topicNames){this.topicNames = topicNames;};
+    public ArrayList<String> getTopicNames(){return this.topicNames;};
+
+    public void setBookID(String bookID){this.bookID = bookID;};
+    public String getBookID(){return this.bookID;};
 
     @Override
     public Shrine getShrine(BlockPos pos) {

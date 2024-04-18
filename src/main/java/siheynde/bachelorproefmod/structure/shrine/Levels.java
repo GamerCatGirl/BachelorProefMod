@@ -44,11 +44,11 @@ public class Levels {
         Hashtable<String, Hashtable<BlockPos, Block>> blockSetupsStrictComparison = new Hashtable<>();
 
 
-        Hashtable<BlockPos, Block> blocksPredict = new Hashtable<>();
-        blocksPredict.put(new BlockPos(-5, 0, 10), Blocks.OBSIDIAN);
-        blocksPredict.put(new BlockPos(0, 0, 10), Blocks.OBSIDIAN);
-        blocksPredict.put(new BlockPos(5, 0, 10), Blocks.OBSIDIAN);
-        blocksPredict.put(new BlockPos(10, 0, 10), Blocks.OBSIDIAN);
+        Hashtable<BlockPos, Block> blocksPredict = new Hashtable<>(); //TODO: work maybe with input -> output
+        blocksPredict.put(new BlockPos(-10, -1, -5), Blocks.OBSIDIAN);
+        blocksPredict.put(new BlockPos(-10, -1, 0), Blocks.OBSIDIAN);
+        blocksPredict.put(new BlockPos(-10, -1, 5), Blocks.OBSIDIAN);
+        blocksPredict.put(new BlockPos(-10, -1, 10), Blocks.OBSIDIAN);
 
         Hashtable<BlockPos, Block> blocksRun = new Hashtable<>();
         //[black, gray, black, white]
@@ -63,7 +63,10 @@ public class Levels {
         blockSetupsSimpleSort.put("Strict Comparison Insertion Sort", blockSetupsStrictComparison);
 
         Hashtable<String, SubTopic> functionsStrictComparison = new Hashtable<>();
-        functionsStrictComparison.put("Strict Comparison Bubble Sort", new StrictComparisonBubbleSort());
+        SubTopic strictComparisonBubbleSort = new StrictComparisonBubbleSort();
+
+
+        functionsStrictComparison.put("Strict Comparison Bubble Sort", strictComparisonBubbleSort);
 
         //TODO: link Lavender Book to the topic
         BachelorProef.LOGGER.info("LoadedBooks books: " + BookLoader.loadedBooks());

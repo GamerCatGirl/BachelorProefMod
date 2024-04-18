@@ -86,7 +86,7 @@ public class FunctionScreen
     private FunctionScreenHandler handler;
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
     private final List<FunctionButtonWidget> buttons = Lists.newArrayList();
-    private final String shrineName;
+    private String shrineName;
     public Shrine shrine;
     private PlayerInventory inventory;
     //private TextFieldWidget predictField;
@@ -107,10 +107,21 @@ public class FunctionScreen
 
 
         //TODO: get the shrine from the player not clientPlayer
-        PlayerMixinInterface playerMixin = (PlayerMixinInterface) inventory.player;
+        //PlayerEntity clientPlayer = inventory.player;
+        ClientPlayNetworking.send(
+                ModPackets.GET_NAME_SHRINE,
+                PacketByteBufs.empty());
 
-        shrine = playerMixin.getShrine(); //TODO: put shrines in server player mixin
-        this.shrineName = shrine.getName();
+        ClientPlayNetworking.send(
+                ModPackets.GET_TOPIC_NAMES,
+                PacketByteBufs.empty());
+
+        ClientPlayNetworking.send(
+                ModPackets.GET_BOOK_ID,
+                PacketByteBufs.empty());
+
+        //BachelorProef.LOGGER.info("Shrine: " + shrine.toString());
+        //this.shrineName = shrine.getName();
 
         //this.amountOfRunButtons = shrine.getBlockSetups().size();
 
@@ -143,6 +154,15 @@ public class FunctionScreen
         handler.addListener(this);
         this.buttons.clear();
 
+        PlayerMixinInterface playerMixin = (PlayerMixinInterface) client.player;
+        String nameShrine = playerMixin.getNameShrine();
+
+        while (nameShrine == null) {
+            nameShrine = playerMixin.getNameShrine();
+            BachelorProef.LOGGER.info("Name shrine is null");
+        }
+        this.shrineName = nameShrine;
+
         Identifier dimensionIn = client.world.getRegistryKey().getValue();
 
         Boolean inOverworld = dimensionIn.equals(dimensionOverworld);
@@ -150,10 +170,13 @@ public class FunctionScreen
         int[] yText = {this.y + 60};
 
         if (inOverworld) {
-            Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> topics =  this.shrine.topic.blocks;
+            //REPLACE WITH GET TOPIC NAMES FROM SHRINE
+            //Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> topics =  this.shrine.topic.blocks;
+            ArrayList<String> topics = playerMixin.getTopicNames();
 
             //TODO: look at buttons from menu -> better suited
-            topics.forEach((key, value) -> {
+            //TODO: for loop so the result is not null!!!!
+            topics.forEach((key) -> {
                 this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
 
                 yText[0] = yText[0] + 20;
@@ -294,19 +317,27 @@ public class FunctionScreen
         public void onPress() {
 
             Identifier dimensionIn = client.world.getRegistryKey().getValue();
+            ClientPlayerEntity player = client.player;
+            PlayerMixinInterface playerMixin = (PlayerMixinInterface) player;
 
             Boolean inOverworld = dimensionIn.equals(dimensionOverworld);
             Boolean inMod = dimensionIn.equals(dimensionMod);
 
-            Levels.Topic topic = shrine.topic;
+            //TODO: get topic from shrine
 
-            BookLoader.loadedBooks().forEach((book) -> {
-                if (book.id().toString().equals(topic.bookID)){
-                    topic.assignBook(book);
+            String bookID = playerMixin.getBookID();
+            //Book book = null;
+            ArrayList<Book> books = new ArrayList<>();
+
+            BookLoader.loadedBooks().forEach((bookIter) -> {
+                if (bookIter.id().toString().equals(bookID)){
+                    books.add(bookIter);
+                    //book = bookIter;
                 }
             });
 
-            Book book = topic.book;
+            Book book = books.get(0);
+
             book.entries().forEach((entry) -> {
                 if(entry.title().toString().equalsIgnoreCase(runID)) {
                     LavenderBookScreen.pushEntry(book, entry);
@@ -331,10 +362,7 @@ public class FunctionScreen
             } else if (inMod) {
                 BachelorProef.LOGGER.info("in test world");
                 BachelorProef.LOGGER.info("Run function of: " + runID);
-                ClientPlayerEntity player = client.player;
-                PlayerMixinInterface playerMixin = (PlayerMixinInterface) player;
-
-
+                Levels.Topic topic = shrine.topic; //TODO: delete this and let server execute this
                 BachelorProef.LOGGER.info("runID: " + playerMixin.getRunID());
                 SubTopic functions = topic.getFunctions(playerMixin.getRunID());
                 BachelorProef.LOGGER.info("Functions: " + functions);

@@ -1,13 +1,10 @@
 package siheynde.bachelorproefmod.networking.packet;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import siheynde.bachelorproefmod.BachelorProef;
-import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.functions.SubTopic;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
@@ -25,7 +22,7 @@ public class ExecuteFunctionC2S {
         SubTopic functions = topic.getFunctions(subTopic);
 
         if (runID.equals("Predict")) {
-            functions.runPredict();
+            String response = functions.runPredict(player);
         } else if (runID.equals("Run")) {
             functions.runRun();
         } else if (runID.equals("Investigate")) {

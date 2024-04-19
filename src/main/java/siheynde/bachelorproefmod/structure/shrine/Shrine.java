@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 public class Shrine {
     public double x;
@@ -74,13 +75,9 @@ public class Shrine {
     public void setupUtilTestWorld(World world, BlockPos pos, int rangeArea, String PRIMMfase ,String idRun) {
         BachelorProef.LOGGER.info("Setting up world with id " + idRun);
 
-        Hashtable<BlockPos, Block> blocks = topic.blocks.get(idRun).get(PRIMMfase);
-
-        System.out.println("Blocks: " + blocks);
+        LinkedHashMap<BlockPos, Block> blocks = topic.blocks.get(idRun).get(PRIMMfase);
 
         SubTopic subTopic = topic.getFunctions(idRun);
-
-        BachelorProef.LOGGER.info("Shrine: " + this);
 
          blocks.forEach((blockPos, block) -> {;
             BachelorProef.LOGGER.info("Block: " + block);

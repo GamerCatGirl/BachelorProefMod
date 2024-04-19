@@ -14,6 +14,7 @@ import siheynde.bachelorproefmod.screen.FunctionScreen;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 public class GetTopicNamesC2SPacket {
 
@@ -24,7 +25,7 @@ public class GetTopicNamesC2SPacket {
         BachelorProef.LOGGER.info("Getting topic names packet C -> S");
 
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
-        Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> topics = playerInterface.getShrine().topic.blocks;
+        Hashtable<String, Hashtable<String, LinkedHashMap<BlockPos, Block>>> topics = playerInterface.getShrine().topic.blocks;
         int size = topics.size();
 
         PacketByteBuf packetByteBuf = PacketByteBufs.create();

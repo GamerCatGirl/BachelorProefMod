@@ -14,21 +14,22 @@ import siheynde.bachelorproefmod.structure.functions.SubTopic;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 public class Levels {
     private ArrayList<Hashtable<BlockPos, Block>> blockSetupsLevel1 = new ArrayList<>();
 
     //private ArrayList<MinecartItem> itemsSimpleSort = {};
-    private Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blockSetupsSimpleSort = new Hashtable<>();
+    private Hashtable<String, Hashtable<String, LinkedHashMap<BlockPos, Block>>> blockSetupsSimpleSort = new Hashtable<>();
 
     private ArrayList<Topic> topics = new ArrayList<>();
 
     public Levels() {
         //run 1
         Hashtable<BlockPos, Block> blocksSort3blocks = new Hashtable<>();
-        blocksSort3blocks.put(new BlockPos(0, 0, 10), Blocks.TINTED_GLASS);
-        blocksSort3blocks.put(new BlockPos(-5, 0, 10), Blocks.GRAY_STAINED_GLASS);
-        blocksSort3blocks.put(new BlockPos(5, 0, 10), Blocks.WHITE_STAINED_GLASS);
+        //blocksSort3blocks.put(new BlockPos(0, 0, 10), Blocks.TINTED_GLASS);
+        //blocksSort3blocks.put(new BlockPos(-5, 0, 10), Blocks.GRAY_STAINED_GLASS);
+        //blocksSort3blocks.put(new BlockPos(5, 0, 10), Blocks.WHITE_STAINED_GLASS);
 
         //run 2
         Hashtable<BlockPos, Block> blocksSort4blocksNonStrict = new Hashtable<>();
@@ -37,20 +38,22 @@ public class Levels {
         blocksSort4blocksNonStrict.put(new BlockPos(10, 0, 10), Blocks.GRAY_STAINED_GLASS);
         blocksSort4blocksNonStrict.put(new BlockPos(-5, 0, 10), Blocks.WHITE_STAINED_GLASS);
 
-        blockSetupsLevel1.add(blocksSort3blocks);
+        //blockSetupsLevel1.add(blocksSort3blocks);
         blockSetupsLevel1.add(blocksSort4blocksNonStrict);
 
         //test
-        Hashtable<String, Hashtable<BlockPos, Block>> blockSetupsStrictComparison = new Hashtable<>();
+        Hashtable<String, LinkedHashMap<BlockPos, Block>> blockSetupsStrictComparison = new Hashtable<>();
 
 
-        Hashtable<BlockPos, Block> blocksPredict = new Hashtable<>(); //TODO: work maybe with input -> output
+        LinkedHashMap<BlockPos, Block> blocksPredict = new LinkedHashMap<>();
+        //Hashtable<BlockPos, Block> blocksPredict = new Hashtable<>(); //TODO: work maybe with input -> output
         blocksPredict.put(new BlockPos(-10, -1, -5), Blocks.OBSIDIAN);
-        blocksPredict.put(new BlockPos(-10, -1, 0), Blocks.OBSIDIAN);
-        blocksPredict.put(new BlockPos(-10, -1, 5), Blocks.OBSIDIAN);
-        blocksPredict.put(new BlockPos(-10, -1, 10), Blocks.OBSIDIAN);
+        blocksPredict.put(new BlockPos(-10, -1,  0), Blocks.OBSIDIAN);
+        blocksPredict.put(new BlockPos(-10, -1,  5), Blocks.OBSIDIAN);
+        blocksPredict.put(new BlockPos(-10, -1,  10), Blocks.OBSIDIAN);
+        BachelorProef.LOGGER.info("blocksPredict: " + blocksPredict);
 
-        Hashtable<BlockPos, Block> blocksRun = new Hashtable<>();
+        LinkedHashMap<BlockPos, Block> blocksRun = new LinkedHashMap<>();
         //[black, gray, black, white]
         blocksRun.put(new BlockPos(-5, 0, 10), Blocks.BLACK_STAINED_GLASS);
         blocksRun.put(new BlockPos(0, 0, 10), Blocks.GRAY_STAINED_GLASS);
@@ -68,8 +71,6 @@ public class Levels {
 
         functionsStrictComparison.put("Strict Comparison Bubble Sort", strictComparisonBubbleSort);
 
-        //TODO: link Lavender Book to the topic
-        BachelorProef.LOGGER.info("LoadedBooks books: " + BookLoader.loadedBooks());
         BookLoader.loadedBooks();
 
         Topic simple_sort = new Topic (
@@ -98,7 +99,7 @@ public class Levels {
         public Hashtable<String, SubTopic> functions;
 
 
-        public Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks;
+        public Hashtable<String, Hashtable<String, LinkedHashMap<BlockPos, Block>>> blocks;
         public ArrayList<Topic> requirements;
         public ArrayList<MinecartItem> items;
 
@@ -115,7 +116,7 @@ public class Levels {
 
         public Topic(String name,
                      String path_rkt,
-                     Hashtable<String, Hashtable<String, Hashtable<BlockPos, Block>>> blocks,
+                     Hashtable<String, Hashtable<String, LinkedHashMap<BlockPos, Block>>> blocks,
                      ArrayList<Topic> requirements,
                      String bookID,
                      Hashtable<String, SubTopic> functions){

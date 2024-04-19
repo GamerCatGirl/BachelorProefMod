@@ -2,12 +2,13 @@ package siheynde.bachelorproefmod.structure.functions;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import siheynde.bachelorproefmod.BachelorProef;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class StrictComparisonBubbleSort implements SubTopic {
     public ArrayList<BlockPos> blocksPredict = new ArrayList<>();
@@ -18,10 +19,35 @@ public class StrictComparisonBubbleSort implements SubTopic {
             Blocks.WHITE_STAINED_GLASS);
 
     @Override
-    public void runPredict() {
+    public String runPredict(PlayerEntity player) {
+        World world = player.getWorld();
         BachelorProef.LOGGER.info("Running predict");
         BachelorProef.LOGGER.info("Blocks: " + blocksPredict);
-        BachelorProef.LOGGER.info(this.toString());
+        List<Block> blocksPredictCurrentOrder = new ArrayList<>();
+
+        blocksPredict.forEach(blockpos -> {
+            BachelorProef.LOGGER.info("Block: " + blockpos);
+            Block block = world.getBlockState(blockpos).getBlock();
+            BachelorProef.LOGGER.info("Block: " + block);
+            blocksPredictCurrentOrder.add(block);
+        });
+
+        Collections.reverse(blocksPredictCurrentOrder);
+
+
+        BachelorProef.LOGGER.info("Blocks current order: " + blocksPredictCurrentOrder);
+
+        if(blocksPredictCurrentOrder.equals(blocksPredictOrder)){
+            String prediction = "You predicted the correct outcome! :)";
+            Text message = Text.of(prediction);
+            player.sendMessage(message);
+            return "ok";
+        } else {
+            String prediction = "You predicted the wrong outcome, but I know you can do better!";
+            Text message = Text.of(prediction);
+            player.sendMessage(message);
+            return "try again";
+        }
         //TODO: check if the blocks are in the right order
     }
 

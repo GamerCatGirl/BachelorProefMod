@@ -20,6 +20,7 @@ public class ModPackets {
     public static final Identifier GET_TOPIC_NAMES_RESPONSE = new Identifier(BachelorProef.MOD_ID, "get_topic_names_response");
     public static final Identifier GET_BOOK_ID = new Identifier(BachelorProef.MOD_ID, "get_book_id");
     public static final Identifier GET_BOOK_ID_RESPONSE = new Identifier(BachelorProef.MOD_ID, "get_book_id_response");
+    public static final Identifier EXECUTE_FUNCTION = new Identifier(BachelorProef.MOD_ID, "execute_function");
 
     public static void registerS2CPackets() {
         ClientPlayNetworking.registerGlobalReceiver(OPEN_ADVANCEMENTS_ID, OpenAdvancementsS2CPacket::receive);
@@ -36,5 +37,7 @@ public class ModPackets {
         ServerPlayNetworking.registerGlobalReceiver(GET_NAME_SHRINE, GetNameShrineC2SPacket::receive);
         ServerPlayNetworking.registerGlobalReceiver(GET_TOPIC_NAMES, GetTopicNamesC2SPacket::receive);
         ServerPlayNetworking.registerGlobalReceiver(GET_BOOK_ID, GetBookIDC2SPacket::receive);
+        ServerPlayNetworking.registerGlobalReceiver(EXECUTE_FUNCTION, ExecuteFunctionC2S::receive);
+
     }
 }

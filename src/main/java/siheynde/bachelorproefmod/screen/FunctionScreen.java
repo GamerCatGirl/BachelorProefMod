@@ -362,22 +362,17 @@ public class FunctionScreen
             } else if (inMod) {
                 BachelorProef.LOGGER.info("in test world");
                 BachelorProef.LOGGER.info("Run function of: " + runID);
-                Levels.Topic topic = shrine.topic; //TODO: delete this and let server execute this
-                BachelorProef.LOGGER.info("runID: " + playerMixin.getRunID());
-                SubTopic functions = topic.getFunctions(playerMixin.getRunID());
-                BachelorProef.LOGGER.info("Functions: " + functions);
+                //Levels.Topic topic = shrine.topic; //TODO: delete this and let server execute this
+                //BachelorProef.LOGGER.info("runID: " + playerMixin.getRunID());
+                //SubTopic functions = topic.getFunctions(playerMixin.getRunID());
+                //BachelorProef.LOGGER.info("Functions: " + functions);
+                //RUN runID
+                PacketByteBuf buf = PacketByteBufs.create();
+                buf.writeString(runID);
 
-                if (runID.equals("Predict")) {
-                    functions.runPredict();
-                } else if (runID.equals("Run")) {
-                    functions.runRun();
-                } else if (runID.equals("Investigate")) {
-                    functions.runInvestigate();
-                } else if (runID.equals("Modify")) {
-                    functions.runModify();
-                } else if (runID.equals("Make")) {
-                    functions.runMake();
-                }
+                ClientPlayNetworking.send(
+                        ModPackets.EXECUTE_FUNCTION,
+                        buf);
 
                 playerMixin.setRunID(null);
                 close();

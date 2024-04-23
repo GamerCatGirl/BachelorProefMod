@@ -75,7 +75,7 @@ public class Levels {
 
         Topic simple_sort = new Topic (
                 "Simple Sort",
-                "assets/bachelorproef/racket/simple_sort_2/lesson.rkt",
+                "assets/bachelorproef/racket/simple_sort/lesson.rkt",
                 blockSetupsSimpleSort,
                 new ArrayList<>(),
                 "bachelorproef:simple_sorting",

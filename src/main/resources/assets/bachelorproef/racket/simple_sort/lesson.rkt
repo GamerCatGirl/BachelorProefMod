@@ -1,15 +1,15 @@
 ;;;;given list of color blocks, sort them based on color
-(define blocks (vector 'white-stained-glass 'tinted-glass 'gray-stained-glass))
-(define predict-vect-1 (vector 'white-stained-glass 'tinted-glass 'gray-stained-glass))
-(define predict-vect-2 (vector 'white-stained-glass 'tinted-glass 'tinted-glass 'gray-stained-glass))
+(define blocks (vector 'white_stained-glass 'black_stained_glass 'gray_stained_glass))
+(define predict-vect-1 (vector 'white_stained_glass 'black_stained_glass 'gray_stained_glass))
+(define predict-vect-2 (vector 'white_stained_glass 'black_stained_glass 'black_stained_glass 'gray_stained_glass))
 
 
 (define (block-to-colorvalue block)
   (cond
     ;;;TODO: modify that it also works for other colors
-    ((eq? block 'white-stained-glass) 0)
-    ((eq? block 'tinted-glass) 1)
-    ((eq? block 'gray-stained-glass) 2)
+    ((eq? block 'white_stained_glass) 0)
+    ((eq? block 'gray_stained_glass) 1)
+    ((eq? block 'black_stained_glass) 2)
     (else (error "unknown block"))))
 
 (define lighter-than (lambda (block-1 block-2)
@@ -38,25 +38,45 @@
 ;; Rewrite the procedure so that the order of the loops is reversed.
 ;; Which order will be the easiest to apply to single linked lists?
 
+(define (set-block! vector idx block)
+  ;TODO: let the robot move the block
+  ;TODO: send to java client to highlight a line
+  (define setBlock (method "setBlock" "siheynde.bachelorproefmod.util.FunctionCalledByScheme" "java.lang.String" "java.lang.Integer"))
+  (setBlock (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme") (.toString block) (new "java.lang.Integer" idx))
+  (vector-set! vector idx block))
+
+(define (loop name)
+    ;TODO: define send to java client to highlight a line
+    0
+)
+
+(define (get-block vector idx)
+    ;TODO: move robot to the block
+    ;TODO: send to java client to highlight a line
+    (vector-ref vector idx))
+
+(define (amount-of-blocks vector)
+    ;TODO: send to java client to highlight a line
+    (vector-length vector))
+
  (define (insertion-sort vector <<?)
       (define (>=? x y) (not (<<? x y)))
       (let outer-loop
-        ((outer-idx (- (vector-length vector) 2)))
+        ((outer-idx (- (amount-of-blocks vector) 2)))
         ;outer index start op lengte vector -2
-        (let ((current (vector-ref vector outer-idx)))
+        (let ((current (get-block vector outer-idx)))
             ; current is element op outer idx
-          (vector-set!
-           vector
+          (set-block! vector
            (let inner-loop
              ((inner-idx (+ 1 outer-idx))) ;inner loop begint op outer loop + 1
              (cond
-               ((or (>= inner-idx (vector-length vector))
-                    (>=? (vector-ref vector inner-idx)
+               ((or (>= inner-idx (amount-of-blocks vector))
+                    (>=? (get-block vector inner-idx)
                          current))
                 (- inner-idx 1)) ;inner idx -1 als inner idx op einde vector
                (else             ;of inner-idx > idx current
                                  ;             < => swap vorige inner met inner
-                (vector-set! vector (- inner-idx 1) (vector-ref vector inner-idx))
+                (set-block! vector (- inner-idx 1) (get-block vector inner-idx))
                 (inner-loop (+ inner-idx 1))))) ;inner loop + 1
            current) ;swap current met inner-idx -1 (vorig)
           (if (> outer-idx 0)
@@ -68,13 +88,29 @@
    (test (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme"))
    ;(display test)
    (+ 5 2)
-
 ) ;;TODO: use arguments for predict, make multiple predict functions,
-                           ;; so you can also have predict that uses edge cases
 
-(define predict-1 (insertion-sort predict-vect-1 lighter-than))
-(define predict-2 (insertion-sort predict-vect-2 lighter-than))
-                           ;;don't use function names "predict" but real function names
+(define (flatmap input)
+    (define result '())
+    (define (flatmap-1 input)
+        (if (null? input) result
+            (begin
+                (set! result (cons (string->symbol (car input)) result))
+                (flatmap-1 (cadr input))
+            )
+        )
+    )
+    (flatmap-1 input)
+    (list->vector result)
+)
+                 ;; so you can also have predict that uses edge cases
+
+(define (run input)
+    (define input->inputvect (flatmap input))
+    (insertion-sort input->inputvect lighter-than)
+    (vector->list input->inputvect)
+)
+
 
 (define (modify) ;;;or complete a certain function
    (vector 7 9 4 8 3 0 1 2)

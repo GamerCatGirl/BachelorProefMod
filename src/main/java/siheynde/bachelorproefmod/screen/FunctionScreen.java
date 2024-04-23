@@ -131,9 +131,6 @@ public class FunctionScreen
         //BachelorProef.LOGGER.info(shrine.Modify().toString());
         //BachelorProef.LOGGER.info(shrine.Modify().getClass().toString());
 
-        //RacketHandleClasses.execute(shrine.Modify());
-
-        //jsint.Pair pair = (jsint.Pair) shrine.predictModify();
 
 
 

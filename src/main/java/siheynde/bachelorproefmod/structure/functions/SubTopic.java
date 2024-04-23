@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 public interface SubTopic {
 
     public String runPredict(PlayerEntity player);
-    public void runRun();
+    public void runRun(PlayerEntity player);
     public void runInvestigate();
     public void runModify();
     public void runMake();

@@ -24,7 +24,7 @@ public class ExecuteFunctionC2S {
         if (runID.equals("Predict")) {
             String response = functions.runPredict(player);
         } else if (runID.equals("Run")) {
-            functions.runRun();
+            functions.runRun(player);
         } else if (runID.equals("Investigate")) {
             functions.runInvestigate();
         } else if (runID.equals("Modify")) {

@@ -7,9 +7,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
+import siheynde.bachelorproefmod.structure.shrine.Shrine;
+import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import java.util.*;
-
+//This will always be executed server side
 public class StrictComparisonBubbleSort implements SubTopic {
     public ArrayList<BlockPos> blocksPredict = new ArrayList<>();
     List<Block> blocksPredictOrder = Arrays.asList(
@@ -62,7 +65,18 @@ public class StrictComparisonBubbleSort implements SubTopic {
     }
 
     @Override
-    public void runRun() {
+    public void runRun(PlayerEntity player) {
+        //packet to client to run scheme code on client side -> file is on client side
+        BachelorProef.LOGGER.info("PLAYER WHEN RUNNING RUN: " + player.toString());
+        //send actions back to the server
+        PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
+        Shrine shrine = playerInterface.getShrine();
+
+        //RacketHandleClasses.execute(shrine.Modify());
+        String answer = shrine.runCode(blocksPredictOrder, "insertion-sort");
+        BachelorProef.LOGGER.info("Answer: " + answer);
+
+        //jsint.Pair pair = (jsint.Pair) shrine.predictModify();
         BachelorProef.LOGGER.info("Running run");
     }
 
@@ -73,11 +87,13 @@ public class StrictComparisonBubbleSort implements SubTopic {
 
     @Override
     public void runModify() {
+        //Dit moet op client side gerund worden om de edits van de client te kunnen ontvangen
         BachelorProef.LOGGER.info("Running modify");
     }
 
     @Override
     public void runMake() {
+        //Dit moet ook op client side gerund worden om de edits van de client te kunnen ontvangen
         BachelorProef.LOGGER.info("Running make");
     }
 }

@@ -21,15 +21,12 @@ public class letLoopC2S {
             Shrine shrine = playerInterface.getShrine();
             String lookFor = "(let-loop '" + functionName;
             List<String> activatedLoops = shrine.activatedLoops;
-            BachelorProef.LOGGER.info("Loops: " + activatedLoops);
             if (activatedLoops.contains(functionName)) {
-                //TODO: reset to this loop
                 shrine.LookInCompleteFunction = true;
                 shrine.indexInFunction = 0;
-                shrine.findOccurrence(lookFor, "'");
-                BachelorProef.LOGGER.info("Reset to this loop: " + functionName);
+                shrine.findOccurrence(lookFor, "'", player);
             } else {
-                shrine.findOccurrence(lookFor, "'");
+                shrine.findOccurrence(lookFor, "'", player);
                 shrine.activatedLoops.add(functionName);
             }
         }

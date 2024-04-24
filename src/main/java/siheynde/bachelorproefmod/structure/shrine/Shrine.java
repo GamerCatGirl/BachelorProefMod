@@ -2,11 +2,17 @@ package siheynde.bachelorproefmod.structure.shrine;
 
 import jscheme.JS;
 import jscheme.SchemePair;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.w3c.dom.events.EventException;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.functions.SubTopic;
 
 import java.io.*;
@@ -96,19 +102,23 @@ public class Shrine {
         }
     }
 
-    public void findOccurrence(String sequence, String split) {
+    public void findOccurrence(String sequence, String split, ServerPlayerEntity player) {
         if (LookInCompleteFunction) {
             while (!(completeFunction.get(indexInFunction).contains(sequence))) {
                 indexInFunction++;
                 if (indexInFunction >= completeFunction.size()) {
                     LookInCompleteFunction = false;
                     indexInFunction = 0;
-                    findOccurrence(sequence, split);
+                    findOccurrence(sequence, split, player);
                     return;
                 }
             }
              if (completeFunction.get(indexInFunction).contains(sequence)){
                 BachelorProef.LOGGER.info("Found in already seen: " + completeFunction.get(indexInFunction) + " at line: " + ( indexInFunction + startLineIndex));
+                 PacketByteBuf buf = PacketByteBufs.create();
+                 Integer index = indexInFunction + startLineIndex;
+                 buf.writeInt(index);
+                 ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, buf);
                 LookInCompleteFunction = true;
                 return;
             }
@@ -128,6 +138,9 @@ public class Shrine {
                     currentLineIndex++;
                 }
                 BachelorProef.LOGGER.info("Found: " + currentLine + " at line: " + currentLineIndex);
+                PacketByteBuf buf = PacketByteBufs.create();
+                buf.writeInt(currentLineIndex);
+                ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, buf);
                 currentLine = currentLine.split(split)[1] + " ";
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,14 +148,17 @@ public class Shrine {
 
     }
 
-    public String runCode(List<Block> blocks, String functionName){
+    public String runCode(List<Block> blocks, String functionName, PlayerEntity player){
         try {
             String path = topic.path_rkt;
             URL resource = getClass().getClassLoader().getResource(path);
             // TODO: get line number where function starts
             getStartLine(resource, functionName);
             // TODO: Highlight line client slide
-            //
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeInt(startLineIndex);
+            ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.SET_LINE_TERMINAL, buf);
+
             JS.load(new java.io.FileReader(resource.getFile()));
             SchemePair pair = JS.list();
 

@@ -22,7 +22,7 @@ public class SetBlockVisualisationC2S {
         Integer toPosition = buf.readInt();
         Shrine shrine = playerInterface.getShrine();
         String lookFor = "(set-block!";
-        shrine.findOccurrence(lookFor, "!");
+        shrine.findOccurrence(lookFor, "!", player);
 
     }
 }

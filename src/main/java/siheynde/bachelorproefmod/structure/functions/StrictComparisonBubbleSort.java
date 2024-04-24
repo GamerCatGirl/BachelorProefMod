@@ -1,16 +1,22 @@
 package siheynde.bachelorproefmod.structure.functions;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
+import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
+import java.io.BufferedReader;
 import java.util.*;
 //This will always be executed server side
 public class StrictComparisonBubbleSort implements SubTopic {
@@ -68,12 +74,14 @@ public class StrictComparisonBubbleSort implements SubTopic {
     public void runRun(PlayerEntity player) {
         //packet to client to run scheme code on client side -> file is on client side
         BachelorProef.LOGGER.info("PLAYER WHEN RUNNING RUN: " + player.toString());
+
+        //TODO: send to client to open terminal and save window to control
+        ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.OPEN_TERMINAL, PacketByteBufs.empty());
         //send actions back to the server
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
         Shrine shrine = playerInterface.getShrine();
 
-        //RacketHandleClasses.execute(shrine.Modify());
-        String answer = shrine.runCode(blocksPredictOrder, "insertion-sort");
+        String answer = shrine.runCode(blocksPredictOrder, "insertion-sort", player);
         BachelorProef.LOGGER.info("Answer: " + answer);
 
         //jsint.Pair pair = (jsint.Pair) shrine.predictModify();

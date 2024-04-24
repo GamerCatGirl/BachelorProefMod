@@ -9,10 +9,7 @@ import org.w3c.dom.events.EventException;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.structure.functions.SubTopic;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -28,6 +25,11 @@ public class Shrine {
     private BufferedReader bufferedReader;
     private String currentLine; //soms worden er 2 functies gecalled op 1 line
     private Integer currentLineIndex;
+    private Integer startLineIndex;
+    public Integer indexInFunction = 0;
+    private ArrayList<String> completeFunction = new ArrayList<>();
+    public Boolean LookInCompleteFunction = false;
+    public List<String> activatedLoops = new ArrayList<>();
 
     int maxRange = 20;
 
@@ -77,8 +79,6 @@ public class Shrine {
         try {
             FileReader fileReader = new FileReader(resource.getFile());
             this.bufferedReader = new BufferedReader(fileReader);
-
-            //definition filereader
             String startFunction = "(define (" + functionName + " ";
 
             currentLine = bufferedReader.readLine();
@@ -89,23 +89,50 @@ public class Shrine {
                 currentLineIndex++;
             }
             BachelorProef.LOGGER.info("Found: " + currentLine + " at line: " + currentLineIndex);
+            startLineIndex = currentLineIndex;
+            completeFunction.add(currentLine);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void findOccurrence(String sequence, String split) {
-        try {
-            while (!(currentLine.contains(sequence))) {
-                currentLine = bufferedReader.readLine();
-                currentLineIndex++;
+        if (LookInCompleteFunction) {
+            while (!(completeFunction.get(indexInFunction).contains(sequence))) {
+                indexInFunction++;
+                if (indexInFunction >= completeFunction.size()) {
+                    LookInCompleteFunction = false;
+                    indexInFunction = 0;
+                    findOccurrence(sequence, split);
+                    return;
+                }
             }
-            BachelorProef.LOGGER.info("Found: " + currentLine + " at line: " + currentLineIndex);
-            currentLine = currentLine.split(split)[1];
-            BachelorProef.LOGGER.info("new currentline: " + currentLine);
+             if (completeFunction.get(indexInFunction).contains(sequence)){
+                BachelorProef.LOGGER.info("Found in already seen: " + completeFunction.get(indexInFunction) + " at line: " + ( indexInFunction + startLineIndex));
+                LookInCompleteFunction = true;
+                return;
+            }
+        }
+
+        try {
+                while (!(currentLine.contains(sequence))) {
+                    String line = bufferedReader.readLine();
+                    //currentLine = bufferedReader.readLine();
+                    if (line != null) {
+                        currentLine = line;
+                        completeFunction.add(currentLine);
+                    } else {
+                        BachelorProef.LOGGER.info("Not found: " + sequence);
+                        return;
+                    }
+                    currentLineIndex++;
+                }
+                BachelorProef.LOGGER.info("Found: " + currentLine + " at line: " + currentLineIndex);
+                currentLine = currentLine.split(split)[1] + " ";
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     public String runCode(List<Block> blocks, String functionName){

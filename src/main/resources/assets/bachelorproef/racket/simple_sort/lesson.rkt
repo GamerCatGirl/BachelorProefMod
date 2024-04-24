@@ -45,8 +45,10 @@
   (setBlock (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme") (.toString block) (new "java.lang.Integer" idx))
   (vector-set! vector idx block))
 
-(define (loop name)
+(define (let-loop name)
     ;TODO: define send to java client to highlight a line
+    (define letLoop (method "letLoop" "siheynde.bachelorproefmod.util.FunctionCalledByScheme" "java.lang.String"))
+    (letLoop (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme") (.toString name))
     0
 )
 
@@ -64,11 +66,13 @@
       (let outer-loop
         ((outer-idx (- (amount-of-blocks vector) 2)))
         ;outer index start op lengte vector -2
+        (let-loop 'outer-loop)
         (let ((current (get-block vector outer-idx)))
             ; current is element op outer idx
           (set-block! vector
            (let inner-loop
              ((inner-idx (+ 1 outer-idx))) ;inner loop begint op outer loop + 1
+             (let-loop 'inner-loop)
              (cond
                ((or (>= inner-idx (amount-of-blocks vector))
                     (>=? (get-block vector inner-idx)

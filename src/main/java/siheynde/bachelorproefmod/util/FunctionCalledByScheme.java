@@ -19,14 +19,14 @@ public class FunctionCalledByScheme {
         buf.writeString(blockName);
         buf.writeInt(toPosition);
         ClientPlayNetworking.send(ModPackets.SET_BLOCK_VISUALISATION, buf);
-
     }
 
-    public void test() {
-        //ClientPlayNetworking.send(ModPackets.MOVE_ROBOT, PacketByteBufs.empty());
+    public void letLoop(String loopname) {
+        BachelorProef.LOGGER.info("Function letLoop " + loopname);
 
-        BachelorProef.LOGGER.info("Function called by scheme");
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeString(loopname);
+        ClientPlayNetworking.send(ModPackets.LET_LOOP, buf);
     }
-
 
 }

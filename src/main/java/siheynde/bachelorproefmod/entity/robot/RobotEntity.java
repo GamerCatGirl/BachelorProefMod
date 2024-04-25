@@ -4,52 +4,68 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
-import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.entity.ModEntities;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
-//TODO: motivition factor -> need to unlock first other shrine
+import java.util.Optional;
+
+//TODO: motivation factor -> need to unlock first other shrine
 //TODO: robot need to activate the portal before can go through
 //TODO: get help from the robot when stuck
 //TODO: storyboard what the game will look like in global
 //TODO: exercises linked to storyline
 
-public class RobotEntity extends TameableEntity {
+public class RobotEntity extends TameableEntity implements InventoryOwner {
+    private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(RobotEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
 
     public RobotEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
     }
+    private final SimpleInventory inventory = new SimpleInventory(8);
 
     public static DefaultAttributeContainer.Builder createRobotAttributes() {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, Integer.MAX_VALUE)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2f);
+    }
+
+    public void holdBlock(BlockPos pos) {
+        BlockState state = this.getWorld().getBlockState(pos);
+        Block block = state.getBlock();
+        ItemStack stack = new ItemStack(block);
+        this.equipStack(EquipmentSlot.MAINHAND, stack);
+        //this.hand
+        this.dataTracker.set(CARRIED_BLOCK, Optional.ofNullable(state));
     }
 
     @Override
@@ -67,11 +83,38 @@ public class RobotEntity extends TameableEntity {
         this.refreshPositionAndAngles(this.getX() + x, this.getY() + y, this.getZ() + z, this.getYaw(), this.getPitch());
     }
 
-    public void replace(BlockPos pos) { //TODO: doesn't work completely
-        this.refreshPositionAndAngles(pos, this.getYaw(), this.getPitch()); //TODO: doesn't work
-        //this.setPosition();
-        //this.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), this.getYaw(), this.getPitch());
+    private boolean teleportTo(double x, double y, double z) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
+        while (mutable.getY() > this.getWorld().getBottomY() && !this.getWorld().getBlockState(mutable).blocksMovement()) {
+            mutable.move(Direction.DOWN);
+        }
+        BlockState blockState = this.getWorld().getBlockState(mutable);
+        boolean bl = blockState.blocksMovement();
+        boolean bl2 = blockState.getFluidState().isIn(FluidTags.WATER);
+        if (!bl || bl2) {
+            return false;
+        }
+        Vec3d vec3d = this.getPos();
+        boolean bl3 = this.teleport(x, y, z, true);
+        if (bl3) {
+            this.getWorld().emitGameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Emitter.of(this));
+        }
+        return bl3;
     }
+
+
+
+
+    public void moveBlock(BlockPos newPos, Block block) {
+        //block.getDefaultState();
+        //BlockState OldState = this.getWorld().getBlockState(oldPos);
+        //setCarriedBlock(OldState);
+            //this.getWorld().setBlockState(oldPos, this.getWorld().getBlockState(newPos));
+            //this.getWorld().setBlockState(newPos, block.getDefaultState());
+            //this.getOwner().sendMessage(Text.of("Your robot moved block from " + oldPos + " to " + newPos));
+
+    }
+
 
     public void placeBlock(BlockPos pos, Block block) {
         if (this.getWorld().canSetBlock(pos)) {
@@ -83,6 +126,12 @@ public class RobotEntity extends TameableEntity {
         //if (this.canPlaceBlock(pos)) {
         //    this.world.setBlockState(pos, block.getDefaultState());
         //}
+    }
+
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.dataTracker.startTracking(CARRIED_BLOCK, Optional.empty());
     }
 
 
@@ -99,7 +148,6 @@ public class RobotEntity extends TameableEntity {
         Item item = itemStack.getItem();
 
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
-
         //ClientPlayerEntity serverPlayer = (ClientPlayerEntity) player;
         //ClientPlayerMixinInterface playerInterface = (ClientPlayerMixinInterface) serverPlayer;
 
@@ -152,11 +200,6 @@ public class RobotEntity extends TameableEntity {
 
     }
 
-    @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-    }
-
 
     @Override
     public EntityView method_48926() {
@@ -170,6 +213,12 @@ public class RobotEntity extends TameableEntity {
     }
 
 
+    @Override
+    public SimpleInventory getInventory() {
+        return this.inventory;
+    }
 
-
+    public ItemStack getHeldItem() {
+        return this.getStackInHand(Hand.MAIN_HAND);
+    }
 }

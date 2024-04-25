@@ -52,9 +52,19 @@
     0
 )
 
+(define (update-inner-idx inner-idx)
+    ;;todo: send to java client
+)
+
+(define (update-outer-idx outer-idx)
+    ;;todo: send to java client
+)
+
 (define (get-block vector idx)
     ;TODO: move robot to the block
     ;TODO: send to java client to highlight a line
+    (define getBlock (method "getBlock" "siheynde.bachelorproefmod.util.FunctionCalledByScheme" "java.lang.Integer"))
+    (getBlock (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme") (new "java.lang.Integer" idx))
     (vector-ref vector idx))
 
 (define (amount-of-blocks vector)

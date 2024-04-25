@@ -114,6 +114,10 @@ public class Levels {
             return functions.get(functionname);
         }
 
+        public SubTopic getSubTopic(String functionname){
+            return functions.get(functionname);
+        }
+
         public Topic(String name,
                      String path_rkt,
                      Hashtable<String, Hashtable<String, LinkedHashMap<BlockPos, Block>>> blocks,

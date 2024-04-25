@@ -1,30 +1,42 @@
 package siheynde.bachelorproefmod.networking.packet;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.minecraft.block.Block;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import siheynde.bachelorproefmod.networking.ModPackets;
+import net.minecraft.util.math.BlockPos;
+import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.entity.robot.RobotEntity;
+import siheynde.bachelorproefmod.structure.functions.SubTopic;
+import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
-import java.io.BufferedReader;
-
-public class SetBlockVisualisationC2S {
+public class GetBlockVisualisationC2S {
 
     public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
                                PacketByteBuf buf, PacketSender responseSender) {
 
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
-        String blockName = buf.readString();
         Integer toPosition = buf.readInt();
         Shrine shrine = playerInterface.getShrine();
-        String lookFor = "(set-block!";
-        shrine.findOccurrence(lookFor, "!", player);
+        Levels.Topic topic = shrine.topic;
+
+        String nameSub = playerInterface.getRunID();
+        SubTopic subTopic = topic.getSubTopic(nameSub);
+
+        BlockPos blockPos = subTopic.getPosition(toPosition);
+        BachelorProef.LOGGER.info("POS vect->real: " + toPosition + " -> " + blockPos);
+
+        String lookFor = "(get-block ";
+        shrine.findOccurrence(lookFor, "g", player);
 
         //TODO: set the block visualisation
+        //TODO: robot takes block in hand
+        RobotEntity robot = playerInterface.getRobot();
+        robot.holdBlock(blockPos);
         //playerInterface.getRobot().moveBlock(oldPosition, toPosition, blockName);
 
     }

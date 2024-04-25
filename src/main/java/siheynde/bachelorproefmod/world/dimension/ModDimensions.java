@@ -74,7 +74,7 @@ public class ModDimensions {
             }
             //robot.setPosition(entity.getBlockPos().getX(), entity.getBlockPos().getY(), entity.getBlockPos().getZ());
             //BachelorProef.LOGGER.info(rob);
-            robot.replace(entity.getBlockPos());
+            //robot.replace(entity.getBlockPos());
             BachelorProef.LOGGER.info("Player pos: " + entity.getPos().toString());
             BachelorProef.LOGGER.info("Robot: " + robot.toString());
             BachelorProef.LOGGER.info("Robot pos: " + robot.getPos().toString());
@@ -91,7 +91,7 @@ public class ModDimensions {
             BlockPos pos = entity.getBlockPos();
             PlayerMixinInterface player = (PlayerMixinInterface) entity;
 
-            player.getRobot().replace(pos);
+            //player.getRobot().replace(pos);
             int x = pos.getX();
             String dimension = entity.getWorld().getRegistryKey().getValue().getPath();
             String overworld = DimensionTypes.OVERWORLD_ID.getPath();

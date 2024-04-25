@@ -21,6 +21,14 @@ public class FunctionCalledByScheme {
         ClientPlayNetworking.send(ModPackets.SET_BLOCK_VISUALISATION, buf);
     }
 
+    public void getBlock(Integer toPosition) {
+        BachelorProef.LOGGER.info("Function getBlock " + toPosition + " place");
+
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeInt(toPosition);
+        ClientPlayNetworking.send(ModPackets.GET_BLOCK_VISUALISATION, buf);
+    }
+
     public void letLoop(String loopname) {
         BachelorProef.LOGGER.info("Function letLoop " + loopname);
 

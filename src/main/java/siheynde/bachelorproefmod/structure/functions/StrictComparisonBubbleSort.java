@@ -5,27 +5,27 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import siheynde.bachelorproefmod.BachelorProef;
-import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
-import java.io.BufferedReader;
 import java.util.*;
 //This will always be executed server side
 public class StrictComparisonBubbleSort implements SubTopic {
     public ArrayList<BlockPos> blocksPredict = new ArrayList<>();
-    List<Block> blocksPredictOrder = Arrays.asList(
+    public List<Block> blocksPredictOrder = Arrays.asList(
             Blocks.BLACK_STAINED_GLASS,
             Blocks.GRAY_STAINED_GLASS,
             Blocks.BLACK_STAINED_GLASS,
             Blocks.WHITE_STAINED_GLASS);
+
+
+
 
     @Override
     public String runPredict(PlayerEntity player) {
@@ -71,7 +71,26 @@ public class StrictComparisonBubbleSort implements SubTopic {
     }
 
     @Override
+    public BlockPos getPosition(Integer Position) {
+        BachelorProef.LOGGER.info("BlockPositions: " + blocksPredict);
+        BachelorProef.LOGGER.info("Blocks: " + blocksPredictOrder);
+        Collections.reverse(blocksPredict);
+        BlockPos pos =  blocksPredict.get(Position);
+        Collections.reverse(blocksPredict);
+        return pos;
+    }
+
+    @Override
     public void runRun(PlayerEntity player) {
+        //TODO: place te input blocks in the right order
+        ArrayList<Integer> counter = new ArrayList<>();
+        blocksPredictOrder.forEach(block -> {
+            //BachelorProef.LOGGER.info("Block: " + block);
+            BlockPos pos = blocksPredict.get(blocksPredictOrder.size() - 1 - counter.size());
+            player.getWorld().setBlockState(pos, block.getDefaultState());
+            counter.add(1);
+        });
+
         //packet to client to run scheme code on client side -> file is on client side
         BachelorProef.LOGGER.info("PLAYER WHEN RUNNING RUN: " + player.toString());
 

@@ -8,6 +8,8 @@ import net.minecraft.network.PacketByteBuf;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.networking.ModPackets;
 
+import static java.lang.Thread.sleep;
+
 
 @Environment(value= EnvType.CLIENT)
 public class FunctionCalledByScheme {
@@ -27,6 +29,7 @@ public class FunctionCalledByScheme {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeInt(toPosition);
         ClientPlayNetworking.send(ModPackets.GET_BLOCK_VISUALISATION, buf);
+
     }
 
     public void letLoop(String loopname) {

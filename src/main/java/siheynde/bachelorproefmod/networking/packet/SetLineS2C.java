@@ -4,9 +4,12 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import siheynde.bachelorproefmod.BachelorProef;
 
 import java.nio.file.Paths;
+
+import static oshi.util.Util.sleep;
 
 public class SetLineS2C {
     public static void receive(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -21,6 +24,10 @@ public class SetLineS2C {
             String pathScript = currentPath + pathToAppleScriptFolder + pathToScriptFile;
 
             Process terminal = Runtime.getRuntime().exec("osascript " + pathScript + " " + line);
+            Text text = Text.of("Set line to: " + line);
+            client.player.sendMessage(text);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

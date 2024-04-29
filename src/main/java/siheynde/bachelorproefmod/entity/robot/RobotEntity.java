@@ -48,6 +48,8 @@ import java.util.Optional;
 public class RobotEntity extends TameableEntity implements InventoryOwner {
     private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(RobotEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
     public BlockPos moveTo = null;
+    public BlockPos moveToStep = null;
+    public Long lastTime = null;
 
 
     public RobotEntity(EntityType<? extends TameableEntity> entityType, World world) {
@@ -78,16 +80,19 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this)); //lower the number to make it a higher priority
-        this.goalSelector.add(1, new ExecuteMove(this));
+        this.goalSelector.add(3, new ExecuteMove(this));
         this.goalSelector.add(2, new SitGoal(this));
-        this.goalSelector.add(4, new WanderAroundFarGoal(this, 1.0));
-        this.goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 4f));
-        this.goalSelector.add(3, new FollowOwnerGoal(this, 1.0, 10.0f, 2.0f, false));
+        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
+        this.goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 4f));
+        this.goalSelector.add(4, new FollowOwnerGoal(this, 1.0, 10.0f, 2.0f, false));
     }
 
-    public void move(int x, int y, int z) { //TODO: doens't work
+    public void move(float x, float y, float z) { //TODO: doens't work
         //if (this.canTeleportTo(new BlockPos(x, y, z))) --- TODO: function from FollowOwnerGoal (make something similar)
-        this.getOwner().sendMessage(Text.of("Your robot moved with x: " + + x + "y: " + y + "& z: " + z));
+        //this.getOwner().sendMessage(Text.of("Your robot moved with x: " + + x + "y: " + y + "& z: " + z));
+        BachelorProef.LOGGER.info("Robot moved with x: " + x + " y: " + y + " z: " + z);
+        BachelorProef.LOGGER.info("Previous pos: " + this.getPos());
+        BachelorProef.LOGGER.info("Now pos: " + this.getX() + x + " " + this.getY() + y + " " + this.getZ() + z);
         this.refreshPositionAndAngles(this.getX() + x, this.getY() + y, this.getZ() + z, this.getYaw(), this.getPitch());
     }
 
@@ -110,17 +115,29 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
         return bl3;
     }
 
+    private boolean inRange(float v1, float v2) {
+        float diff = Math.abs(v1 - v2);
+        return diff <= 0.5;
+    }
 
+    public BlockPos moveToStep(BlockPos goalPos) {
+        float moveX = (float) (goalPos.getX() > this.getBlockPos().getX() ? 0.5 : -0.5);
+        float moveY = (float) (goalPos.getY() > this.getBlockPos().getY() ? 0.5 : -0.5);
+        float moveZ = (float) (goalPos.getZ() > this.getBlockPos().getZ() ? 0.5 : -0.5);
 
+        moveX = inRange(goalPos.getX(), this.getBlockPos().getX())  ? 0 : moveX;
+        moveY = inRange(goalPos.getY(), this.getBlockPos().getY()) ? 0 : moveY;
+        moveZ = inRange(goalPos.getZ(), this.getBlockPos().getZ()) ? 0 : moveZ;
 
-    public void moveBlock(BlockPos newPos, Block block) {
-        //block.getDefaultState();
-        //BlockState OldState = this.getWorld().getBlockState(oldPos);
-        //setCarriedBlock(OldState);
-            //this.getWorld().setBlockState(oldPos, this.getWorld().getBlockState(newPos));
-            //this.getWorld().setBlockState(newPos, block.getDefaultState());
-            //this.getOwner().sendMessage(Text.of("Your robot moved block from " + oldPos + " to " + newPos));
+        //this.move(moveX, moveY, moveZ);
 
+        if (moveX == 0 && moveY == 0 && moveZ == 0) {
+            this.moveTo = null;
+        }
+
+        return new BlockPos((int) (this.getBlockPos().getX() + moveX),
+                (int) (this.getBlockPos().getY() + moveY),
+                (int) (this.getBlockPos().getZ() + moveZ));
     }
 
 
@@ -140,6 +157,15 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(CARRIED_BLOCK, Optional.empty());
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.moveTo != null) {
+            this.moveToStep = this.moveToStep(this.moveTo);
+           this.teleport(this.moveToStep.getX(), this.moveToStep.getY(), this.moveToStep.getZ(), false);
+        }
     }
 
 

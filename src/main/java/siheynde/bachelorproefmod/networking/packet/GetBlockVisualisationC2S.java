@@ -1,18 +1,26 @@
 package siheynde.bachelorproefmod.networking.packet;
 
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
+import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.functions.SubTopic;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
+
+import javax.xml.crypto.Data;
+import java.util.Date;
+
+import static java.lang.Thread.sleep;
 
 public class GetBlockVisualisationC2S {
 
@@ -31,15 +39,15 @@ public class GetBlockVisualisationC2S {
         BachelorProef.LOGGER.info("POS vect->real: " + toPosition + " -> " + blockPos);
 
         String lookFor = "(get-block ";
-        shrine.findOccurrence(lookFor, "g", player);
+        PacketByteBuf newbuf =  shrine.findOccurrence(lookFor, "g", player);
+        ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, newbuf);
 
-
-
-        //TODO: set the block visualisation
-        //TODO: robot takes block in hand
         RobotEntity robot = playerInterface.getRobotTestWorld();
         robot.moveTo = blockPos;
-        //robot.holdBlock(blockPos);
+        //
+        Text text = Text.of("Robot took block at position: " + blockPos);
+        player.sendMessage(text);
+        robot.holdBlock(blockPos);
         //playerInterface.getRobot().moveBlock(oldPosition, toPosition, blockName);
 
     }

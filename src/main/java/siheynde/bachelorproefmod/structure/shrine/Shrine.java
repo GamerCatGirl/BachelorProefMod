@@ -102,15 +102,14 @@ public class Shrine {
         }
     }
 
-    public void findOccurrence(String sequence, String split, ServerPlayerEntity player) {
+    public PacketByteBuf findOccurrence(String sequence, String split, ServerPlayerEntity player) {
         if (LookInCompleteFunction) {
             while (!(completeFunction.get(indexInFunction).contains(sequence))) {
                 indexInFunction++;
                 if (indexInFunction >= completeFunction.size()) {
                     LookInCompleteFunction = false;
                     indexInFunction = 0;
-                    findOccurrence(sequence, split, player);
-                    return;
+                    return findOccurrence(sequence, split, player);
                 }
             }
              if (completeFunction.get(indexInFunction).contains(sequence)){
@@ -118,9 +117,8 @@ public class Shrine {
                  PacketByteBuf buf = PacketByteBufs.create();
                  Integer index = indexInFunction + startLineIndex;
                  buf.writeInt(index);
-                 ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, buf);
                 LookInCompleteFunction = true;
-                return;
+                return buf;
             }
         }
 
@@ -133,19 +131,19 @@ public class Shrine {
                         completeFunction.add(currentLine);
                     } else {
                         BachelorProef.LOGGER.info("Not found: " + sequence);
-                        return;
+                        return null;
                     }
                     currentLineIndex++;
                 }
                 BachelorProef.LOGGER.info("Found: " + currentLine + " at line: " + currentLineIndex);
                 PacketByteBuf buf = PacketByteBufs.create();
                 buf.writeInt(currentLineIndex);
-                ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, buf);
                 currentLine = currentLine.split(split)[1] + " ";
+                return buf;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        return null;
     }
 
     public String runCode(List<Block> blocks, String functionName, PlayerEntity player){

@@ -52,14 +52,6 @@
     0
 )
 
-(define (update-inner-idx inner-idx)
-    ;;todo: send to java client
-)
-
-(define (update-outer-idx outer-idx)
-    ;;todo: send to java client
-)
-
 (define (get-block vector idx)
     ;TODO: move robot to the block
     ;TODO: send to java client to highlight a line

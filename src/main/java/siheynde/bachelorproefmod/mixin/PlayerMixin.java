@@ -1,11 +1,13 @@
 package siheynde.bachelorproefmod.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,9 +21,12 @@ import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 import java.util.ArrayList;
 
 @Mixin(PlayerEntity.class)
-public class PlayerMixin implements PlayerMixinInterface {
+public abstract class PlayerMixin implements PlayerMixinInterface {
+    @Shadow protected abstract void takeShieldHit(LivingEntity attacker);
+
     @Unique
     RobotEntity robot = null;
+    RobotEntity robotTestWorld = null;
     Levels levels = new Levels();
     private ArrayList<Levels.Topic> topics = levels.getTopics();
     public ArrayList<Shrine> visitedShrines = new ArrayList<>();
@@ -82,8 +87,18 @@ public class PlayerMixin implements PlayerMixinInterface {
     }
 
     @Override
+    public void setRobotTestWorld(RobotEntity robot) {
+        this.robotTestWorld = robot;
+    }
+
+    @Override
     public RobotEntity getRobot() {
         return robot;
+    }
+
+    @Override
+    public RobotEntity getRobotTestWorld() {
+        return this.robotTestWorld;
     }
 
     //TODO: add shrine completed function to increase amountShrinesUnlocked

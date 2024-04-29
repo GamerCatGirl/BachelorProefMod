@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -15,5 +16,6 @@ public class ModEntities {
             Registries.ENTITY_TYPE,
             new Identifier(BachelorProef.MOD_ID, "robot"),
             FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RobotEntity::new).dimensions(EntityDimensions.fixed(1f, 1f)).build()
+            //FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RobotEntity::new).dimensions(EntityDimensions.changing(1f, 1f)).build()
     );
 }

@@ -10,9 +10,11 @@ import java.util.ArrayList;
 public interface PlayerMixinInterface {
     Levels.Topic getTopic();
     void setRobot(RobotEntity robot);
+    void setRobotTestWorld(RobotEntity robot);
     void setRunID(String runID);
     String getRunID();
     RobotEntity getRobot();
+    RobotEntity getRobotTestWorld();
     void setNameShrine(String name);
     String getNameShrine();
     void setTopicNames(ArrayList<String> topicNames);

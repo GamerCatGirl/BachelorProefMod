@@ -48,8 +48,18 @@ import java.util.Optional;
 public class RobotEntity extends TameableEntity implements InventoryOwner {
     private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(RobotEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
 
+
     public RobotEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
+        BachelorProef.LOGGER.info(entityType.toString());
+    }
+
+    //public RobotEntity(World world) {
+    //    super(ModEntities.ROBOT, world);
+    //}
+
+    public void setWorld(World world) {
+        super.setWorld(world);
     }
     private final SimpleInventory inventory = new SimpleInventory(8);
 

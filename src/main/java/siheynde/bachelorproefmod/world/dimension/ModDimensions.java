@@ -11,10 +11,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -24,6 +26,7 @@ import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.DimensionTypes;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.entity.ModEntities;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.mixin.PlayerMixin;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
@@ -93,12 +96,26 @@ public class ModDimensions {
 
             //player.getRobot().replace(pos);
             int x = pos.getX();
+            World world = entity.getWorld();
             String dimension = entity.getWorld().getRegistryKey().getValue().getPath();
             String overworld = DimensionTypes.OVERWORLD_ID.getPath();
+
+            //RobotEntity robot = player.getRobot();
+            //robot.setWorld(world);
+
 
             if (dimension.equalsIgnoreCase(overworld)) {
                 BachelorProef.LOGGER.info("in overworld");
             } else {
+                RobotEntity robot = player.getRobotTestWorld();
+
+                if(robot == null) {
+                    BachelorProef.LOGGER.info("Robot other world is null");
+                    RobotEntity newRobot = new RobotEntity(ModEntities.ROBOT, world);
+                    player.setRobotTestWorld(newRobot);
+                    newRobot.setOwner((PlayerEntity) entity);
+                }
+
                 BachelorProef.LOGGER.info("in test world");
                 BachelorProef.LOGGER.info(entity.getChunkPos().toString());
                 BachelorProef.LOGGER.info(areaEmpty(pos, entity.getWorld()).toString());

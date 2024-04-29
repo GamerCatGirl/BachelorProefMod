@@ -95,7 +95,6 @@ public class ModDimensions {
             PlayerMixinInterface player = (PlayerMixinInterface) entity;
 
             //player.getRobot().replace(pos);
-            int x = pos.getX();
             World world = entity.getWorld();
             String dimension = entity.getWorld().getRegistryKey().getValue().getPath();
             String overworld = DimensionTypes.OVERWORLD_ID.getPath();
@@ -112,6 +111,9 @@ public class ModDimensions {
                 if(robot == null) {
                     BachelorProef.LOGGER.info("Robot other world is null");
                     RobotEntity newRobot = new RobotEntity(ModEntities.ROBOT, world);
+                    //RobotEntity newRobot = ModEntities.ROBOT.create(world);
+                    //newRobot.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0, 0);
+                    world.spawnEntity(newRobot);
                     player.setRobotTestWorld(newRobot);
                     newRobot.setOwner((PlayerEntity) entity);
                 }

@@ -47,16 +47,13 @@ import java.util.Optional;
 
 public class RobotEntity extends TameableEntity implements InventoryOwner {
     private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(RobotEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
+    public BlockPos moveTo = null;
 
 
     public RobotEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
         BachelorProef.LOGGER.info(entityType.toString());
     }
-
-    //public RobotEntity(World world) {
-    //    super(ModEntities.ROBOT, world);
-    //}
 
     public void setWorld(World world) {
         super.setWorld(world);
@@ -81,6 +78,7 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this)); //lower the number to make it a higher priority
+        this.goalSelector.add(1, new ExecuteMove(this));
         this.goalSelector.add(2, new SitGoal(this));
         this.goalSelector.add(4, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(4, new LookAtEntityGoal(this, PlayerEntity.class, 4f));

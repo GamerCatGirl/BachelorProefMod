@@ -33,10 +33,13 @@ public class GetBlockVisualisationC2S {
         String lookFor = "(get-block ";
         shrine.findOccurrence(lookFor, "g", player);
 
+
+
         //TODO: set the block visualisation
         //TODO: robot takes block in hand
-        RobotEntity robot = playerInterface.getRobot();
-        robot.holdBlock(blockPos);
+        RobotEntity robot = playerInterface.getRobotTestWorld();
+        robot.moveTo = blockPos;
+        //robot.holdBlock(blockPos);
         //playerInterface.getRobot().moveBlock(oldPosition, toPosition, blockName);
 
     }

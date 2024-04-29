@@ -29,8 +29,7 @@ public class MoveRobotC2SPacket {
         RobotEntity robot = playerInterface.getRobot();
 
         BachelorProef.LOGGER.info("Received move robot packet");
-        //buf.readInt();
-        BachelorProef.LOGGER.info(buf.toString());
+
         int x = buf.readVarInt();
         int y = buf.readVarInt();
         int z = buf.readVarInt();

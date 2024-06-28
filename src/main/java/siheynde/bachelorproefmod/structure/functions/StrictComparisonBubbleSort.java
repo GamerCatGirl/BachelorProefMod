@@ -15,6 +15,9 @@ import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import java.util.*;
+
+import static java.lang.Thread.sleep;
+
 //This will always be executed server side
 public class StrictComparisonBubbleSort implements SubTopic {
     public ArrayList<BlockPos> blocksPredict = new ArrayList<>();
@@ -84,8 +87,9 @@ public class StrictComparisonBubbleSort implements SubTopic {
     public void runRun(PlayerEntity player) {
         //TODO: place te input blocks in the right order
         ArrayList<Integer> counter = new ArrayList<>();
+
+        // setup blocks to sort in the right order, gotten input vect
         blocksPredictOrder.forEach(block -> {
-            //BachelorProef.LOGGER.info("Block: " + block);
             BlockPos pos = blocksPredict.get(blocksPredictOrder.size() - 1 - counter.size());
             player.getWorld().setBlockState(pos, block.getDefaultState());
             counter.add(1);
@@ -94,8 +98,13 @@ public class StrictComparisonBubbleSort implements SubTopic {
         //packet to client to run scheme code on client side -> file is on client side
         BachelorProef.LOGGER.info("PLAYER WHEN RUNNING RUN: " + player.toString());
 
-        //TODO: send to client to open terminal and save window to control
-        ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.OPEN_TERMINAL, PacketByteBufs.empty());
+        try {
+            //send to client to open terminal and save window to control
+            ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.OPEN_TERMINAL, PacketByteBufs.empty());
+            sleep(1000);    //wait for terminal to open
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         //send actions back to the server
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
         Shrine shrine = playerInterface.getShrine();
@@ -103,7 +112,6 @@ public class StrictComparisonBubbleSort implements SubTopic {
         String answer = shrine.runCode(blocksPredictOrder, "insertion-sort", player);
         BachelorProef.LOGGER.info("Answer: " + answer);
 
-        //jsint.Pair pair = (jsint.Pair) shrine.predictModify();
         BachelorProef.LOGGER.info("Running run");
     }
 

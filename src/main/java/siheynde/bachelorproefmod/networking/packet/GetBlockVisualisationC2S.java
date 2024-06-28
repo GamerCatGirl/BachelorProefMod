@@ -19,6 +19,8 @@ import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import javax.xml.crypto.Data;
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static java.lang.Thread.sleep;
 
@@ -42,12 +44,31 @@ public class GetBlockVisualisationC2S {
         PacketByteBuf newbuf =  shrine.findOccurrence(lookFor, "g", player);
         ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, newbuf);
 
+        //wait a second for the line to be set in terminal
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         RobotEntity robot = playerInterface.getRobotTestWorld();
+        robot.arrived = false;
         robot.moveTo = blockPos;
+
         //
+        //TODO: wait untill robot has arrived
+        //while(robot.arrived == false){}
+        //TODO: Create CompletableFuture to wait for robot.arrived to be true
+
+
+        //
+
         Text text = Text.of("Robot took block at position: " + blockPos);
         player.sendMessage(text);
         robot.holdBlock(blockPos);
+
+        //TODO: Ask if server play networking is done
+
         //playerInterface.getRobot().moveBlock(oldPosition, toPosition, blockName);
 
     }

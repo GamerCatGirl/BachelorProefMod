@@ -31,6 +31,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.gen.chunk.Blender;
 import org.jetbrains.annotations.Nullable;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.entity.ModEntities;
@@ -48,8 +49,11 @@ import java.util.Optional;
 public class RobotEntity extends TameableEntity implements InventoryOwner {
     private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(RobotEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
     public BlockPos moveTo = null;
+    public boolean arrived = true;
     public BlockPos moveToStep = null;
     public Long lastTime = null;
+
+    private Runnable callback = null;
 
 
     public RobotEntity(EntityType<? extends TameableEntity> entityType, World world) {
@@ -67,6 +71,7 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, Integer.MAX_VALUE)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2f);
     }
+
 
     public void holdBlock(BlockPos pos) {
         BlockState state = this.getWorld().getBlockState(pos);
@@ -165,7 +170,21 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
         if (this.moveTo != null) {
             this.moveToStep = this.moveToStep(this.moveTo);
            this.teleport(this.moveToStep.getX(), this.moveToStep.getY(), this.moveToStep.getZ(), false);
+
+           if (isArrived()) {
+               this.arrived = true;
+           }
         }
+    }
+
+    private double distance(BlockPos pos1, BlockPos pos2) {
+        return Math.sqrt(Math.pow(pos1.getX() - pos2.getX(), 2) + Math.pow(pos1.getY() - pos2.getY(), 2) + Math.pow(pos1.getZ() - pos2.getZ(), 2));
+    }
+
+    private boolean isArrived() {
+        double maxDistance = 1.8;
+        double dis = distance(moveTo, this.getBlockPos());
+        return dis < maxDistance;
     }
 
 

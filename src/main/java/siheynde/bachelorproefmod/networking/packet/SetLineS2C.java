@@ -2,7 +2,9 @@ package siheynde.bachelorproefmod.networking.packet;
 
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import siheynde.bachelorproefmod.BachelorProef;
@@ -24,10 +26,14 @@ public class SetLineS2C {
             String pathScript = currentPath + pathToAppleScriptFolder + pathToScriptFile;
 
             Process terminal = Runtime.getRuntime().exec("osascript " + pathScript + " " + line);
+            if (MinecraftClient.getInstance().isPaused()) { //closes pause screen
+                MinecraftClient.getInstance().setScreen(null);
+                MinecraftClient.getInstance().mouse.lockCursor();
+            }
             Text text = Text.of("Set line to: " + line);
             client.player.sendMessage(text);
-
-
+            terminal.waitFor();
+            client.player.sendMessage(Text.of("Set line done!"));
         } catch (Exception e) {
             e.printStackTrace();
         }

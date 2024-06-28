@@ -148,14 +148,16 @@ public class Shrine {
 
     public String runCode(List<Block> blocks, String functionName, PlayerEntity player){
         try {
+            //TODO: wait untill previous block is taken by robot
+
             String path = topic.path_rkt;
             URL resource = getClass().getClassLoader().getResource(path);
-            // TODO: get line number where function starts
+            //get line number where function starts
             getStartLine(resource, functionName);
-            // TODO: Highlight line client slide
+            //Highlight line client slide
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeInt(startLineIndex);
-            ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.SET_LINE_TERMINAL, buf);
+            ServerPlayNetworking.send((ServerPlayerEntity) player, ModPackets.SET_LINE_TERMINAL, buf); //Wait untill done
 
             JS.load(new java.io.FileReader(resource.getFile()));
             SchemePair pair = JS.list();
@@ -169,7 +171,6 @@ public class Shrine {
 
             return JS.call("run", pair).toString();
 
-            //JS.load(new java.io.FileReader("src/main/resources/assests/bachelorproef/racket/introduction/predict.rkt"));
         } catch (EventException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {

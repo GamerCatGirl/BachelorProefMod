@@ -1,5 +1,6 @@
 package siheynde.bachelorproefmod.networking.packet;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
@@ -19,15 +20,17 @@ import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import javax.xml.crypto.Data;
 import java.util.Date;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 import static java.lang.Thread.sleep;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 public class GetBlockVisualisationC2S {
 
     public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
                                PacketByteBuf buf, PacketSender responseSender) {
+
+
 
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
         Integer toPosition = buf.readInt();
@@ -57,6 +60,17 @@ public class GetBlockVisualisationC2S {
 
         //
         //TODO: wait untill robot has arrived
+        ExecutorService executor = newSingleThreadExecutor();
+        Future<String> future =  executor.submit(() -> {
+                while(robot.arrived == false){}
+                return "done";
+        });
+        try {
+            future.get(50, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         //while(robot.arrived == false){}
         //TODO: Create CompletableFuture to wait for robot.arrived to be true
 

@@ -1,57 +1,174 @@
 package siheynde.bachelorproefmod.entity.robot;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.LeavesBlock;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.ai.pathing.*;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldView;
 import siheynde.bachelorproefmod.BachelorProef;
+import siheynde.bachelorproefmod.util.PlayerMixinInterface;
+
+import java.util.EnumSet;
 
 public class ExecuteMove extends Goal {
     RobotEntity robot;
     BlockPos goalPos;
+    private final TameableEntity tameable;
+    private int updateCountdownTicks = 0;
+    private final double speed = 1;
+    private final WorldView world;
+    private final EntityNavigation navigation;
+    private LivingEntity owner;
+    private final float maxDistance = 10.0f; //based on follow owner goal
+    private final float minDistance = 1.5f; //robot moet minstens 2 blokken van de goalpositie
     float range = (float) 0.6;
 
     public ExecuteMove(RobotEntity robot) {
+        this.tameable = (TameableEntity) robot;
+        this.navigation = tameable.getNavigation();
         this.robot = robot;
+        this.world = tameable.getWorld();
+        this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+        if (!(tameable.getNavigation() instanceof MobNavigation) && !(tameable.getNavigation() instanceof BirdNavigation)) {
+            throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
+        }
     }
 
-    @Override
-    public boolean canStart() {
-        goalPos = robot.moveTo;
-        return goalPos != null;
+    private boolean cannotFollow() {
+        return this.tameable.hasVehicle() || this.tameable.isLeashed();
     }
 
     @Override
     public boolean shouldContinue() {
-        goalPos = robot.moveTo;
-        return goalPos != null;
+        if (this.navigation.isIdle()) {
+            return false;
+        }
+        if (this.cannotFollow()) {
+            return false;
+        }
+
+        return !(this.tameable.squaredDistanceTo(this.goalPos.getX(), goalPos.getY(), goalPos.getZ()) <= (double)(this.maxDistance * this.maxDistance));
     }
 
     @Override
-    public boolean shouldRunEveryTick() {
+    public boolean canStart() {;
+        LivingEntity livingEntity = this.tameable.getOwner();
+
+        if (livingEntity == null) {
+            BachelorProef.LOGGER.info("FAULT: No owner found");
+            return false;
+        }
+
+        PlayerMixinInterface ownerMixin = (PlayerMixinInterface) livingEntity;
+        BlockPos pos = ownerMixin.getRobotMoveTo();
+        BachelorProef.LOGGER.info("Robot " + robot + " can start moving to?: " + ownerMixin.getRobotMoveTo());
+
+        if (pos == null) {
+            BachelorProef.LOGGER.info("FAULT: No position found");
+            return false;
+        }
+
+        if (livingEntity.isSpectator()) {
+            BachelorProef.LOGGER.info("FAULT: No spectator found");
+            return false;
+        }
+        if (this.cannotFollow()) {
+            BachelorProef.LOGGER.info("FAULT: Cannot Follow");
+            return false;
+        }
+        if (this.tameable.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) < (double)(this.minDistance * this.minDistance)) {
+            BachelorProef.LOGGER.info("FAULT: Distance " + this.tameable.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) + " too small");
+            return false;
+        }
+        this.owner = livingEntity;
+        goalPos = pos;
+        return goalPos != null;
+    }
+
+    public void start() {
+        BachelorProef.LOGGER.info("Start moving to: " + goalPos);
+        this.updateCountdownTicks = 0;
+        this.tameable.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
+    }
+
+    @Override
+    public void stop() {
+        BachelorProef.LOGGER.info("Stopping navigation robot");
+        this.navigation.stop();
+    }
+
+    private void tryTeleport() {
+        BlockPos blockPos = goalPos;
+        for (int i = 0; i < 10; ++i) {
+        int j = this.getRandomInt(-3, 3);
+        int k = this.getRandomInt(-1, 1);
+        int l = this.getRandomInt(-3, 3);
+        boolean bl = this.tryTeleportTo(blockPos.getX() + j, blockPos.getY() + k, blockPos.getZ() + l);
+        if (!bl) continue;
+        return;
+        }
+    }
+
+    private boolean tryTeleportTo(int x, int y, int z) {
+        if (Math.abs((double)x - this.goalPos.getX()) < 2.0 && Math.abs((double)z - this.goalPos.getZ()) < 2.0) {
+            return false;
+        }
+        if (!this.canTeleportTo(new BlockPos(x, y, z))) {
+            return false;
+        }
+        this.tameable.refreshPositionAndAngles((double)x + 0.5, y, (double)z + 0.5, this.tameable.getYaw(), this.tameable.getPitch());
+        this.navigation.stop();
         return true;
     }
 
-    private boolean inRange(float v1, float v2) {
-        float diff = Math.abs(v1 - v2);
-        return diff <= range;
+    private boolean canTeleportTo(BlockPos pos) {
+        PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(this.world, pos.mutableCopy());
+        if (pathNodeType != PathNodeType.WALKABLE) {
+            return false;
+        }
+        BlockState blockState = this.world.getBlockState(pos.down());
+        if (blockState.getBlock() instanceof LeavesBlock) {
+            return false;
+        }
+        BlockPos blockPos = pos.subtract(this.tameable.getBlockPos());
+        return this.world.isSpaceEmpty(this.tameable, this.tameable.getBoundingBox().offset(blockPos));
+    }
+
+    private int getRandomInt(int min, int max) {
+        return this.tameable.getRandom().nextInt(max - min + 1) + min;
     }
 
     @Override
     public void tick() {
-        // TODO: Execute move
-        float moveX = (float) (goalPos.getX() > robot.getBlockPos().getX() ? 0.5 : -0.5);
-        float moveY = (float) (goalPos.getY() > robot.getBlockPos().getY() ? 0.5 : -0.5);
-        float moveZ = (float) (goalPos.getZ() > robot.getBlockPos().getZ() ? 0.5 : -0.5);
+        if (this.goalPos != null){
+            this.tameable.getLookControl().lookAt(goalPos.getX(), goalPos.getY(), goalPos.getZ(), 10.0f, this.tameable.getMaxLookPitchChange());
 
-        moveX = inRange(goalPos.getX(), robot.getBlockPos().getX())  ? 0 : moveX;
-        moveY = inRange(goalPos.getY(), robot.getBlockPos().getY()) ? 0 : moveY;
-        moveZ = inRange(goalPos.getZ(), robot.getBlockPos().getZ()) ? 0 : moveZ;
+            if (this.tameable.squaredDistanceTo(goalPos.getX(), goalPos.getY(), goalPos.getZ()) < 3) {
+                BachelorProef.LOGGER.info("Robot arrived at block: " + goalPos);
+                PlayerMixinInterface ownerMixin = (PlayerMixinInterface) this.owner;
+                ownerMixin.setRobotArrtived(true);
+                ownerMixin.setRobotMoveTo(null);
+                //TODO: check of robot needs to take the block
+            }
+            if (--this.updateCountdownTicks > 0) {
+                return; //next test doesn't need to be checked if robot is moving
+            }
+            this.updateCountdownTicks = this.getTickCount(10);
 
-        //BachelorProef.LOGGER.info("Moving to: " + goalPos + " with: " + moveX + " " + moveY + " " + moveZ);
-        robot.move(moveX, moveY, moveZ);
+            if (this.tameable.squaredDistanceTo(goalPos.getX(), goalPos.getY(), goalPos.getZ()) >= 144.0) {
+                this.tryTeleport();
+            } else {
+                this.navigation.startMovingTo(goalPos.getX(), goalPos.getY(), goalPos.getZ(), this.speed);
+                if (navigation.getCurrentPath() == null) {return;}
 
-        if (moveX == 0 && moveY == 0 && moveZ == 0) {
-            robot.moveTo = null;
+                BachelorProef.LOGGER.info("path: " + navigation.getCurrentPath());
+            }
         }
     }
 }

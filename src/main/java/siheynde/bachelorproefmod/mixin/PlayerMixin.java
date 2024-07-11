@@ -19,6 +19,11 @@ import java.util.ArrayList;
 public abstract class PlayerMixin implements PlayerMixinInterface {
     @Shadow protected abstract void takeShieldHit(LivingEntity attacker);
 
+    private BlockPos robotMoveTo = null;
+    private boolean robotArrived = false;
+
+    private BlockPos holdBlock = null;
+
     @Unique
     RobotEntity robot = null;
     RobotEntity robotTestWorld = null;
@@ -30,6 +35,36 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
     String nameShrine;
     ArrayList<String> topicNames;
     String bookID;
+
+    @Override
+    public void setRobotMoveTo(BlockPos pos){
+        robotMoveTo = pos;
+    };
+
+    @Override
+    public void setRobotArrtived(boolean arrived){
+        robotArrived = arrived;
+    };
+
+    @Override
+    public BlockPos getRobotMoveTo(){
+        return robotMoveTo;
+    };
+
+    @Override
+    public boolean getRobotArrived(){
+        return robotArrived;
+    };
+
+    @Override
+    public void setRobotHoldBlock(BlockPos pos) {
+        holdBlock = pos;
+    }
+
+    @Override
+    public void setRobotDropBlock() {
+        holdBlock = null;
+    }
 
     @Override
     public Shrine getShrine() {

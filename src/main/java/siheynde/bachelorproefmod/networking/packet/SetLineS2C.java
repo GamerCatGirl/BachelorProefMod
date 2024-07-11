@@ -26,10 +26,9 @@ public class SetLineS2C {
             String pathScript = currentPath + pathToAppleScriptFolder + pathToScriptFile;
 
             Process terminal = Runtime.getRuntime().exec("osascript " + pathScript + " " + line);
-            if (MinecraftClient.getInstance().isPaused()) { //closes pause screen
-                MinecraftClient.getInstance().setScreen(null);
-                MinecraftClient.getInstance().mouse.lockCursor();
-            }
+            //if (client.isPaused()) { //closes pause screen TODO: gives error
+            //    client.setScreen(null);
+            //}
             Text text = Text.of("Set line to: " + line);
             client.player.sendMessage(text);
             terminal.waitFor();

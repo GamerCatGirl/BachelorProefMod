@@ -26,6 +26,7 @@ public class ModPackets {
     public static final Identifier OPEN_TERMINAL = new Identifier(BachelorProef.MOD_ID, "open_terminal");
     public static final Identifier SET_LINE_TERMINAL = new Identifier(BachelorProef.MOD_ID, "set_line_terminal");
     public static final Identifier GET_BLOCK_VISUALISATION = new Identifier(BachelorProef.MOD_ID, "get_block_visualisation");
+    public static final Identifier ACTIONS = new Identifier(BachelorProef.MOD_ID, "actions");
 
     public static void registerS2CPackets() {
         ClientPlayNetworking.registerGlobalReceiver(OPEN_ADVANCEMENTS_ID, OpenAdvancementsS2CPacket::receive);
@@ -48,5 +49,6 @@ public class ModPackets {
         ServerPlayNetworking.registerGlobalReceiver(SET_BLOCK_VISUALISATION, SetBlockVisualisationC2S::receive);
         ServerPlayNetworking.registerGlobalReceiver(GET_BLOCK_VISUALISATION, GetBlockVisualisationC2S::receive);
         ServerPlayNetworking.registerGlobalReceiver(LET_LOOP, letLoopC2S::receive);
+        ServerPlayNetworking.registerGlobalReceiver(ACTIONS, ActionsC2S::receive);
     }
 }

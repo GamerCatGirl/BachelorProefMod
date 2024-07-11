@@ -52,6 +52,11 @@
     0
 )
 
+(define (end)
+    (define done (method "done" "siheynde.bachelorproefmod.util.FunctionCalledByScheme"))
+    (done (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme"))
+)
+
 (define (get-block vector idx)
     ;TODO: move robot to the block
     ;TODO: send to java client to highlight a line
@@ -86,7 +91,8 @@
                 (inner-loop (+ inner-idx 1))))) ;inner loop + 1
            current) ;swap current met inner-idx -1 (vorig)
           (if (> outer-idx 0)
-              (outer-loop (- outer-idx 1))))))
+              (outer-loop (- outer-idx 1)))))
+          (end))
 
 
 (define (predict)

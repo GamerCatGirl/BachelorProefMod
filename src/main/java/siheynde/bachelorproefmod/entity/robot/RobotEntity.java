@@ -82,11 +82,12 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
         this.dataTracker.set(CARRIED_BLOCK, Optional.ofNullable(state));
     }
 
+
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this)); //lower the number to make it a higher priority
-        this.goalSelector.add(3, new ExecuteMove(this));
-        this.goalSelector.add(2, new SitGoal(this));
+        this.goalSelector.add(2, new ExecuteMove(this));
+        this.goalSelector.add(1, new SitGoal(this));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 4f));
         this.goalSelector.add(4, new FollowOwnerGoal(this, 1.0, 10.0f, 2.0f, false));
@@ -167,21 +168,23 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
     @Override
     public void tick() {
         super.tick();
-        if (this.moveTo != null) {
-            this.moveToStep = this.moveToStep(this.moveTo);
-           this.teleport(this.moveToStep.getX(), this.moveToStep.getY(), this.moveToStep.getZ(), false);
 
-           if (isArrived()) {
-               this.arrived = true;
-           }
+        if (isArrived()) {
+            BachelorProef.LOGGER.info("Robot arrived at block");
+            this.arrived = true;
         }
+
     }
 
     private double distance(BlockPos pos1, BlockPos pos2) {
+        BachelorProef.LOGGER.info("Distance between: " + pos1 + " and " + pos2);
         return Math.sqrt(Math.pow(pos1.getX() - pos2.getX(), 2) + Math.pow(pos1.getY() - pos2.getY(), 2) + Math.pow(pos1.getZ() - pos2.getZ(), 2));
     }
 
     private boolean isArrived() {
+        if (this.moveTo == null) {
+            return false;
+        }
         double maxDistance = 1.8;
         double dis = distance(moveTo, this.getBlockPos());
         return dis < maxDistance;

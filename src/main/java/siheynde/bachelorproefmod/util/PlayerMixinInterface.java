@@ -18,12 +18,13 @@ public interface PlayerMixinInterface {
     void setRobotHoldBlock(BlockPos pos);
     void setRobotDropBlock();
 
-    void setRobot(RobotEntity robot);
-    void setRobotTestWorld(RobotEntity robot);
+    void robotAssignedTestWorld();
     void setRunID(String runID);
+
+    void robotAssigned();
+    Boolean hasRobot();
     String getRunID();
-    RobotEntity getRobot();
-    RobotEntity getRobotTestWorld();
+    Boolean hasRobotTestWorld();
     void setNameShrine(String name);
     String getNameShrine();
     void setTopicNames(ArrayList<String> topicNames);

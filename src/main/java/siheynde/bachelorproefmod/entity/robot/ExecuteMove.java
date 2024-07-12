@@ -47,13 +47,22 @@ public class ExecuteMove extends Goal {
     @Override
     public boolean shouldContinue() {
         if (this.navigation.isIdle()) {
+            BachelorProef.LOGGER.info("Stopping: Navigation is idle");
             return false;
         }
         if (this.cannotFollow()) {
+            BachelorProef.LOGGER.info("Stopping: Cannot follow");
             return false;
         }
 
-        return !(this.tameable.squaredDistanceTo(this.goalPos.getX(), goalPos.getY(), goalPos.getZ()) <= (double)(this.maxDistance * this.maxDistance));
+        Boolean wrongDistance = !(this.tameable.squaredDistanceTo(this.goalPos.getX(), goalPos.getY(), goalPos.getZ()) <= (double)(this.maxDistance * this.maxDistance));
+
+        if(wrongDistance){
+            BachelorProef.LOGGER.info("Stopping: Wrong distance");
+            return false;
+        }
+
+        return wrongDistance;
     }
 
     @Override
@@ -150,8 +159,8 @@ public class ExecuteMove extends Goal {
             this.tameable.getLookControl().lookAt(goalPos.getX(), goalPos.getY(), goalPos.getZ(), 10.0f, this.tameable.getMaxLookPitchChange());
 
             if (this.tameable.squaredDistanceTo(goalPos.getX(), goalPos.getY(), goalPos.getZ()) < 3) {
-                BachelorProef.LOGGER.info("Robot arrived at block: " + goalPos);
                 PlayerMixinInterface ownerMixin = (PlayerMixinInterface) this.owner;
+                BachelorProef.LOGGER.info("Robot arrived at block: " + goalPos + ", its owner is: " + this.owner);
                 ownerMixin.setRobotArrtived(true);
                 ownerMixin.setRobotMoveTo(null);
                 //TODO: check of robot needs to take the block
@@ -165,6 +174,7 @@ public class ExecuteMove extends Goal {
                 this.tryTeleport();
             } else {
                 this.navigation.startMovingTo(goalPos.getX(), goalPos.getY(), goalPos.getZ(), this.speed);
+                if (navigation.isIdle()) {throw new Error("Navigation is idle");}
                 if (navigation.getCurrentPath() == null) {return;}
 
                 BachelorProef.LOGGER.info("path: " + navigation.getCurrentPath());

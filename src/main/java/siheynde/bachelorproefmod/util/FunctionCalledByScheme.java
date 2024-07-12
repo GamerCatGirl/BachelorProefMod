@@ -29,9 +29,6 @@ public class FunctionCalledByScheme {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeString(blockName);
         buf.writeInt(toPosition);
-        playerInterface.addAction("setBlock", buf);
-        //actions.put("setBlock", buf);
-        //ClientPlayNetworking.send(ModPackets.SET_BLOCK_VISUALISATION, buf);
     }
 
     public void getBlock(Integer toPosition) {
@@ -40,9 +37,6 @@ public class FunctionCalledByScheme {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeInt(toPosition);
         playerInterface.addAction("getBlock", buf);
-        //actions.put("getBlock", buf);
-        //ClientPlayNetworking.send(ModPackets.GET_BLOCK_VISUALISATION, buf); //TODO: do this on server
-
     }
 
     public void letLoop(String loopname) {
@@ -77,7 +71,7 @@ public class FunctionCalledByScheme {
                 }
             }
         }
-        //TODO: send each action to server
+
         ClientPlayNetworking.send(ModPackets.ACTIONS, buf);
 
     }

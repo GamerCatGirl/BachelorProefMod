@@ -45,15 +45,8 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.DimensionTypes;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
-import siheynde.bachelorproefmod.BachelorProefClient;
-import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
-import siheynde.bachelorproefmod.User;
-import siheynde.bachelorproefmod.mixin.PlayerMixin;
 import siheynde.bachelorproefmod.networking.ModPackets;
-import siheynde.bachelorproefmod.structure.functions.SubTopic;
-import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
-import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 import siheynde.bachelorproefmod.world.dimension.ModDimensions;
 
@@ -67,10 +60,6 @@ public class FunctionScreen
         implements ScreenHandlerListener {
     protected static final int x_text = 2;
     protected static final int y_predict_text = 15;
-    protected static final int y_run_text = 50;
-    protected static final int y_investigate_text = 85;
-    protected static final int y_modify_text = 120;
-    protected static final int y_create_text = 155;
 
     protected static final int backgroundWidth = 248;
     private static final Identifier TEXTURE = new Identifier(BachelorProef.MOD_ID, "textures/gui/function_screen.png");

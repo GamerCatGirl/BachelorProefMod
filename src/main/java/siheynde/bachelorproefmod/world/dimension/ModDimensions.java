@@ -69,18 +69,15 @@ public class ModDimensions {
         //todo: going back to overworld -> delete progress in test dimension & portal
         if (entity.isPlayer()){
             PlayerMixinInterface player = (PlayerMixinInterface) entity;
-            RobotEntity robot = player.getRobot();
-            if (robot == null) {
+            BachelorProef.LOGGER.info("Player to check if has a robot: " + player);
+            if (!player.hasRobot() && !player.hasRobotTestWorld()) {
                 Text text = Text.of("Teleport canceled: No robot assigned");
                 entity.sendMessage(text);
                 return SHOULDTP.CANCEL_TP;
             }
             //robot.setPosition(entity.getBlockPos().getX(), entity.getBlockPos().getY(), entity.getBlockPos().getZ());
-            //BachelorProef.LOGGER.info(rob);
             //robot.replace(entity.getBlockPos());
-            BachelorProef.LOGGER.info("Player pos: " + entity.getPos().toString());
-            BachelorProef.LOGGER.info("Robot: " + robot.toString());
-            BachelorProef.LOGGER.info("Robot pos: " + robot.getPos().toString());
+
         }
 
         //TODO: teleport robot too new dimension in throughpotyal function
@@ -106,15 +103,14 @@ public class ModDimensions {
             if (dimension.equalsIgnoreCase(overworld)) {
                 BachelorProef.LOGGER.info("in overworld");
             } else {
-                RobotEntity robot = player.getRobotTestWorld();
-
-                if(robot == null) {
+                if(!player.hasRobotTestWorld()) {
                     BachelorProef.LOGGER.info("Robot other world is null");
                     RobotEntity newRobot = new RobotEntity(ModEntities.ROBOT, world);
                     //RobotEntity newRobot = ModEntities.ROBOT.create(world);
                     //newRobot.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0, 0);
                     world.spawnEntity(newRobot);
-                    player.setRobotTestWorld(newRobot);
+                    player.robotAssignedTestWorld();
+                    //player.setRobotTestWorld(newRobot);
                     newRobot.setOwner((PlayerEntity) entity);
                 }
 
@@ -126,9 +122,8 @@ public class ModDimensions {
                     PlayerMixinInterface playerMixin = (PlayerMixinInterface) entity;
                     Shrine shrine = playerMixin.getShrine(pos);
                     String idRun = playerMixin.getRunID();
-                    BachelorProef.LOGGER.info("Location player: " + pos);
                     shrine.setupUtilTestWorld(entity.getWorld(), pos, rangeArea, "Predict" ,idRun);
-                    BachelorProef.LOGGER.info("Shrine: " + shrine);
+                    //BachelorProef.LOGGER.info("Shrine: " + shrine);
                 }
                 //entity.getWorld().setBlockState(new BlockPos(x + 50, pos.getY(), pos.getZ()), Blocks.ACACIA_FENCE.getDefaultState());
 

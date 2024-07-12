@@ -30,7 +30,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import siheynde.bachelorproefmod.BachelorProef;
-import siheynde.bachelorproefmod.Racket.RacketHandleClasses;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.ClientPlayerMixinInterface;

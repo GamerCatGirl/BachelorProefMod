@@ -22,6 +22,9 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
     private BlockPos robotMoveTo = null;
     private boolean robotArrived = false;
 
+    private boolean HAS_ROBOT_OVERWORLD = false;
+    private boolean HAS_ROBOT_TEST_WORLD = false;
+
     private BlockPos holdBlock = null;
 
     @Unique
@@ -35,6 +38,26 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
     String nameShrine;
     ArrayList<String> topicNames;
     String bookID;
+
+    @Override
+    public void robotAssignedTestWorld(){
+        BachelorProef.LOGGER.info("Robot assigned (test world) to player " + this);
+        HAS_ROBOT_TEST_WORLD = true;
+    };
+    @Override
+    public void robotAssigned(){
+        BachelorProef.LOGGER.info("Robot assigned (overworld) to player " + this);
+        HAS_ROBOT_OVERWORLD = true;
+    };
+
+    @Override
+    public Boolean hasRobot(){
+        return HAS_ROBOT_OVERWORLD;
+    };
+    @Override
+    public Boolean hasRobotTestWorld(){
+        return HAS_ROBOT_TEST_WORLD;
+    };
 
     @Override
     public void setRobotMoveTo(BlockPos pos){
@@ -95,38 +118,9 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
         return runID;
     }
 
-    //@Inject(method = "tick", at = @At("TAIL"))
-    //private void injected(CallbackInfo info) {
-        //BachelorProef.LOGGER.info("added in PlayerEntity constructor");
-    //    BlockPos pos = ((PlayerEntity) (Object) this).getBlockPos();
-        //Biome world = ((PlayerEntity) (Object) this).getWorld();//.get
-        //BachelorProef.LOGGER.info("World: " + world);
-    //}
-
     @Override
     public Levels.Topic getTopic() {
         return topics.get(amountShrinesUnlocked);
-    }
-
-    @Override
-    public void setRobot(RobotEntity robot) {
-        BachelorProef.LOGGER.info("Setting robot");
-        this.robot = robot;
-    }
-
-    @Override
-    public void setRobotTestWorld(RobotEntity robot) {
-        this.robotTestWorld = robot;
-    }
-
-    @Override
-    public RobotEntity getRobot() {
-        return robot;
-    }
-
-    @Override
-    public RobotEntity getRobotTestWorld() {
-        return this.robotTestWorld;
     }
 
     //TODO: add shrine completed function to increase amountShrinesUnlocked

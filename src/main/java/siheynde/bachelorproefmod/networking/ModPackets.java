@@ -7,9 +7,7 @@ import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.networking.packet.*;
 
 public class ModPackets {
-
     public static final Identifier OPEN_ADVANCEMENTS_ID = new Identifier(BachelorProef.MOD_ID, "open_advancements");
-    public static final Identifier MOVE_ROBOT = new Identifier(BachelorProef.MOD_ID, "move_robot");
     public static final Identifier SET_RUN_ID = new Identifier(BachelorProef.MOD_ID, "run_id");
 
     public static final Identifier GET_RUN_ID = new Identifier(BachelorProef.MOD_ID, "get_run_id");
@@ -39,7 +37,6 @@ public class ModPackets {
     }
 
     public static void registerC2SPackets() {
-        ServerPlayNetworking.registerGlobalReceiver(MOVE_ROBOT, MoveRobotC2SPacket::receive);
         ServerPlayNetworking.registerGlobalReceiver(SET_RUN_ID, runIDC2SPacket::receive);
         ServerPlayNetworking.registerGlobalReceiver(GET_RUN_ID, GetRunIDC2SPacket::receive);
         ServerPlayNetworking.registerGlobalReceiver(GET_NAME_SHRINE, GetNameShrineC2SPacket::receive);

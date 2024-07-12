@@ -25,7 +25,7 @@ import java.util.concurrent.*;
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
-public class GetBlockVisualisationC2S {
+public class GetBlockVisualisationC2S { //TODO: delete this file
 
     public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
                                PacketByteBuf buf, PacketSender responseSender) {
@@ -54,15 +54,16 @@ public class GetBlockVisualisationC2S {
             throw new RuntimeException(e);
         }
 
-        RobotEntity robot = playerInterface.getRobotTestWorld();
-        robot.arrived = false;
-        robot.moveTo = blockPos;
+        //RobotEntity robot = playerInterface.getRobotTestWorld();
+        //robot.arrived = false;
+        //robot.moveTo = blockPos;
 
         //
         //TODO: wait untill robot has arrived
         ExecutorService executor = newSingleThreadExecutor();
         Future<String> future =  executor.submit(() -> {
-                while(robot.arrived == false){}
+                //TODO: check in player if the robot is arrived
+                //while(robot.arrived == false){}
                 return "done";
         });
         try {
@@ -79,7 +80,7 @@ public class GetBlockVisualisationC2S {
 
         Text text = Text.of("Robot took block at position: " + blockPos);
         player.sendMessage(text);
-        robot.holdBlock(blockPos);
+        //robot.holdBlock(blockPos);
 
         //TODO: Ask if server play networking is done
 

@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
@@ -16,7 +17,7 @@ public class GetNameShrineS2CPacket {
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) client.player;
         playerInterface.setNameShrine(name);
 
-        BachelorProef.LOGGER.info("Set to client player: " + name);
+        client.player.sendMessage(Text.of(name + " shrine unlocked!"));
 
     }
 

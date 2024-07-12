@@ -19,19 +19,15 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.gen.chunk.Blender;
+import net.minecraft.world.dimension.DimensionTypes;
 import org.jetbrains.annotations.Nullable;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.entity.ModEntities;
@@ -50,10 +46,6 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
     private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(RobotEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
     public BlockPos moveTo = null;
     public boolean arrived = true;
-    public BlockPos moveToStep = null;
-    public Long lastTime = null;
-
-    private Runnable callback = null;
 
 
     public RobotEntity(EntityType<? extends TameableEntity> entityType, World world) {
@@ -74,6 +66,7 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
 
 
     public void holdBlock(BlockPos pos) {
+        //TODO: check function when using
         BlockState state = this.getWorld().getBlockState(pos);
         Block block = state.getBlock();
         ItemStack stack = new ItemStack(block);
@@ -91,59 +84,6 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 4f));
         this.goalSelector.add(4, new FollowOwnerGoal(this, 1.0, 10.0f, 2.0f, false));
-    }
-
-    public void move(float x, float y, float z) { //TODO: doens't work
-        //if (this.canTeleportTo(new BlockPos(x, y, z))) --- TODO: function from FollowOwnerGoal (make something similar)
-        //this.getOwner().sendMessage(Text.of("Your robot moved with x: " + + x + "y: " + y + "& z: " + z));
-        BachelorProef.LOGGER.info("Robot moved with x: " + x + " y: " + y + " z: " + z);
-        BachelorProef.LOGGER.info("Previous pos: " + this.getPos());
-        BachelorProef.LOGGER.info("Now pos: " + this.getX() + x + " " + this.getY() + y + " " + this.getZ() + z);
-        this.refreshPositionAndAngles(this.getX() + x, this.getY() + y, this.getZ() + z, this.getYaw(), this.getPitch());
-    }
-
-    private boolean teleportTo(double x, double y, double z) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
-        while (mutable.getY() > this.getWorld().getBottomY() && !this.getWorld().getBlockState(mutable).blocksMovement()) {
-            mutable.move(Direction.DOWN);
-        }
-        BlockState blockState = this.getWorld().getBlockState(mutable);
-        boolean bl = blockState.blocksMovement();
-        boolean bl2 = blockState.getFluidState().isIn(FluidTags.WATER);
-        if (!bl || bl2) {
-            return false;
-        }
-        Vec3d vec3d = this.getPos();
-        boolean bl3 = this.teleport(x, y, z, true);
-        if (bl3) {
-            this.getWorld().emitGameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Emitter.of(this));
-        }
-        return bl3;
-    }
-
-    private boolean inRange(float v1, float v2) {
-        float diff = Math.abs(v1 - v2);
-        return diff <= 0.5;
-    }
-
-    public BlockPos moveToStep(BlockPos goalPos) {
-        float moveX = (float) (goalPos.getX() > this.getBlockPos().getX() ? 0.5 : -0.5);
-        float moveY = (float) (goalPos.getY() > this.getBlockPos().getY() ? 0.5 : -0.5);
-        float moveZ = (float) (goalPos.getZ() > this.getBlockPos().getZ() ? 0.5 : -0.5);
-
-        moveX = inRange(goalPos.getX(), this.getBlockPos().getX())  ? 0 : moveX;
-        moveY = inRange(goalPos.getY(), this.getBlockPos().getY()) ? 0 : moveY;
-        moveZ = inRange(goalPos.getZ(), this.getBlockPos().getZ()) ? 0 : moveZ;
-
-        //this.move(moveX, moveY, moveZ);
-
-        if (moveX == 0 && moveY == 0 && moveZ == 0) {
-            this.moveTo = null;
-        }
-
-        return new BlockPos((int) (this.getBlockPos().getX() + moveX),
-                (int) (this.getBlockPos().getY() + moveY),
-                (int) (this.getBlockPos().getZ() + moveZ));
     }
 
 
@@ -177,7 +117,9 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
     }
 
     private double distance(BlockPos pos1, BlockPos pos2) {
-        BachelorProef.LOGGER.info("Distance between: " + pos1 + " and " + pos2);
+        if (pos1 == null || pos2 == null) {
+            throw new Error("Cannot calculate distance, one of the positions is null");
+        }
         return Math.sqrt(Math.pow(pos1.getX() - pos2.getX(), 2) + Math.pow(pos1.getY() - pos2.getY(), 2) + Math.pow(pos1.getZ() - pos2.getZ(), 2));
     }
 
@@ -204,8 +146,6 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
         Item item = itemStack.getItem();
 
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
-        //ClientPlayerEntity serverPlayer = (ClientPlayerEntity) player;
-        //ClientPlayerMixinInterface playerInterface = (ClientPlayerMixinInterface) serverPlayer;
 
 
         if (this.getWorld().isClient) {
@@ -236,15 +176,31 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
             // TODO: View progress other player
             System.out.println("Tamed");
         }
-        else if (item == Items.IRON_INGOT && !this.isTamed() && playerInterface.getRobot() == null) {
+        else if (item == Items.IRON_INGOT && !this.isTamed()) {
 
             if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
             this.setOwner(player);
-            playerInterface.setRobot(this);
-            BachelorProef.LOGGER.info(playerInterface.getRobot().toString());
-            BachelorProef.LOGGER.info(playerInterface.toString());
+
+            World world = this.getWorld();
+            String dimension = world.getRegistryKey().getValue().getPath();
+            String overworld = DimensionTypes.OVERWORLD_ID.getPath();
+
+            if (dimension.equalsIgnoreCase(overworld)) {
+                playerInterface.robotAssigned();
+            } else {
+                playerInterface.robotAssignedTestWorld();
+            }
+
+            if (playerInterface.hasRobotTestWorld()){
+                BachelorProef.LOGGER.info("Robot assigned to player went successfully! (test world)");
+            } else if (playerInterface.hasRobot()){
+                BachelorProef.LOGGER.info("Robot assigned to player went successfully! (overworld)");
+            } else {
+                Error error = new Error("Assigning to player went wrong!");
+                throw error;
+            }
 
             //TODO: save after game is closed and opened again
             this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);

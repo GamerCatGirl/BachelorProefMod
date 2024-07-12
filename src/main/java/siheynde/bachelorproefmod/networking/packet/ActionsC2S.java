@@ -71,14 +71,14 @@ public class ActionsC2S {
             //wait untill robot has arrived on different thread
             ExecutorService executor = newSingleThreadExecutor();
            Future<String> future =  executor.submit(() -> {
-               BachelorProef.LOGGER.info("Trying to check if robot arrived!");
+               BachelorProef.LOGGER.info("Trying to check if robot arrived for user " + player + "!");
                 while(playerInterface.getRobotArrived() == false){}
                 playerInterface.setRobotArrtived(false); //reset arrived
-                BachelorProef.LOGGER.info("ACTIONS: Robot arrived at block! :)");
+                BachelorProef.LOGGER.info("ACTIONS: Robot arrived at block! :)"); //TODO: is never completed
                 return "done";
             });
             try {
-                future.get(50, TimeUnit.SECONDS); //waiting max 50 seconds per action
+                future.get(5000, TimeUnit.SECONDS); //waiting max 50 seconds per action
                 BachelorProef.LOGGER.info("ACTIONS: Robot arrived at block! :)");
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -110,15 +110,9 @@ public class ActionsC2S {
 
             BachelorProef.LOGGER.info("Received packet to execute Actions");
             PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
-            RobotEntity robot = playerInterface.getRobotTestWorld();
-            BachelorProef.LOGGER.info("Robot: " + robot);
-            BachelorProef.LOGGER.info("Position robot: " + robot.getX() + " " + robot.getY() + " " + robot.getZ());
-            //TODO: set robot to sit, so it only moves when you want it to move
-            robot.setSitting(true);
 
-            //TODO: set robot to your position
-            robot.setPosition(player.getX(), player.getY(), player.getZ());
-            BachelorProef.LOGGER.info("Position robot: " + robot.getX() + " " + robot.getY() + " " + robot.getZ());
+            //TODO: let robot come to your position
+
 
 
             BachelorProef.LOGGER.info("BUF?: " + buf.toString());

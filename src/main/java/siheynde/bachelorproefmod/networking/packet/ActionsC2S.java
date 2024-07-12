@@ -49,12 +49,16 @@ public class ActionsC2S {
             PacketByteBuf newbuf =  shrine.findOccurrence(lookFor, "g", player);
             ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, newbuf);
 
+            //TODO: let robot sit
+
             //wait a second for the line to be set in terminal
             try {
                 sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+
+            //TODO: let robot stand up --- so there is no difference between client and server position of robot
 
             //RobotEntity robot = playerInterface.getRobotTestWorld();
             BachelorProef.LOGGER.info("Setting move to of Robot!: " + blockPos);
@@ -68,7 +72,9 @@ public class ActionsC2S {
 
             BachelorProef.LOGGER.info("Robot start moving to block");
 
+            //TODO: here ligt de error !!!!!!!!!!!!!!!!!!!!!!!!!
             //wait untill robot has arrived on different thread
+            /*
             ExecutorService executor = newSingleThreadExecutor();
            Future<String> future =  executor.submit(() -> {
                BachelorProef.LOGGER.info("Trying to check if robot arrived for user " + player + "!");
@@ -83,6 +89,8 @@ public class ActionsC2S {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            */
+
 
             Text text = Text.of("Robot took block at position: " + blockPos);
             player.sendMessage(text);
@@ -130,6 +138,10 @@ public class ActionsC2S {
                     case "getBlock":
                         Integer toPosition2 = buf.readInt();
                         getBlockVisualisation(playerInterface, toPosition2, player);
+
+                        //TODO: delete this adterwards, just for testing atm
+                        buf = new PacketByteBuf(PacketByteBufs.create());
+
                         break;
 
                     case "letLoop":

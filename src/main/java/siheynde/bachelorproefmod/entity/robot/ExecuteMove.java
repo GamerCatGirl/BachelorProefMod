@@ -55,10 +55,13 @@ public class ExecuteMove extends Goal {
             return false;
         }
 
-        Boolean wrongDistance = !(this.tameable.squaredDistanceTo(this.goalPos.getX(), goalPos.getY(), goalPos.getZ()) <= (double)(this.maxDistance * this.maxDistance));
+        double distance = this.tameable.squaredDistanceTo(this.goalPos.getX(), goalPos.getY(), goalPos.getZ());
+        Boolean wrongDistance = (distance <= (double)(this.maxDistance * this.maxDistance));
 
-        if(wrongDistance){
+        if(!wrongDistance){
             BachelorProef.LOGGER.info("Stopping: Wrong distance");
+            BachelorProef.LOGGER.info("Squared Distance: " + distance);
+            BachelorProef.LOGGER.info("Squared Max distance: " + (double)(this.maxDistance * this.maxDistance));
             return false;
         }
 
@@ -173,7 +176,9 @@ public class ExecuteMove extends Goal {
             if (this.tameable.squaredDistanceTo(goalPos.getX(), goalPos.getY(), goalPos.getZ()) >= 144.0) {
                 this.tryTeleport();
             } else {
-                this.navigation.startMovingTo(goalPos.getX(), goalPos.getY(), goalPos.getZ(), this.speed);
+                if ( !this.navigation.startMovingTo(goalPos.getX(), goalPos.getY(), goalPos.getZ(), this.speed)){
+                    throw new Error("Navigation starting failed");
+                }
                 if (navigation.isIdle()) {throw new Error("Navigation is idle");}
                 if (navigation.getCurrentPath() == null) {return;}
 

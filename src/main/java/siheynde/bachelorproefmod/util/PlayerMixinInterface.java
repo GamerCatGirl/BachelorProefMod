@@ -10,6 +10,10 @@ import java.util.ArrayList;
 public interface PlayerMixinInterface {
     Levels.Topic getTopic();
     void setRobotMoveTo(BlockPos pos);
+    void makeRobotSit();
+    void makeRobotStand();
+
+    Boolean isRobotSitting();
     void setRobotArrtived(boolean arrived);
 
     BlockPos getRobotMoveTo();

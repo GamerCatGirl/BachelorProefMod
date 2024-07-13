@@ -30,6 +30,24 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
     @Unique
     RobotEntity robot = null;
     RobotEntity robotTestWorld = null;
+
+    Boolean robotSit = false;
+
+    @Override
+    public void makeRobotSit() {
+        robotSit = true;
+    }
+
+    @Override
+    public void makeRobotStand() {
+        robotSit = false;
+    }
+
+    @Override
+    public Boolean isRobotSitting() {
+        return robotSit;
+    }
+
     Levels levels = new Levels();
     private ArrayList<Levels.Topic> topics = levels.getTopics();
     public ArrayList<Shrine> visitedShrines = new ArrayList<>();
@@ -68,6 +86,8 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
     public void setRobotArrtived(boolean arrived){
         robotArrived = arrived;
     };
+
+
 
     @Override
     public BlockPos getRobotMoveTo(){

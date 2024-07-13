@@ -50,6 +50,7 @@ public class ActionsC2S {
             ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, newbuf);
 
             //TODO: let robot sit
+            playerInterface.makeRobotSit();
 
             //wait a second for the line to be set in terminal
             try {
@@ -58,14 +59,16 @@ public class ActionsC2S {
                 throw new RuntimeException(e);
             }
 
-            //TODO: let robot stand up --- so there is no difference between client and server position of robot
+            //TODO: let robot stand up --- so there is no difference between client and server position of robot after waiting
+            playerInterface.makeRobotStand();
 
             //RobotEntity robot = playerInterface.getRobotTestWorld();
             BachelorProef.LOGGER.info("Setting move to of Robot!: " + blockPos);
             //RobotEntity robot2 = playerInterface.getRobot();
             //BachelorProef.LOGGER.info("Robot: " + robot);
             //BachelorProef.LOGGER.info("Robot2: " + robot2);
-            playerInterface.setRobotMoveTo(blockPos);
+            BlockPos robotPos = blockPos.add(0, 1, 0);
+            playerInterface.setRobotMoveTo(robotPos); //TODO: zet y + 1 dat hij op de blok staat ipv in de blok crashed
             playerInterface.setRobotArrtived(false);
             //robot.arrived = false;
             //robot.moveTo = blockPos;
@@ -95,7 +98,6 @@ public class ActionsC2S {
             Text text = Text.of("Robot took block at position: " + blockPos);
             player.sendMessage(text);
             playerInterface.setRobotHoldBlock(blockPos);
-            //robot.holdBlock(blockPos);
         }
 
         public static void letLoopVisualisation(PlayerMixinInterface playerInterface, String functionName, ServerPlayerEntity player) {

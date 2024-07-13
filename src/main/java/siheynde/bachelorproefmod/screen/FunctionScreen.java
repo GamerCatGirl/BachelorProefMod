@@ -342,23 +342,24 @@ public class FunctionScreen
                         ModPackets.SET_RUN_ID,
                         buf);
 
+                PlayerMixinInterface playerInterface = (PlayerMixinInterface) client.player; //saving in client to
+                playerInterface.setRunID(runID); //saving in client to
+                playerInterface.setNameShrine(shrineName); //saving in client toJN£
+
                 client.player.sendMessage(Text.of("Go through the portal to start lesson of " + runID));
                 close();
                 MinecraftClient.getInstance().setScreen(new LavenderBookScreen(book));
             } else if (inMod) {
                 BachelorProef.LOGGER.info("in test world");
                 BachelorProef.LOGGER.info("Run function of: " + runID);
-                //Levels.Topic topic = shrine.topic; //TODO: delete this and let server execute this
-                //BachelorProef.LOGGER.info("runID: " + playerMixin.getRunID());
-                //SubTopic functions = topic.getFunctions(playerMixin.getRunID());
-                //BachelorProef.LOGGER.info("Functions: " + functions);
-                //RUN runID
+
                 PacketByteBuf buf = PacketByteBufs.create();
                 buf.writeString(runID);
 
                 ClientPlayNetworking.send(
                         ModPackets.EXECUTE_FUNCTION,
                         buf);
+                //TODO: mag ook client side runnen ipv server side!!!!
 
                 playerMixin.setRunID(null);
                 close();

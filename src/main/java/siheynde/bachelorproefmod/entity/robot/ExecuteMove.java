@@ -111,7 +111,6 @@ public class ExecuteMove extends Goal {
 
     @Override
     public void stop() {
-        BachelorProef.LOGGER.info("Stopping navigation robot");
         this.navigation.stop();
     }
 
@@ -173,13 +172,12 @@ public class ExecuteMove extends Goal {
             }
             this.updateCountdownTicks = this.getTickCount(10);
 
-            if (this.tameable.squaredDistanceTo(goalPos.getX(), goalPos.getY(), goalPos.getZ()) >= 144.0) {
+            double distance = this.tameable.squaredDistanceTo(goalPos.getX(), goalPos.getY(), goalPos.getZ());
+            if (distance >= 1000.0) {
+                BachelorProef.LOGGER.info("Teleporting robot to: " + goalPos + " because distance is: " + distance);
                 this.tryTeleport();
             } else {
-                if ( !this.navigation.startMovingTo(goalPos.getX(), goalPos.getY(), goalPos.getZ(), this.speed)){
-                    throw new Error("Navigation starting failed");
-                }
-                if (navigation.isIdle()) {throw new Error("Navigation is idle");}
+                this.navigation.startMovingTo(goalPos.getX(), goalPos.getY(), goalPos.getZ(), this.speed);
                 if (navigation.getCurrentPath() == null) {return;}
 
                 BachelorProef.LOGGER.info("path: " + navigation.getCurrentPath());

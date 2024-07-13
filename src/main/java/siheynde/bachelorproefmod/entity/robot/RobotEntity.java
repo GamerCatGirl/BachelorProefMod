@@ -114,6 +114,16 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
             this.arrived = true;
         }
 
+        LivingEntity player = this.getOwner();
+        if (player != null) {
+            PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
+            if (playerInterface.isRobotSitting()){
+                this.setSitting(true);
+            } else {
+                this.setSitting(false);
+            }
+        }
+
     }
 
     private double distance(BlockPos pos1, BlockPos pos2) {

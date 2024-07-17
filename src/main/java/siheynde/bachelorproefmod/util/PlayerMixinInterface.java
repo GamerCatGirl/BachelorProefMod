@@ -9,6 +9,9 @@ import java.util.ArrayList;
 
 public interface PlayerMixinInterface {
     Levels.Topic getTopic();
+
+    void setPreviousActionDone(boolean done);
+    Boolean getPreviousActionDone();
     void setRobotMoveTo(BlockPos pos);
     void makeRobotSit();
     void makeRobotStand();
@@ -20,6 +23,7 @@ public interface PlayerMixinInterface {
     boolean getRobotArrived();
 
     void setRobotHoldBlock(BlockPos pos);
+    BlockPos getRobotHoldBlock();
     void setRobotDropBlock();
 
     void robotAssignedTestWorld();

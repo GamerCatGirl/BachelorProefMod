@@ -67,11 +67,11 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
 
     public void holdBlock(BlockPos pos) {
         //TODO: check function when using
+        //BachelorProef.LOGGER.info("Robot is holding block");
         BlockState state = this.getWorld().getBlockState(pos);
         Block block = state.getBlock();
         ItemStack stack = new ItemStack(block);
         this.equipStack(EquipmentSlot.MAINHAND, stack);
-        //this.hand
         this.dataTracker.set(CARRIED_BLOCK, Optional.ofNullable(state));
     }
 
@@ -121,6 +121,11 @@ public class RobotEntity extends TameableEntity implements InventoryOwner {
                 this.setSitting(true);
             } else {
                 this.setSitting(false);
+            }
+
+            if(playerInterface.getRobotHoldBlock() != null){
+                //BachelorProef.LOGGER.info("Getting block that robot needs to hold!");
+                this.holdBlock(playerInterface.getRobotHoldBlock());
             }
         }
 

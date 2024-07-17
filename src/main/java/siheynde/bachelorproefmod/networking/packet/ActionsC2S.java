@@ -3,6 +3,7 @@ package siheynde.bachelorproefmod.networking.packet;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -18,23 +19,21 @@ import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 public class ActionsC2S {
-
         private static void setBlockVisualisation(PlayerMixinInterface playerInterface, String blockName, Integer toPosition, ServerPlayerEntity player) {
+            BachelorProef.LOGGER.info("Set block visualisation");
             Shrine shrine = playerInterface.getShrine();
             String lookFor = "(set-block!";
             shrine.findOccurrence(lookFor, "!", player);
             //TODO: wait untill action is done
         }
 
-        private static void getBlockVisualisation(PlayerMixinInterface playerInterface, Integer toPosition, ServerPlayerEntity player) {
+        private static String getBlockVisualisation(PlayerMixinInterface playerInterface, Integer toPosition, ServerPlayerEntity player) {
             BachelorProef.LOGGER.info("Get block visualisation");
             Shrine shrine = playerInterface.getShrine();
             Levels.Topic topic = shrine.topic;
@@ -68,39 +67,29 @@ public class ActionsC2S {
             //BachelorProef.LOGGER.info("Robot: " + robot);
             //BachelorProef.LOGGER.info("Robot2: " + robot2);
             BlockPos robotPos = blockPos.add(0, 1, 0);
-            playerInterface.setRobotMoveTo(robotPos); //TODO: zet y + 1 dat hij op de blok staat ipv in de blok crashed
+            playerInterface.setRobotMoveTo(robotPos); //zet y + 1 dat hij op de blok staat ipv in de blok crashed
             playerInterface.setRobotArrtived(false);
-            //robot.arrived = false;
-            //robot.moveTo = blockPos;
 
             BachelorProef.LOGGER.info("Robot start moving to block");
 
-            //TODO: here ligt de error !!!!!!!!!!!!!!!!!!!!!!!!!
-            //wait untill robot has arrived on different thread
-            /*
-            ExecutorService executor = newSingleThreadExecutor();
-           Future<String> future =  executor.submit(() -> {
-               BachelorProef.LOGGER.info("Trying to check if robot arrived for user " + player + "!");
-                while(playerInterface.getRobotArrived() == false){}
-                playerInterface.setRobotArrtived(false); //reset arrived
-                BachelorProef.LOGGER.info("ACTIONS: Robot arrived at block! :)"); //TODO: is never completed
-                return "done";
-            });
-            try {
-                future.get(5000, TimeUnit.SECONDS); //waiting max 50 seconds per action
-                BachelorProef.LOGGER.info("ACTIONS: Robot arrived at block! :)");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            while(playerInterface.getRobotArrived() == false || playerInterface.getRobotMoveTo() != null){
+                BachelorProef.LOGGER.info("Waiting...");
             }
-            */
 
+            playerInterface.setRobotArrtived(false); //reset arrived
+            BachelorProef.LOGGER.info("ACTIONS: Robot arrived at block! :)");
 
+            playerInterface.setRobotHoldBlock(blockPos); //TODO: implement this in robot itself too in tick function
             Text text = Text.of("Robot took block at position: " + blockPos);
             player.sendMessage(text);
-            playerInterface.setRobotHoldBlock(blockPos);
+            //playerInterface.setRobotHoldBlock(blockPos);
+            BachelorProef.LOGGER.info("Get Block Visualisation done");
+            playerInterface.setPreviousActionDone(true);
+            return "DONE";
         }
 
         public static void letLoopVisualisation(PlayerMixinInterface playerInterface, String functionName, ServerPlayerEntity player) {
+            BachelorProef.LOGGER.info("Let loop");
             Shrine shrine = playerInterface.getShrine();
             String lookFor = "(let-loop '" + functionName;
             List<String> activatedLoops = shrine.activatedLoops;
@@ -114,12 +103,73 @@ public class ActionsC2S {
             }
         }
 
+    private static void startRobotMovementThread(PlayerMixinInterface playerInterface, PacketByteBuf buf, ServerPlayerEntity player, String action) {
 
-        public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
-                                   PacketByteBuf buf, PacketSender responseSender) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<String> future = executor.submit(() -> {
+            // This is the task that will run in a separate thread
+            while (!playerInterface.getPreviousActionDone()) {
+                try {
+                    Thread.sleep(100); // Sleep to prevent busy-waiting
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return "interrupted";
+                }
+            }
+
+            playerInterface.setPreviousActionDone(false);
+
+            return "done";
+        });
+
+        // Create a scheduled executor to check the future periodically
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(() -> {
+            if (future.isDone()) {
+                try {
+                    BachelorProef.LOGGER.info("Previous action is done!");
+                    // Execute any additional logic needed after the robot arrives
+                    switch(action){
+                        case "setBlock":
+                            String blockName = buf.readString();
+                            Integer toPosition = buf.readInt();
+                            setBlockVisualisation(playerInterface, blockName, toPosition, player);
+                            //TODO: ask here if the action is done
+                            break;
+                        case "getBlock":
+                            Integer toPosition2 = buf.readInt();
+                            getBlockVisualisation(playerInterface, toPosition2, player);
+                            break;
+
+                        case "letLoop":
+                            String loopName = buf.readString();
+                            letLoopVisualisation(playerInterface, loopName, player);
+                            break;
+                        default:
+                            BachelorProef.LOGGER.info("Action not found: " + action);
+                            throw new IllegalStateException("Unexpected value: " + action);
+                    }
+
+                    // Shutdown the executors
+                    executor.shutdown();
+                    scheduler.shutdown();
+
+                } catch (Exception e) {
+                    BachelorProef.LOGGER.error("Error occurred while waiting for the robot to arrive", e);
+                    // Handle the error appropriately
+                }
+            }
+        }, 0, 100, TimeUnit.MILLISECONDS); // Check every 100 milliseconds
+    }
+
+
+
+    public static void receive(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler,
+                        PacketByteBuf buf, PacketSender responseSender) {
 
             BachelorProef.LOGGER.info("Received packet to execute Actions");
             PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
+            playerInterface.setRobotArrtived(true);
 
             //TODO: let robot come to your position
 
@@ -127,33 +177,19 @@ public class ActionsC2S {
 
             BachelorProef.LOGGER.info("BUF?: " + buf.toString());
 
-            while(buf.isReadable()){
-                String action = buf.readString();
+
+            PacketByteBuf currentBuf = buf;
+
+            while(currentBuf.isReadable()) {
+                String action = currentBuf.readString();
                 BachelorProef.LOGGER.info("Action: " + action);
-                switch(action){
-                    case "setBlock":
-                        String blockName = buf.readString();
-                        Integer toPosition = buf.readInt();
-                        setBlockVisualisation(playerInterface, blockName, toPosition, player);
-                        //TODO: ask here if the action is done
-                        break;
-                    case "getBlock":
-                        Integer toPosition2 = buf.readInt();
-                        getBlockVisualisation(playerInterface, toPosition2, player);
-
-                        //TODO: delete this adterwards, just for testing atm
-                        buf = new PacketByteBuf(PacketByteBufs.create());
-
-                        break;
-
-                    case "letLoop":
-                        String loopName = buf.readString();
-                        letLoopVisualisation(playerInterface, loopName, player);
-                        break;
-                }
-                BachelorProef.LOGGER.info("New action?: " + buf.isReadable());
+                startRobotMovementThread(playerInterface, currentBuf, player, action);
+                //if (action.equals("getBlock")) {
+                //    currentBuf = PacketByteBufs.create();
+                //}
+                BachelorProef.LOGGER.info("New action?: " + currentBuf.isReadable());
             }
 
             //TODO: make robot stand up again
-        }
+    }
 }

@@ -25,7 +25,7 @@ public class ExecuteMove extends Goal {
     private final WorldView world;
     private final EntityNavigation navigation;
     private LivingEntity owner;
-    private final float maxDistance = 10.0f; //based on follow owner goal
+    private final float maxDistance = 20.0f; //based on follow owner goal
     private final float minDistance = 1.5f; //robot moet minstens 2 blokken van de goalpositie
     float range = (float) 0.6;
 
@@ -46,6 +46,9 @@ public class ExecuteMove extends Goal {
 
     @Override
     public boolean shouldContinue() {
+        if (goalPos == null) {
+            return false;
+        }
         if (this.navigation.isIdle()) {
             BachelorProef.LOGGER.info("Stopping: Navigation is idle");
             return false;
@@ -79,23 +82,23 @@ public class ExecuteMove extends Goal {
 
         PlayerMixinInterface ownerMixin = (PlayerMixinInterface) livingEntity;
         BlockPos pos = ownerMixin.getRobotMoveTo();
-        BachelorProef.LOGGER.info("Robot " + robot + " can start moving to?: " + ownerMixin.getRobotMoveTo());
+        //BachelorProef.LOGGER.info("Robot " + robot + " can start moving to?: " + ownerMixin.getRobotMoveTo());
 
         if (pos == null) {
-            BachelorProef.LOGGER.info("FAULT: No position found");
+            //BachelorProef.LOGGER.info("FAULT: No position found");
             return false;
         }
 
         if (livingEntity.isSpectator()) {
-            BachelorProef.LOGGER.info("FAULT: No spectator found");
+            //BachelorProef.LOGGER.info("FAULT: No spectator found");
             return false;
         }
         if (this.cannotFollow()) {
-            BachelorProef.LOGGER.info("FAULT: Cannot Follow");
+            //BachelorProef.LOGGER.info("FAULT: Cannot Follow");
             return false;
         }
         if (this.tameable.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) < (double)(this.minDistance * this.minDistance)) {
-            BachelorProef.LOGGER.info("FAULT: Distance " + this.tameable.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) + " too small");
+            //BachelorProef.LOGGER.info("FAULT: Distance " + this.tameable.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) + " too small");
             return false;
         }
         this.owner = livingEntity;
@@ -163,9 +166,9 @@ public class ExecuteMove extends Goal {
             if (this.tameable.squaredDistanceTo(goalPos.getX(), goalPos.getY(), goalPos.getZ()) < 3) {
                 PlayerMixinInterface ownerMixin = (PlayerMixinInterface) this.owner;
                 BachelorProef.LOGGER.info("Robot arrived at block: " + goalPos + ", its owner is: " + this.owner);
+                this.goalPos = null;
                 ownerMixin.setRobotArrtived(true);
                 ownerMixin.setRobotMoveTo(null);
-                //TODO: check of robot needs to take the block
             }
             if (--this.updateCountdownTicks > 0) {
                 return; //next test doesn't need to be checked if robot is moving
@@ -176,7 +179,7 @@ public class ExecuteMove extends Goal {
             if (distance >= 1000.0) {
                 BachelorProef.LOGGER.info("Teleporting robot to: " + goalPos + " because distance is: " + distance);
                 this.tryTeleport();
-            } else {
+            }  else {
                 this.navigation.startMovingTo(goalPos.getX(), goalPos.getY(), goalPos.getZ(), this.speed);
                 if (navigation.getCurrentPath() == null) {return;}
 

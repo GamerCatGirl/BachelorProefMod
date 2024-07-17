@@ -27,11 +27,23 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
 
     private BlockPos holdBlock = null;
 
+    private Boolean previousActionDone = false;
+
     @Unique
     RobotEntity robot = null;
     RobotEntity robotTestWorld = null;
 
     Boolean robotSit = false;
+
+    @Override
+    public void setPreviousActionDone(boolean done) {
+        previousActionDone = done;
+    }
+
+    @Override
+    public Boolean getPreviousActionDone() {
+        return previousActionDone;
+    }
 
     @Override
     public void makeRobotSit() {
@@ -102,6 +114,11 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
     @Override
     public void setRobotHoldBlock(BlockPos pos) {
         holdBlock = pos;
+    }
+
+    @Override
+    public BlockPos getRobotHoldBlock() {
+        return holdBlock;
     }
 
     @Override

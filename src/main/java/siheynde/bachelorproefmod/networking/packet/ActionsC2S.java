@@ -16,6 +16,7 @@ import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.functions.SubTopic;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
+import siheynde.bachelorproefmod.util.Action;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import java.util.List;
@@ -169,6 +170,10 @@ public class ActionsC2S {
 
             BachelorProef.LOGGER.info("Received packet to execute Actions");
             PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
+            List<Action> actions = playerInterface.getActions();
+            BachelorProef.LOGGER.info("actions on server side: " + actions.toString());
+
+
             playerInterface.setRobotArrtived(true);
 
             //TODO: let robot come to your position
@@ -178,16 +183,14 @@ public class ActionsC2S {
             BachelorProef.LOGGER.info("BUF?: " + buf.toString());
 
 
-            PacketByteBuf currentBuf = buf;
-
-            while(currentBuf.isReadable()) {
-                String action = currentBuf.readString();
+            while(buf.isReadable()) {
+                String action = buf.readString();
                 BachelorProef.LOGGER.info("Action: " + action);
-                startRobotMovementThread(playerInterface, currentBuf, player, action);
+                startRobotMovementThread(playerInterface, buf, player, action);
                 //if (action.equals("getBlock")) {
                 //    currentBuf = PacketByteBufs.create();
                 //}
-                BachelorProef.LOGGER.info("New action?: " + currentBuf.isReadable());
+                BachelorProef.LOGGER.info("New action?: " + buf.isReadable());
             }
 
             //TODO: make robot stand up again

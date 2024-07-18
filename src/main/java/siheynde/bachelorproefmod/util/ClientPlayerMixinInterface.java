@@ -7,11 +7,11 @@ import siheynde.bachelorproefmod.structure.shrine.Shrine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public interface ClientPlayerMixinInterface {
-    HashMap<PacketByteBuf,String> actions = new HashMap<>();
     void addAction(String action, PacketByteBuf buf);
-    HashMap<PacketByteBuf, String> getActions();
+    List<PacketByteBuf> getActions();
     Shrine getShrine(int level);
     void setTopic(Levels.Topic topic);
     Levels.Topic getTopic();

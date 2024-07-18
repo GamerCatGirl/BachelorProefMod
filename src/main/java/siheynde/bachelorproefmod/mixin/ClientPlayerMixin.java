@@ -10,12 +10,19 @@ import siheynde.bachelorproefmod.structure.shrine.Shrine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Mixin(ClientPlayerEntity.class)
 public class ClientPlayerMixin implements ClientPlayerMixinInterface {
     public ArrayList<Shrine> visitedShrines = new ArrayList<>();
 
     public Levels.Topic topic;
+
+    private HashMap<PacketByteBuf,String> actions = new HashMap<>();
+
+    private List<PacketByteBuf> actionsNew = new ArrayList<>();
+
+    private int actions_count = 0;
 
     public Shrine getShrine(int level) {
         return visitedShrines.get(level);
@@ -24,11 +31,15 @@ public class ClientPlayerMixin implements ClientPlayerMixinInterface {
     @Override
     public void addAction(String action, PacketByteBuf buf) {
         actions.put(buf, action);
+        actionsNew.add(buf);
+        actions_count += 1;
     }
 
     @Override
-    public HashMap<PacketByteBuf, String> getActions() {
-        return actions;
+    public List<PacketByteBuf> getActions() {
+        BachelorProef.LOGGER.info("should have " + actions_count + " actions, has " + actions.size() + " actions, new edition has " + actionsNew.size() + " actions.");
+
+        return actionsNew;
     }
 
     public void setTopic(Levels.Topic topic) {

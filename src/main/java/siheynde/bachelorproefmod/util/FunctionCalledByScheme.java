@@ -11,6 +11,7 @@ import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.networking.ModPackets;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.Thread.sleep;
@@ -27,52 +28,75 @@ public class FunctionCalledByScheme {
         BachelorProef.LOGGER.info("Function setBlock " + blockName + " on " + toPosition + " place");
 
         PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeString("setBlock");
         buf.writeString(blockName);
         buf.writeInt(toPosition);
+
+        ClientPlayNetworking.send(ModPackets.SAVE_ACTION, buf);
+
+        playerInterface.addAction("setBlock", buf); //TODO: send to server!
     }
 
     public void getBlock(Integer toPosition) {
         BachelorProef.LOGGER.info("Function getBlock " + toPosition + " place");
 
         PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeString("getBlock");
         buf.writeInt(toPosition);
-        playerInterface.addAction("getBlock", buf);
+
+        ClientPlayNetworking.send(ModPackets.SAVE_ACTION, buf);
+
+        playerInterface.addAction("getBlock", buf); //TODO: send to server!
     }
 
     public void letLoop(String loopname) {
         BachelorProef.LOGGER.info("Function letLoop " + loopname);
         PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeString("letLoop");
         buf.writeString(loopname);
-        playerInterface.addAction("letLoop", buf);
+
+        ClientPlayNetworking.send(ModPackets.SAVE_ACTION, buf);
+
+        playerInterface.addAction("letLoop", buf); // TODO: send to server!
     }
 
     public void done() {
         PacketByteBuf buf = PacketByteBufs.create();
-        HashMap<PacketByteBuf, String> actions = playerInterface.getActions();
-        BachelorProef.LOGGER.info(actions.toString());
-        for (Map.Entry<PacketByteBuf, String> entry : actions.entrySet()) {
-            switch (entry.getValue()) {
+        ClientPlayNetworking.send(ModPackets.ACTIONS, buf);
+
+        //TODO: delete under this line
+        /*List<PacketByteBuf> actions = playerInterface.getActions();
+        //BachelorProef.LOGGER.info("actions: " + actions.toString());
+
+        for (PacketByteBuf entry : actions) {
+            String action = entry.readString();
+            BachelorProef.LOGGER.info(action);
+            switch (entry.readString()) {
                 case "setBlock" -> {
-                    String blockName = entry.getKey().readString();
-                    Integer toPosition = entry.getKey().readInt();
-                    buf.writeString(entry.getValue());
+                    String blockName = entry.readString();
+                    int toPosition = entry.readInt();
+                    //String blockName = entry.getKey().readString();
+                    //Integer toPosition = entry.getKey().readInt();
+                    buf.writeString("setBlock");
                     buf.writeString(blockName);
                     buf.writeInt(toPosition);
                 }
                 case "getBlock" -> {
-                    Integer toPosition = entry.getKey().readInt();
-                    buf.writeString(entry.getValue());
+                    int toPosition = entry.readInt();
+                    buf.writeString("getBlock");
                     buf.writeInt(toPosition);
                 }
                 case "letLoop" -> {
-                    String loopName = entry.getKey().readString();
-                    buf.writeString(entry.getValue());
+                    String loopName = buf.readString();
+                    buf.writeString("letLoop");
                     buf.writeString(loopName);
                 }
             }
-        }
+        };
 
         ClientPlayNetworking.send(ModPackets.ACTIONS, buf);
+
+         */
 
     }
 

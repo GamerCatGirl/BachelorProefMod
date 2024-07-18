@@ -6,9 +6,12 @@ import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface PlayerMixinInterface {
     Levels.Topic getTopic();
+
+    void addAction(Action action);
 
     void setPreviousActionDone(boolean done);
     Boolean getPreviousActionDone();
@@ -43,4 +46,5 @@ public interface PlayerMixinInterface {
     Shrine getShrine();
     ArrayList<Shrine> getVisitedShrines();
 
+    List<Action> getActions();
 }

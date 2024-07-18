@@ -11,13 +11,22 @@ import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
+import siheynde.bachelorproefmod.util.Action;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerMixin implements PlayerMixinInterface {
     @Shadow protected abstract void takeShieldHit(LivingEntity attacker);
+
+    private List<Action> actions = new ArrayList<>();
+
+    @Override
+    public void addAction(Action action) {
+        actions.add(action);
+    }
 
     private BlockPos robotMoveTo = null;
     private boolean robotArrived = false;
@@ -197,5 +206,10 @@ public abstract class PlayerMixin implements PlayerMixinInterface {
         visitedShrines.add(newShrine);
 
         return newShrine;
+    }
+
+    @Override
+    public List<Action> getActions() {
+        return actions;
     }
 }

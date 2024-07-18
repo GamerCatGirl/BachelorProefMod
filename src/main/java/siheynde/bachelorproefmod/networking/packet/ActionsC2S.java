@@ -104,10 +104,12 @@ public class ActionsC2S {
             }
         }
 
-    private static void startRobotMovementThread(PlayerMixinInterface playerInterface, PacketByteBuf buf, ServerPlayerEntity player, String action) {
+    private static void startRobotMovementThread(ServerPlayerEntity player, List<Action> actions) {
+            PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<String> future = executor.submit(() -> {
+            BachelorProef.LOGGER.info("Waiting for previous action to be done...");
             // This is the task that will run in a separate thread
             while (!playerInterface.getPreviousActionDone()) {
                 try {
@@ -129,7 +131,13 @@ public class ActionsC2S {
             if (future.isDone()) {
                 try {
                     BachelorProef.LOGGER.info("Previous action is done!");
+                    Action action = actions.get(0);
+                    actions.remove(0);
+                    BachelorProef.LOGGER.info("Starting new action " + action.toString());
+
+                    action.execute(player);
                     // Execute any additional logic needed after the robot arrives
+                    /*
                     switch(action){
                         case "setBlock":
                             String blockName = buf.readString();
@@ -151,9 +159,16 @@ public class ActionsC2S {
                             throw new IllegalStateException("Unexpected value: " + action);
                     }
 
+                     */
+
                     // Shutdown the executors
                     executor.shutdown();
                     scheduler.shutdown();
+
+                    //Start new action
+                    BachelorProef.LOGGER.info("Trying to start new action!");
+                    if (actions.size() > 0) {startRobotMovementThread(player, actions);}
+
 
                 } catch (Exception e) {
                     BachelorProef.LOGGER.error("Error occurred while waiting for the robot to arrive", e);
@@ -182,17 +197,24 @@ public class ActionsC2S {
 
             BachelorProef.LOGGER.info("BUF?: " + buf.toString());
 
+            playerInterface.setPreviousActionDone(true);
+            //Action action = actions.get(0);
+            //actions.remove(0);
 
-            while(buf.isReadable()) {
-                String action = buf.readString();
-                BachelorProef.LOGGER.info("Action: " + action);
-                startRobotMovementThread(playerInterface, buf, player, action);
+            //for (Action action : actions) {
+            startRobotMovementThread(player, actions);
+            //}
+
+            //
+            //while(buf.isReadable()) {
+            //    String action = buf.readString();
+            //    BachelorProef.LOGGER.info("Action: " + action);
+                //startRobotMovementThread(playerInterface, buf, player, action);
                 //if (action.equals("getBlock")) {
                 //    currentBuf = PacketByteBufs.create();
                 //}
-                BachelorProef.LOGGER.info("New action?: " + buf.isReadable());
-            }
+                //BachelorProef.LOGGER.info("New action?: " + buf.isReadable());
+            //}
 
-            //TODO: make robot stand up again
     }
 }

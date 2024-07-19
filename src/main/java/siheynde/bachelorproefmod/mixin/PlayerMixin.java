@@ -1,6 +1,5 @@
 package siheynde.bachelorproefmod.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;

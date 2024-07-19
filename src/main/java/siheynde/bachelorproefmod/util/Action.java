@@ -11,6 +11,8 @@ import siheynde.bachelorproefmod.structure.functions.SubTopic;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 
+import java.util.List;
+
 import static java.lang.Thread.sleep;
 
 public class Action {
@@ -47,7 +49,7 @@ public class Action {
         // TODO: Implement this method
         BachelorProef.LOGGER.info("Executing action of type " + this.type + " ...");
         if (this.type.equals("setBlock")) {
-            throw new RuntimeException("Set Block Function not yet implemented!"); //setBlockVisualisation(player);
+            return setBlockVisualisation(player);
         } else if (this.type.equals("getBlock")) {
             return getBlockVisualisation(player);
         } else if (this.type.equals("letLoop")) {
@@ -57,9 +59,95 @@ public class Action {
         }
     }
 
+    private String setBlockVisualisation(ServerPlayerEntity player) {
+        PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
+
+        BachelorProef.LOGGER.info("Set block visualisation");
+        Shrine shrine = playerInterface.getShrine();
+        Levels.Topic topic = shrine.topic;
+
+        String nameSub = playerInterface.getRunID();
+        SubTopic subTopic = topic.getSubTopic(nameSub);
+
+        BlockPos blockPos = subTopic.getPosition(toPosition);
+        BachelorProef.LOGGER.info("POS vect->real: " + toPosition + " -> " + blockPos);
+
+        String lookFor = "(set-block! ";
+        PacketByteBuf newbuf =  shrine.findOccurrence(lookFor, "!", player);
+        ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, newbuf);
+
+        //TODO: let robot sit
+        playerInterface.makeRobotSit();
+
+        //wait a second for the line to be set in terminal
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        //TODO: let robot stand up --- so there is no difference between client and server position of robot after waiting
+        playerInterface.makeRobotStand();
+
+        //RobotEntity robot = playerInterface.getRobotTestWorld();
+        BachelorProef.LOGGER.info("Setting move to of Robot!: " + blockPos);
+        //RobotEntity robot2 = playerInterface.getRobot();
+        //BachelorProef.LOGGER.info("Robot: " + robot);
+        //BachelorProef.LOGGER.info("Robot2: " + robot2);
+        BlockPos robotPos = blockPos.add(0, 1, 0);
+        playerInterface.setRobotMoveTo(robotPos); //zet y + 1 dat hij op de blok staat ipv in de blok crashed
+        playerInterface.setRobotArrtived(false);
+
+        BachelorProef.LOGGER.info("Robot start moving to block");
+
+        while(playerInterface.getRobotArrived() == false || playerInterface.getRobotMoveTo() != null){
+            BachelorProef.LOGGER.info("Waiting...");
+        }
+
+        playerInterface.setRobotArrtived(false); //reset arrived
+        BachelorProef.LOGGER.info("ACTIONS: Robot arrived at block! :)");
+
+        //playerInterface.setRobotHoldBlock(blockPos); //TODO: implement this in robot itself too in tick function
+        BachelorProef.LOGGER.info(blockName);
+        //TODO: convert to block to be placed
+
+        Text text = Text.of("Robot places block at position: " + blockPos);
+        player.sendMessage(text);
+        //playerInterface.setRobotHoldBlock(blockPos);
+        BachelorProef.LOGGER.info("Get Block Visualisation done");
+        playerInterface.setPreviousActionDone(true);
+        return "DONE";
+    }
+
     private String letLoop(ServerPlayerEntity player){
         //TODO: implement
+        BachelorProef.LOGGER.info("Let loop");
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
+
+        Shrine shrine = playerInterface.getShrine();
+        String lookFor = "(let-loop '" + loopName;
+        List<String> activatedLoops = shrine.activatedLoops;
+        PacketByteBuf bufLine;
+        if (activatedLoops.contains(loopName)) {
+            shrine.LookInCompleteFunction = true;
+            shrine.indexInFunction = 0;
+            bufLine = shrine.findOccurrence(lookFor, "'", player);
+        } else {
+            bufLine = shrine.findOccurrence(lookFor, "'", player);
+            shrine.activatedLoops.add(loopName);
+        }
+
+        ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, bufLine);
+
+        playerInterface.makeRobotSit();
+        //wait a second for the line to be set in terminal
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        playerInterface.makeRobotStand();
+
         playerInterface.setPreviousActionDone(true);
         return "DONE";
     }

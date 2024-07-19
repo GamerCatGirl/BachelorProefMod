@@ -1,7 +1,6 @@
 package siheynde.bachelorproefmod.util;
 
 import net.minecraft.util.math.BlockPos;
-import siheynde.bachelorproefmod.entity.robot.RobotEntity;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 

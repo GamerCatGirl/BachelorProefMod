@@ -175,6 +175,10 @@ public class ExecuteMove extends Goal {
             }
             this.updateCountdownTicks = this.getTickCount(10);
 
+            if (goalPos == null) {
+                return; //failsafe for nullpointer
+            }
+
             double distance = this.tameable.squaredDistanceTo(goalPos.getX(), goalPos.getY(), goalPos.getZ());
             if (distance >= 1000.0) {
                 BachelorProef.LOGGER.info("Teleporting robot to: " + goalPos + " because distance is: " + distance);

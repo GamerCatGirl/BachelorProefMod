@@ -185,9 +185,7 @@ public class ExecuteMove extends Goal {
                 this.tryTeleport();
             }  else {
                 this.navigation.startMovingTo(goalPos.getX(), goalPos.getY(), goalPos.getZ(), this.speed);
-                if (navigation.getCurrentPath() == null) {return;}
 
-                BachelorProef.LOGGER.info("path: " + navigation.getCurrentPath());
             }
         }
     }

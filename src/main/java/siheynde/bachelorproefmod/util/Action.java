@@ -2,10 +2,12 @@ package siheynde.bachelorproefmod.util;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.block.Block;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.networking.ModPackets;
 import siheynde.bachelorproefmod.structure.functions.SubTopic;
@@ -120,6 +122,12 @@ public class Action {
 
         //playerInterface.setRobotHoldBlock(blockPos); //TODO: implement this in robot itself too in tick function
         BachelorProef.LOGGER.info(blockName);
+        Block block =  BlockIDs.getBlockID(blockName);
+        BlockPos position = blockPos;
+
+        World world = player.getWorld();
+        world.setBlockState(position, block.getDefaultState());
+
         //TODO: convert to block to be placed
 
         Text textHulp = Text.of("Robot places block at position: " + blockPos);

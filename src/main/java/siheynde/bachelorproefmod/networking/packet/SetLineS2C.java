@@ -32,7 +32,6 @@ public class SetLineS2C {
             Text text = Text.of("Set line to: " + line);
             client.player.sendMessage(text);
             terminal.waitFor();
-            client.player.sendMessage(Text.of("Set line done!"));
         } catch (Exception e) {
             e.printStackTrace();
         }

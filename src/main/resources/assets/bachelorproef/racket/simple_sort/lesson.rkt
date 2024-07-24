@@ -38,11 +38,11 @@
 ;; Rewrite the procedure so that the order of the loops is reversed.
 ;; Which order will be the easiest to apply to single linked lists?
 
-(define (set-block! vector idx block)
+(define (set-block! vector idx block line)
   ;TODO: let the robot move the block
   ;TODO: send to java client to highlight a line
-  (define setBlock (method "setBlock" "siheynde.bachelorproefmod.util.FunctionCalledByScheme" "java.lang.String" "java.lang.Integer"))
-  (setBlock (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme") (.toString block) (new "java.lang.Integer" idx))
+  (define setBlock (method "setBlock" "siheynde.bachelorproefmod.util.FunctionCalledByScheme" "java.lang.String" "java.lang.Integer" "java.lang.Integer"))
+  (setBlock (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme") (.toString block) (new "java.lang.Integer" idx) (new "java.lang.Integer" line))
   (vector-set! vector idx block))
 
 (define (let-loop name)
@@ -87,9 +87,10 @@
                 (- inner-idx 1)) ;inner idx -1 als inner idx op einde vector
                (else             ;of inner-idx > idx current
                                  ;             < => swap vorige inner met inner
-                (set-block! vector (- inner-idx 1) (get-block vector inner-idx))
+                (set-block! vector (- inner-idx 1)
+                    (get-block vector inner-idx) 90)
                 (inner-loop (+ inner-idx 1))))) ;inner loop + 1
-           current) ;swap current met inner-idx -1 (vorig)
+           current 79) ;swap current met inner-idx -1 (vorig)
           (if (> outer-idx 0)
               (outer-loop (- outer-idx 1)))))
           (end))

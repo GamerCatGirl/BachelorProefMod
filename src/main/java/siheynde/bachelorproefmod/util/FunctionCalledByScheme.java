@@ -24,13 +24,14 @@ public class FunctionCalledByScheme {
     MinecraftClient client = MinecraftClient.getInstance();
     ClientPlayerMixinInterface playerInterface = (ClientPlayerMixinInterface) client.player;
 
-    public void setBlock(String blockName, Integer toPosition) {
+    public void setBlock(String blockName, Integer toPosition, Integer line) {
         BachelorProef.LOGGER.info("Function setBlock " + blockName + " on " + toPosition + " place");
 
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeString("setBlock");
         buf.writeString(blockName);
         buf.writeInt(toPosition);
+        buf.writeInt(line);
 
         ClientPlayNetworking.send(ModPackets.SAVE_ACTION, buf);
 

@@ -1,5 +1,6 @@
 package siheynde.bachelorproefmod.util;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,12 +20,14 @@ public class Action {
     public String type;
     public String blockName;
     public int toPosition;
+    public int line;
     public String loopName;
 
-    public Action(String blockName, int toPosition) {
+    public Action(String blockName, int toPosition, int line) {
         this.type = "setBlock";
         this.blockName = blockName;
         this.toPosition = toPosition;
+        this.line = line;
         BachelorProef.LOGGER.info("New action made of type " + this.type);
     }
 
@@ -72,9 +75,13 @@ public class Action {
         BlockPos blockPos = subTopic.getPosition(toPosition);
         BachelorProef.LOGGER.info("POS vect->real: " + toPosition + " -> " + blockPos);
 
-        String lookFor = "(set-block! ";
-        PacketByteBuf newbuf =  shrine.findOccurrence(lookFor, "!", player);
-        ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, newbuf);
+        //String lookFor = "(set-block! ";
+        //PacketByteBuf newbuf =  shrine.findOccurrence(lookFor, "!", player);
+        PacketByteBuf bufLine = PacketByteBufs.create();
+        //shrine.indexInFunction = line - shrine.startLineIndex;
+
+        bufLine.writeInt(line);
+        ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, bufLine);
 
         //TODO: let robot sit
         playerInterface.makeRobotSit();
@@ -101,7 +108,11 @@ public class Action {
         BachelorProef.LOGGER.info("Robot start moving to block");
 
         while(playerInterface.getRobotArrived() == false || playerInterface.getRobotMoveTo() != null){
-            BachelorProef.LOGGER.info("Waiting...");
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         playerInterface.setRobotArrtived(false); //reset arrived
@@ -111,8 +122,8 @@ public class Action {
         BachelorProef.LOGGER.info(blockName);
         //TODO: convert to block to be placed
 
-        Text text = Text.of("Robot places block at position: " + blockPos);
-        player.sendMessage(text);
+        Text textHulp = Text.of("Robot places block at position: " + blockPos);
+        player.sendMessage(textHulp);
         //playerInterface.setRobotHoldBlock(blockPos);
         BachelorProef.LOGGER.info("Get Block Visualisation done");
         playerInterface.setPreviousActionDone(true);
@@ -194,8 +205,13 @@ public class Action {
         BachelorProef.LOGGER.info("Robot start moving to block");
 
         while(playerInterface.getRobotArrived() == false || playerInterface.getRobotMoveTo() != null){
-            BachelorProef.LOGGER.info("Waiting...");
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
+
 
         playerInterface.setRobotArrtived(false); //reset arrived
         BachelorProef.LOGGER.info("ACTIONS: Robot arrived at block! :)");

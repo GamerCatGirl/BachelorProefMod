@@ -26,83 +26,8 @@ import static java.lang.Thread.sleep;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 public class ActionsC2S {
-        private static void setBlockVisualisation(PlayerMixinInterface playerInterface, String blockName, Integer toPosition, ServerPlayerEntity player) {
-            BachelorProef.LOGGER.info("Set block visualisation");
-            Shrine shrine = playerInterface.getShrine();
-            String lookFor = "(set-block!";
-            shrine.findOccurrence(lookFor, "!", player);
-            //TODO: wait untill action is done
-        }
 
-        private static String getBlockVisualisation(PlayerMixinInterface playerInterface, Integer toPosition, ServerPlayerEntity player) {
-            BachelorProef.LOGGER.info("Get block visualisation");
-            Shrine shrine = playerInterface.getShrine();
-            Levels.Topic topic = shrine.topic;
 
-            String nameSub = playerInterface.getRunID();
-            SubTopic subTopic = topic.getSubTopic(nameSub);
-
-            BlockPos blockPos = subTopic.getPosition(toPosition);
-            BachelorProef.LOGGER.info("POS vect->real: " + toPosition + " -> " + blockPos);
-
-            String lookFor = "(get-block ";
-            PacketByteBuf newbuf =  shrine.findOccurrence(lookFor, "g", player);
-            ServerPlayNetworking.send(player, ModPackets.SET_LINE_TERMINAL, newbuf);
-
-            //TODO: let robot sit
-            playerInterface.makeRobotSit();
-
-            //wait a second for the line to be set in terminal
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            //TODO: let robot stand up --- so there is no difference between client and server position of robot after waiting
-            playerInterface.makeRobotStand();
-
-            //RobotEntity robot = playerInterface.getRobotTestWorld();
-            BachelorProef.LOGGER.info("Setting move to of Robot!: " + blockPos);
-            //RobotEntity robot2 = playerInterface.getRobot();
-            //BachelorProef.LOGGER.info("Robot: " + robot);
-            //BachelorProef.LOGGER.info("Robot2: " + robot2);
-            BlockPos robotPos = blockPos.add(0, 1, 0);
-            playerInterface.setRobotMoveTo(robotPos); //zet y + 1 dat hij op de blok staat ipv in de blok crashed
-            playerInterface.setRobotArrtived(false);
-
-            BachelorProef.LOGGER.info("Robot start moving to block");
-
-            while(playerInterface.getRobotArrived() == false || playerInterface.getRobotMoveTo() != null){
-                BachelorProef.LOGGER.info("Waiting...");
-            }
-
-            playerInterface.setRobotArrtived(false); //reset arrived
-            BachelorProef.LOGGER.info("ACTIONS: Robot arrived at block! :)");
-
-            playerInterface.setRobotHoldBlock(blockPos); //TODO: implement this in robot itself too in tick function
-            Text text = Text.of("Robot took block at position: " + blockPos);
-            player.sendMessage(text);
-            //playerInterface.setRobotHoldBlock(blockPos);
-            BachelorProef.LOGGER.info("Get Block Visualisation done");
-            playerInterface.setPreviousActionDone(true);
-            return "DONE";
-        }
-
-        public static void letLoopVisualisation(PlayerMixinInterface playerInterface, String functionName, ServerPlayerEntity player) {
-            BachelorProef.LOGGER.info("Let loop");
-            Shrine shrine = playerInterface.getShrine();
-            String lookFor = "(let-loop '" + functionName;
-            List<String> activatedLoops = shrine.activatedLoops;
-            if (activatedLoops.contains(functionName)) {
-                shrine.LookInCompleteFunction = true;
-                shrine.indexInFunction = 0;
-                shrine.findOccurrence(lookFor, "'", player);
-            } else {
-                shrine.findOccurrence(lookFor, "'", player);
-                shrine.activatedLoops.add(functionName);
-            }
-        }
 
     private static void startRobotMovementThread(ServerPlayerEntity player, List<Action> actions) {
             PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;

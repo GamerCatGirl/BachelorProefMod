@@ -31,7 +31,7 @@ public class Shrine {
     private BufferedReader bufferedReader;
     private String currentLine; //soms worden er 2 functies gecalled op 1 line
     private Integer currentLineIndex;
-    private Integer startLineIndex;
+    public Integer startLineIndex;
     public Integer indexInFunction = 0;
     private ArrayList<String> completeFunction = new ArrayList<>();
     public Boolean LookInCompleteFunction = false;
@@ -125,7 +125,6 @@ public class Shrine {
         try {
                 while (!(currentLine.contains(sequence))) {
                     String line = bufferedReader.readLine();
-                    //currentLine = bufferedReader.readLine();
                     if (line != null) {
                         currentLine = line;
                         completeFunction.add(currentLine);

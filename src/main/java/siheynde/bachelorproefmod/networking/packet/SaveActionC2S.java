@@ -5,6 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import siheynde.bachelorproefmod.BachelorProef;
 import siheynde.bachelorproefmod.util.Action;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
 
@@ -21,7 +22,10 @@ public class SaveActionC2S {
             case "setBlock" -> {
                 String blockName = buf.readString();
                 int toPosition = buf.readInt();
-                action = new Action(blockName, toPosition);
+                int line = buf.readInt();
+
+                BachelorProef.LOGGER.info("Reading int line: " + line);
+                action = new Action(blockName, toPosition, line);
             }
             case "getBlock" -> {
                 int toPosition = buf.readInt();

@@ -76,7 +76,7 @@ public class ExecuteMove extends Goal {
         LivingEntity livingEntity = this.tameable.getOwner();
 
         if (livingEntity == null) {
-            BachelorProef.LOGGER.info("FAULT: No owner found");
+            //BachelorProef.LOGGER.info("FAULT: No owner found");
             return false;
         }
 

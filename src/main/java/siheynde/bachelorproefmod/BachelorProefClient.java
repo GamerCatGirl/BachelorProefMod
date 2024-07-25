@@ -28,6 +28,7 @@ public class BachelorProefClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.ROBOT, RobotModel::getTexturedModelData);
         ModPackets.registerS2CPackets();
 
+
         HandledScreens.register(ModScreenHandlers.FUNCTION_SCREEN, FunctionScreen::new);
         HandledScreens.register(ModScreenHandlers.TEST_SCREEN, TestScreen::new);
 

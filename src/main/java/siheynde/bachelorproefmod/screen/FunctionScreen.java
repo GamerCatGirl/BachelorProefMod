@@ -19,6 +19,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -39,6 +40,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextContent;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.dimension.DimensionType;
@@ -68,9 +70,6 @@ public class FunctionScreen
     static final Identifier BUTTON_SELECTED_TEXTURE = new Identifier("container/beacon/button_selected");
     static final Identifier BUTTON_HIGHLIGHTED_TEXTURE = new Identifier("container/beacon/button_highlighted");
     static final Identifier BUTTON_TEXTURE = new Identifier("container/beacon/button");
-    static final Identifier CANCEL_TEXTURE = new Identifier("container/beacon/cancel");
-    private static final Identifier TEXT_FIELD_TEXTURE = new Identifier("container/anvil/text_field");
-    private static final Identifier TEXT_FIELD_DISABLED_TEXTURE = new Identifier("container/anvil/text_field_disabled");
 
     private FunctionScreenHandler handler;
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
@@ -87,6 +86,8 @@ public class FunctionScreen
     private DrawContext context;
     public String answerRun = "";
     private boolean narrow;
+
+    private ButtonWidget buttonTopicA;
 
 
     public FunctionScreen(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -140,6 +141,12 @@ public class FunctionScreen
         handler.addListener(this);
         this.buttons.clear();
 
+        this.buttonTopicA = this.addDrawableChild(ButtonWidget.builder(Text.literal("Topic 1"), button -> {
+            //this.structureBlock.setRotation(BlockRotation.NONE);
+            BachelorProef.LOGGER.info("Button pressed");
+            //this.updateRotationButton();
+        }).dimensions(this.width / 2 - 1 - 40 - 1 - 40 - 20, 200, 60, 20).build());
+
         PlayerMixinInterface playerMixin = (PlayerMixinInterface) client.player;
         String nameShrine = playerMixin.getNameShrine();
 
@@ -186,8 +193,8 @@ public class FunctionScreen
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        renderBackground(context, mouseX, mouseY, delta);
-        this.renderForeground(context, mouseX, mouseY, delta);
+        //renderBackground(context, mouseX, mouseY, delta);
+        //this.renderForeground(context, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
@@ -235,7 +242,9 @@ public class FunctionScreen
 
     @Override
     protected void drawForeground(DrawContext context, int mouseX, int mouseY){
-        context.drawCenteredTextWithShadow(this.textRenderer, this.shrineName, x_text, y_predict_text, 0x000000);
+        context.drawText(this.textRenderer, Text.of(this.shrineName), x_text, y_predict_text, 0x000000, false);
+
+        //context.drawCenteredTextWithShadow(this.textRenderer, this.shrineName, x_text, y_predict_text, 0x000000);
     }
 
 

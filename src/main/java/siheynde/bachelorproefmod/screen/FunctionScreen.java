@@ -1,5 +1,6 @@
 package siheynde.bachelorproefmod.screen;
 
+import ca.weblite.objc.Client;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.netty.buffer.ByteBuf;
@@ -54,6 +55,7 @@ import siheynde.bachelorproefmod.world.dimension.ModDimensions;
 
 import java.util.*;
 
+import static java.lang.Thread.sleep;
 import static net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.getReceived;
 
 @Environment(value=EnvType.CLIENT)
@@ -86,15 +88,15 @@ public class FunctionScreen
     private DrawContext context;
     public String answerRun = "";
     private boolean narrow;
-
-    private ButtonWidget buttonTopicA;
+    private PlayerEntity player;
+    private Text ERROR_TEXT;
 
 
     public FunctionScreen(FunctionScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.inventory = inventory;
         this.handler = handler;
-
+        this.player = inventory.player;
 
         //TODO: get the shrine from the player not clientPlayer
         //PlayerEntity clientPlayer = inventory.player;
@@ -109,6 +111,8 @@ public class FunctionScreen
         ClientPlayNetworking.send(
                 ModPackets.GET_BOOK_ID,
                 PacketByteBufs.empty());
+
+
 
         //BachelorProef.LOGGER.info("Shrine: " + shrine.toString());
         //this.shrineName = shrine.getName();
@@ -141,13 +145,23 @@ public class FunctionScreen
         handler.addListener(this);
         this.buttons.clear();
 
-        this.buttonTopicA = this.addDrawableChild(ButtonWidget.builder(Text.literal("Topic 1"), button -> {
+        //this.buttonTopicA = this.addDrawableChild(ButtonWidget.builder(Text.literal("Topic 1"), button -> {
             //this.structureBlock.setRotation(BlockRotation.NONE);
-            BachelorProef.LOGGER.info("Button pressed");
+        //    BachelorProef.LOGGER.info("Button pressed");
             //this.updateRotationButton();
-        }).dimensions(this.width / 2 - 1 - 40 - 1 - 40 - 20, 200, 60, 20).build());
+        //}).dimensions(this.width / 2 - 1 - 40 - 1 - 40 - 20, 200, 60, 20).build());
 
         PlayerMixinInterface playerMixin = (PlayerMixinInterface) client.player;
+        /*
+        if(!playerMixin.hasRobot()){
+            Text text = Text.of("Please assign a robot first!");
+            player.sendMessage(text);
+            ERROR_TEXT = text;
+            //context.drawText(this.textRenderer, Text.of("Please assign a robot first!"), x_text - 10, y_predict_text + 30, 0xff0000, false);
+            return;
+        }
+         */
+
         String nameShrine = playerMixin.getNameShrine();
 
         while (nameShrine == null) {
@@ -160,7 +174,7 @@ public class FunctionScreen
 
         Boolean inOverworld = dimensionIn.equals(dimensionOverworld);
         Boolean inMod = dimensionIn.equals(dimensionMod);
-        int[] yText = {this.y + 60};
+        int[] yText = {this.y + 30};
 
         if (inOverworld) {
             //REPLACE WITH GET TOPIC NAMES FROM SHRINE
@@ -169,10 +183,23 @@ public class FunctionScreen
 
             //TODO: look at buttons from menu -> better suited
             //TODO: for loop so the result is not null!!!!
-            topics.forEach((key) -> {
-                this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
+            if (topics == null){
+                    Text text = Text.of("Try to load the block again!");
+                    player.sendMessage(text);
+                    ERROR_TEXT = text;
+                    return;
+            }
 
-                yText[0] = yText[0] + 20;
+            topics.forEach((key) -> {
+                //this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
+                this.addDrawableChild(ButtonWidget.builder(Text.literal(key), button -> {
+                    //this.structureBlock.setRotation(BlockRotation.NONE);
+                    BachelorProef.LOGGER.info("Button pressed");
+                    runButton(key);
+                    //this.updateRotationButton();
+                }).dimensions(this.x - 10, yText[0], 200, 20).build());
+
+                yText[0] = yText[0] + 25;
             });
 
         } else if (inMod) {
@@ -184,9 +211,97 @@ public class FunctionScreen
                     PacketByteBufs.empty());
 
             PRIMM.forEach((key) -> {
-                this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
-                yText[0] = yText[0] + 20;
+                //this.addButton(new RunButton(this.x + 50, yText[0], key, this.textRenderer));
+                this.addDrawableChild(ButtonWidget.builder(Text.literal(key), button -> {
+                    //this.structureBlock.setRotation(BlockRotation.NONE);
+                    BachelorProef.LOGGER.info("Button pressed");
+                    runButton(key);
+                    //this.updateRotationButton();
+                }).dimensions(this.x - 10, yText[0], 200, 20).build());
+
+                yText[0] = yText[0] + 25;
             });
+        }
+    }
+
+    public void runButton(String runID){
+        Identifier dimensionIn = client.world.getRegistryKey().getValue();
+        ClientPlayerEntity player = client.player;
+        PlayerMixinInterface playerMixin = (PlayerMixinInterface) player;
+
+        Boolean inOverworld = dimensionIn.equals(dimensionOverworld);
+        Boolean inMod = dimensionIn.equals(dimensionMod);
+
+        //TODO: get topic from shrine
+
+        String bookID = playerMixin.getBookID();
+        //Book book = null;
+        ArrayList<Book> books = new ArrayList<>();
+
+        BookLoader.loadedBooks().forEach((bookIter) -> {
+            if (bookIter.id().toString().equals(bookID)){
+                books.add(bookIter);
+                //book = bookIter;
+            }
+        });
+
+        Book book = books.get(0);
+
+        book.entries().forEach((entry) -> {
+            if(entry.title().toString().equalsIgnoreCase(runID)) {
+                LavenderBookScreen.pushEntry(book, entry);
+            }
+        });
+
+        if (inOverworld) {
+            BachelorProef.LOGGER.info("in overworld");
+
+
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeString(runID);
+
+
+            ClientPlayNetworking.send(
+                    ModPackets.SET_RUN_ID,
+                    buf);
+
+            PlayerMixinInterface playerInterface = (PlayerMixinInterface) client.player; //saving in client to
+            playerInterface.setRunID(runID); //saving in client to
+            playerInterface.setNameShrine(shrineName); //saving in client toJN£
+
+            client.player.sendMessage(Text.of("Go through the portal to start lesson of " + runID));
+            close();
+            MinecraftClient.getInstance().setScreen(new LavenderBookScreen(book));
+        } else if (inMod) {
+            BachelorProef.LOGGER.info("in test world");
+            BachelorProef.LOGGER.info("Run function of: " + runID);
+
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeString(runID);
+
+            ClientPlayNetworking.send(
+                    ModPackets.EXECUTE_FUNCTION,
+                    buf);
+            //TODO: mag ook client side runnen ipv server side!!!!
+
+            playerMixin.setRunID(null);
+            close();
+        }
+
+
+        //client.debugRenderer
+
+        //TODO: give the player the book if not in inventory
+
+        //TODO test first in which dimension the player is
+        ItemStack bookStack = LavenderBookItem.itemOf(book);
+        Boolean hasBook = inventory.contains(bookStack);
+
+        if (!hasBook){
+            BachelorProef.LOGGER.info("Bookstack: " + hasBook.toString());
+            inventory.player.giveItemStack(bookStack);
+
+            //TODO: give player correct blocks or run the code
         }
     }
 
@@ -242,8 +357,10 @@ public class FunctionScreen
 
     @Override
     protected void drawForeground(DrawContext context, int mouseX, int mouseY){
-        context.drawText(this.textRenderer, Text.of(this.shrineName), x_text, y_predict_text, 0x000000, false);
-
+        context.drawText(this.textRenderer, Text.of(this.shrineName), x_text - 10, y_predict_text, 0x000000, false);
+        if (ERROR_TEXT != null){
+            context.drawText(this.textRenderer, ERROR_TEXT, x_text - 10, y_predict_text + 30, 0x990000, false);
+        }
         //context.drawCenteredTextWithShadow(this.textRenderer, this.shrineName, x_text, y_predict_text, 0x000000);
     }
 

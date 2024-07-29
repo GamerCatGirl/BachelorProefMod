@@ -27,6 +27,16 @@ public class StrictComparisonBubbleSort implements SubTopic {
             Blocks.BLACK_STAINED_GLASS,
             Blocks.WHITE_STAINED_GLASS);
 
+    private final List<String> questionInvestigate =
+            List.of("Line number strict comparison: ",
+                    "Complexity algorithm: ");
+                    //"Where in the algorithm can you see that we need to use strict comparison?",
+                    //"What is the time complexity of the algorithm?");
+
+    @Override
+    public List<String> getQuestionsInvestigate() {
+        return questionInvestigate;
+    }
 
 
 
@@ -117,6 +127,8 @@ public class StrictComparisonBubbleSort implements SubTopic {
 
     @Override
     public void runInvestigate() {
+
+        //TODO: check if answer is correct
         BachelorProef.LOGGER.info("Running investigate");
     }
 

@@ -9,6 +9,10 @@ import java.util.List;
 public interface SubTopic {
 
     public List<String> getQuestionsInvestigate();
+    public List<String> getAnswersInvestigate();
+
+    public List<String> getExplainModify();
+    public List<String> getExplainMake();
 
     public String runPredict(PlayerEntity player);
     public void runRun(PlayerEntity player);

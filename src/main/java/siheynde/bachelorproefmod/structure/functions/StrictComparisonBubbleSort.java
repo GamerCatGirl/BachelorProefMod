@@ -32,12 +32,36 @@ public class StrictComparisonBubbleSort implements SubTopic {
                     "Complexity algorithm: ");
                     //"Where in the algorithm can you see that we need to use strict comparison?",
                     //"What is the time complexity of the algorithm?");
+    private final List<String> answersInvestigate =
+                            List.of("5", "O(n^2)"); //Dit is try -> niet het juiste antwoord
+
+    private final List<String> explainModify =
+            List.of("Make the algorithm work with ",
+                    "non-strict comparison",
+                    "name function: non-strict-insertion-sort");
+
+    private final List<String> explainMake =
+            List.of("Write selection sort ");
+
+    @Override
+    public List<String> getExplainModify() {
+        return explainModify;
+    }
+
+    @Override
+    public List<String> getExplainMake() {
+        return explainMake;
+    }
 
     @Override
     public List<String> getQuestionsInvestigate() {
         return questionInvestigate;
     }
 
+    @Override
+    public List<String> getAnswersInvestigate() {
+        return answersInvestigate;
+    }
 
 
     @Override

@@ -53,6 +53,7 @@ import siheynde.bachelorproefmod.structure.functions.SubTopic;
 import siheynde.bachelorproefmod.structure.shrine.Levels;
 import siheynde.bachelorproefmod.structure.shrine.Shrine;
 import siheynde.bachelorproefmod.util.PlayerMixinInterface;
+import siheynde.bachelorproefmod.util.TerminalActions;
 import siheynde.bachelorproefmod.world.dimension.ModDimensions;
 
 import java.util.*;
@@ -65,30 +66,38 @@ public class FunctionScreen
         extends HandledScreen<FunctionScreenHandler>
         implements ScreenHandlerListener {
     protected static final int x_text = 2;
+
+    //TODO: make sure textfield are working!!!
     protected static final int y_predict_text = 15;
 
     protected static final int backgroundWidth = 248;
     private static final Identifier TEXTURE = new Identifier(BachelorProef.MOD_ID, "textures/gui/function_screen.png");
-    static final Identifier CONFIRM_TEXTURE = new Identifier("container/beacon/confirm");
-    static final Identifier BUTTON_DISABLED_TEXTURE = new Identifier("container/beacon/button_disabled");
-    static final Identifier BUTTON_SELECTED_TEXTURE = new Identifier("container/beacon/button_selected");
-    static final Identifier BUTTON_HIGHLIGHTED_TEXTURE = new Identifier("container/beacon/button_highlighted");
-    static final Identifier BUTTON_TEXTURE = new Identifier("container/beacon/button");
+    private static final Identifier TEXT_FIELD_TEXTURE = new Identifier("container/anvil/text_field");
+    private static final Identifier TEXT_FIELD_DISABLED_TEXTURE = new Identifier("container/anvil/text_field_disabled");
 
     private FunctionScreenHandler handler;
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
-    private final List<FunctionButtonWidget> buttons = Lists.newArrayList();
     private String shrineName;
     public Shrine shrine;
+    private List<String> answers;
     private PlayerInventory inventory;
+
+    private Boolean answer1Correct;
+    private Boolean answer2Correct;
 
     private String selectedTab = "";
     //private TextFieldWidget predictField;
     //private TextFieldWidget investigateField;
 
     String Text_Line1 = "";
+    String Text_Line15 = "";
     String Text_Line2 = "";
     String Text_Line3 = "";
+
+    int sizeInput = 20;
+    int heightInput = 20;
+    private TextFieldWidget inputLine1;
+    private TextFieldWidget inputLine2;
 
     Identifier dimensionOverworld = DimensionTypes.OVERWORLD.getValue();
     Identifier dimensionMod = ModDimensions.DIMENSION_TYPE.getValue();
@@ -121,32 +130,13 @@ public class FunctionScreen
                 PacketByteBufs.empty());
 
 
-
-        //BachelorProef.LOGGER.info("Shrine: " + shrine.toString());
-        //this.shrineName = shrine.getName();
-
-        //this.amountOfRunButtons = shrine.getBlockSetups().size();
-
-        //BachelorProef.LOGGER.info("Amount of run buttons: " + amountOfRunButtons);
-
-        //BachelorProef.LOGGER.info(shrine.predictAnswer());
-        //BachelorProef.LOGGER.info(shrine.Modify().toString());
-        //BachelorProef.LOGGER.info(shrine.Modify().getClass().toString());
-
-
-
-
-        //ClientPlayNetworking.send(ModPackets.MOVE_ROBOT,  PacketByteBufs.empty());
-        //robot.move(0, 0, 0);
-
-        //TODO : primitive functions to let the robot move !!!!
     }
 
     @Override
     protected void init() {
         super.init();
         handler.addListener(this);
-        this.buttons.clear();
+        //this.buttons.clear();
 
         //this.buttonTopicA = this.addDrawableChild(ButtonWidget.builder(Text.literal("Topic 1"), button -> {
             //this.structureBlock.setRotation(BlockRotation.NONE);
@@ -155,6 +145,20 @@ public class FunctionScreen
         //}).dimensions(this.width / 2 - 1 - 40 - 1 - 40 - 20, 200, 60, 20).build());
 
         PlayerMixinInterface playerMixin = (PlayerMixinInterface) client.player;
+
+        inputLine1 = new TextFieldWidget(this.textRenderer, x - 7, y + 48, 102, 12, Text.translatable("container.repair"));
+        inputLine2 = new TextFieldWidget(this.textRenderer, x - 7, y + 84, 102, 12, Text.translatable("container.repair"));
+        setupField(this.inputLine1);
+        setupField(this.inputLine2);
+
+        inputLine1.setVisible(false);
+        inputLine2.setVisible(false);
+
+        this.setInitialFocus(this.inputLine1);
+        this.inputLine1.setEditable(true);
+        this.setFocused(this.inputLine1);
+        //TODO: check if needs to be hidden
+
         /*
         if(!playerMixin.hasRobot()){
             Text text = Text.of("Please assign a robot first!");
@@ -237,41 +241,54 @@ public class FunctionScreen
         }
     }
 
-    public void runButton(String runID){
+    private void resetTextLines(){
         Text_Line1 = "";
+        Text_Line15 = "";
         Text_Line2 = "";
         Text_Line3 = "";
+    }
+
+
+    public void runButton(String runID){
+        if (!selectedTab.equals("Investigate")){
+            resetTextLines();
+            BachelorProef.LOGGER.info("Resetting textlines");
+        }
 
         if (runID.equals("Run Tab")){
             selectedTab = "Run";
+            resetTextLines();
             //TODO:
             BachelorProef.LOGGER.info("Run Tab");
             return;}
         if(runID.equals("Predict Tab")){
             selectedTab = "Predict";
+            resetTextLines();
             //TODO:
             BachelorProef.LOGGER.info("Predict Tab");
             return;}
         if(runID.equals("Investigate Tab")){
             selectedTab = "Investigate";
-            //TODO: get the questions from the shrine
             PlayerMixinInterface playerInterface = (PlayerMixinInterface) client.player;
             Shrine shrine = playerInterface.getShrine();
             Levels.Topic topic = shrine.topic;
             String subTopicID = playerInterface.getRunID();
             SubTopic subTopic = topic.getSubTopic(subTopicID);
             List<String> questions = subTopic.getQuestionsInvestigate();
+            answers = subTopic.getAnswersInvestigate();
             BachelorProef.LOGGER.info("Questions: " + questions);
 
             questions.forEach((String textToDisplay) -> {
 
                 if (Text_Line1.equals("")){
                     Text_Line1 = textToDisplay;
+                    inputLine1.setVisible(true);
                     return;
                 }
 
                 if (Text_Line2.equals("")){
                     Text_Line2 = textToDisplay;
+                    inputLine2.setVisible(true);
                     return;
                 }
 
@@ -281,18 +298,65 @@ public class FunctionScreen
                 }
             });
 
-            //TODO: place the answer input
-
-            //TODO: make sure investigate checks the answers
-
-
             BachelorProef.LOGGER.info("Investigate Tab");
             return;}
         if(runID.equals("Modify Tab")){
+            resetTextLines();
             selectedTab = "Modify";
-            //TODO:
-            BachelorProef.LOGGER.info("Modify Tab");
+            PlayerMixinInterface playerInterface = (PlayerMixinInterface) client.player;
+            Shrine shrine = playerInterface.getShrine();
+            Levels.Topic topic = shrine.topic;
+            String subTopicID = playerInterface.getRunID();
+            SubTopic subTopic = topic.getSubTopic(subTopicID);
+            List<String> explaination = subTopic.getExplainModify();
+
+            explaination.forEach((String textToDisplay) -> {
+
+                if (Text_Line1.equals("")){
+                    Text_Line1 = textToDisplay;
+                    return;
+                }
+
+                if (Text_Line15.equals("")){
+                    Text_Line15 = textToDisplay;
+                    return;
+                }
+
+                if (Text_Line2.equals("")){
+                    Text_Line2 = textToDisplay;
+                    return;
+                }
+            });
+
+            this.addDrawableChild(ButtonWidget.builder(Text.literal("Open Code"), button -> {
+                TerminalActions.openCode();
+            }).dimensions(this.x + 100, this.y + 110, 80, 20).build());
+
             return;}
+
+        if(runID.equals("Investigate")){
+            BachelorProef.LOGGER.info("clicked on investigate");
+            String answer1 = inputLine1.getText();
+            String answer2 = inputLine2.getText();
+            String correctResult1 = answers.get(0);
+            String correctResult2 = answers.get(1);
+
+            if (answer1.equals(correctResult1)){
+                answer1Correct = true;
+            } else {
+                answer1Correct = false;
+            }
+
+            if (answer2.equals(correctResult2)){
+                answer2Correct = true;
+            } else {
+                answer2Correct = false;
+            }
+
+            BachelorProef.LOGGER.info("answer1: " + answer1);
+            BachelorProef.LOGGER.info("answer2: " + answer2);
+            return;
+        }
         if(runID.equals("Make Tab")){
             selectedTab = "Make";
             //TODO:
@@ -383,6 +447,10 @@ public class FunctionScreen
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
+        if (selectedTab.equals("Investigate")) {
+            this.inputLine1.render(context, mouseX, mouseY, delta);
+            this.inputLine2.render(context, mouseX, mouseY, delta);
+        }
         //renderBackground(context, mouseX, mouseY, delta);
         //this.renderForeground(context, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
@@ -401,6 +469,12 @@ public class FunctionScreen
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             //this.client.player.closeHandledScreen();
+        }
+        if (this.inputLine1.isActive() && this.inputLine1.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (this.inputLine2.isActive() && this.inputLine2.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
@@ -422,7 +496,19 @@ public class FunctionScreen
         int x = (width - backgroundWidth) / 2;
         int y = (height - backgroundHeight) / 2;
 
+        //BachelorProef.LOGGER.info("Background...");
+
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
+
+        if (!Text_Line1.equals("") && selectedTab.equals("Investigate")){
+            context.drawGuiTexture(getFocused() == inputLine1 ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x - 10, this.y + 45, 110, 16);
+
+        }
+        if (!Text_Line2.equals("") && selectedTab.equals("Investigate")){
+            context.drawGuiTexture(getFocused() == inputLine2 ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x - 10, this.y + 80, 110, 16);
+
+        }
+
     }
 
     @Override
@@ -430,15 +516,61 @@ public class FunctionScreen
         context.drawText(this.textRenderer, Text.of(this.shrineName), x_text - 20, y_predict_text, 0x000000, false);
         if (ERROR_TEXT != null){
             context.drawText(this.textRenderer, ERROR_TEXT, x_text - 10, y_predict_text + 30, 0x990000, false);
+            return;
         }
 
-        context.drawText(this.textRenderer, Text_Line1, x_text - 10, y_predict_text + 30, 0x000000, false);
-        context.drawText(this.textRenderer, Text_Line2, x_text - 10, y_predict_text + 50, 0x000000, false);
-        //context.drawCenteredTextWithShadow(this.textRenderer, this.shrineName, x_text, y_predict_text, 0x000000);
+        context.drawText(this.textRenderer, Text_Line1, x_text - 10, y_predict_text + 20, 0x000000, false);
+        context.drawText(this.textRenderer, Text_Line15, x_text - 10, y_predict_text + 37, 0x000000, false);
+        context.drawText(this.textRenderer, Text_Line2, x_text - 10, y_predict_text + 55, 0x000000, false);
 
         if (selectedTab.equals("Investigate")){
-            BachelorProef.LOGGER.info("add input text");
+            if (answer1Correct == null){return;}
+            
+            if (answer1Correct){
+                context.drawText(this.textRenderer, "V", x_text + 104, y_predict_text + 34, 0x008000, false);
+            } else {
+                context.drawText(this.textRenderer, "X", x_text + 104, y_predict_text + 34, 0x990000, false);
+            }
+
+            if (answer2Correct == null){return;}
+
+            if (answer2Correct){
+                context.drawText(this.textRenderer, "V", x_text + 104, y_predict_text + 69, 0x008000, false);
+            } else {
+                context.drawText(this.textRenderer, "X", x_text + 104, y_predict_text + 69, 0x990000, false);
+            }
+
+            //TODO: do this for answer 2
+
+
         }
+
+    }
+
+    private void onRenamed(String name) {
+        //BachelorProef.LOGGER.info("Renaming input: " + name);
+        //if (!slot.hasStack()) {
+        //    return;
+        //}
+        //String string = name;
+        //if (!slot.getStack().hasCustomName() && string.equals(slot.getStack().getName().getString())) {
+        //    string = "";
+        //}
+        //if ((this.handler).setNewPredict(string)) {
+          //this.client.player.networkHandler.sendPacket(new RenameItemC2SPacket(string));
+        //}
+    }
+
+    private void setupField(TextFieldWidget field) {
+        field.setFocusUnlocked(false);
+        field.setEditableColor(-1);
+        field.setUneditableColor(-1);
+        field.setDrawsBackground(false);
+        field.setMaxLength(50);
+        field.setChangedListener(this::onRenamed);
+        field.setText("testInput1");
+        this.addSelectableChild(field);
+        field.setEditable(true);
     }
 
 
@@ -454,6 +586,27 @@ public class FunctionScreen
             return true;
         }
         if (this.narrow && this.recipeBook.isOpen()) {
+            return true;
+        }
+        if(this.inputLine1 != null){
+            if (this.inputLine1.mouseClicked(mouseX, mouseY, button)) {
+                this.setFocused(this.inputLine1);
+                inputLine2.setFocused(false);
+                inputLine2.setEditable(false);
+                //TODO: zet cursor uit
+                inputLine1.setFocused(true);
+                inputLine1.setEditable(true);
+                return true;
+            }
+        }
+
+        if(this.inputLine2.mouseClicked(mouseX, mouseY, button)) {
+            this.setFocused(this.inputLine2);
+            inputLine1.setFocused(false);
+            inputLine1.setEditable(false);
+            //predictField.setCursor(-1, false);
+            inputLine2.setFocused(true);
+            inputLine2.setEditable(true);
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -479,13 +632,6 @@ public class FunctionScreen
     @Override
     public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
 
-    }
-
-
-
-    @Environment(value=EnvType.CLIENT)
-    static interface FunctionButtonWidget {
-        public void tick(int var1);
     }
 
 }

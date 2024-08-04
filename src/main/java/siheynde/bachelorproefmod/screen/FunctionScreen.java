@@ -333,6 +333,39 @@ public class FunctionScreen
             }).dimensions(this.x + 100, this.y + 110, 80, 20).build());
 
             return;}
+        if (runID.equals("Make Tab")){
+            selectedTab = "Make";
+            resetTextLines();
+            PlayerMixinInterface playerInterface = (PlayerMixinInterface) client.player;
+            Shrine shrine = playerInterface.getShrine();
+            Levels.Topic topic = shrine.topic;
+            String subTopicID = playerInterface.getRunID();
+            SubTopic subTopic = topic.getSubTopic(subTopicID);
+            List<String> explaination = subTopic.getExplainMake();
+
+            explaination.forEach((String textToDisplay) -> {
+
+                if (Text_Line1.equals("")){
+                    Text_Line1 = textToDisplay;
+                    return;
+                }
+
+                if (Text_Line15.equals("")){
+                    Text_Line15 = textToDisplay;
+                    return;
+                }
+
+                if (Text_Line2.equals("")){
+                    Text_Line2 = textToDisplay;
+                    return;
+                }
+            });
+
+            this.addDrawableChild(ButtonWidget.builder(Text.literal("Open Code"), button -> {
+                TerminalActions.openCode();
+            }).dimensions(this.x + 100, this.y + 110, 80, 20).build());
+            return;
+        }
 
         if(runID.equals("Investigate")){
             BachelorProef.LOGGER.info("clicked on investigate");
@@ -357,11 +390,6 @@ public class FunctionScreen
             BachelorProef.LOGGER.info("answer2: " + answer2);
             return;
         }
-        if(runID.equals("Make Tab")){
-            selectedTab = "Make";
-            //TODO:
-            BachelorProef.LOGGER.info("Make Tab");
-            return;}
 
         Identifier dimensionIn = client.world.getRegistryKey().getValue();
         ClientPlayerEntity player = client.player;

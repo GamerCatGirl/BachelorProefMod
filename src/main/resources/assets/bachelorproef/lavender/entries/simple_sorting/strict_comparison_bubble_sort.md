@@ -1,6 +1,6 @@
 ```json
 {
-  "title": "Strict Comparison Bubble Sort",
+  "title": "Strict Comparison Insertion Sort",
   "icon": "minecraft:white_stained_glass",
   "associated_items": [
     "minecraft:nether_quartz_ore"
@@ -41,13 +41,15 @@ When you have following vector of blocks with color: [black, gray, black, white]
 
 **Fase 2: Run**
 
-You now can choose to run both algorithms with the given vector and see if your predictions were correct. Write down what the core difference is between the two algorithms.
+You now can choose to run the algorithm with the given vector and see if your predictions were correct. Write down what the core difference is between the two algorithms.
 
 ;;;;;
 
 **Fase 3: Investigate**
 
-Where exactly in the algorithm occurs the problem with non-strict comparisons and why?
+Where exactly in the algorithm occurs the problem with non-strict comparisons?
+
+What is the complexity of the algorithm?
 
 ;;;;;
 
@@ -59,4 +61,4 @@ Can you modify the algorithms so it works with non-strict comparisons, even thou
 
 **Fase 5: Make**
 
-We know how the selection sort algoritm works from theory, can you now implement this algorithm so we have a simple sorting algorithm that also works with non-strict comparisons?
+We know how the selection sort algoritm works from theory, can you now try implement this algorithm?

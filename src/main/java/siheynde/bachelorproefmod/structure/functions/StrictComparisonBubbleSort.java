@@ -41,7 +41,9 @@ public class StrictComparisonBubbleSort implements SubTopic {
                     "name function: non-strict-insertion-sort");
 
     private final List<String> explainMake =
-            List.of("Write selection sort ");
+            List.of("Write selection sort", "name function: selection-sort");
+
+    private final String nameFunctionMake = "selection-sort";
 
     @Override
     public List<String> getExplainModify() {
@@ -119,7 +121,10 @@ public class StrictComparisonBubbleSort implements SubTopic {
 
     @Override
     public void runRun(PlayerEntity player) {
-        //TODO: place te input blocks in the right order
+        runCode("insertion-sort", player);
+    }
+
+    public void runCode(String nameFunction, PlayerEntity player) {
         ArrayList<Integer> counter = new ArrayList<>();
 
         // setup blocks to sort in the right order, gotten input vect
@@ -143,10 +148,11 @@ public class StrictComparisonBubbleSort implements SubTopic {
         PlayerMixinInterface playerInterface = (PlayerMixinInterface) player;
         Shrine shrine = playerInterface.getShrine();
 
-        String answer = shrine.runCode(blocksPredictOrder, "insertion-sort", player);
+        String answer = shrine.runCode(blocksPredictOrder, nameFunction, player);
         BachelorProef.LOGGER.info("Answer: " + answer);
 
         BachelorProef.LOGGER.info("Running run");
+
     }
 
     @Override
@@ -157,13 +163,16 @@ public class StrictComparisonBubbleSort implements SubTopic {
     }
 
     @Override
-    public void runModify() {
+    public void runModify(PlayerEntity player) {
         //Dit moet op client side gerund worden om de edits van de client te kunnen ontvangen
+        String nameFunction = "non-strict-insertion-sort";
+        runCode(nameFunction, player);
         BachelorProef.LOGGER.info("Running modify");
     }
 
     @Override
-    public void runMake() {
+    public void runMake(PlayerEntity player) {
+        runCode(nameFunctionMake, player);
         //Dit moet ook op client side gerund worden om de edits van de client te kunnen ontvangen
         BachelorProef.LOGGER.info("Running make");
     }

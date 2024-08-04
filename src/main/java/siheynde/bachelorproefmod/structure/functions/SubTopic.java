@@ -17,8 +17,8 @@ public interface SubTopic {
     public String runPredict(PlayerEntity player);
     public void runRun(PlayerEntity player);
     public void runInvestigate();
-    public void runModify();
-    public void runMake();
+    public void runModify(PlayerEntity player);
+    public void runMake(PlayerEntity player);
 
     public void addBlock(String whereToAdd, Block block, BlockPos pos);
     public BlockPos getPosition(Integer Position);

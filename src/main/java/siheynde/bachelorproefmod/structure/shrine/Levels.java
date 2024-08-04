@@ -62,14 +62,16 @@ public class Levels {
         blockSetupsStrictComparison.put("Predict", blocksPredict);
         blockSetupsStrictComparison.put("Run", blocksRun);
 
-        blockSetupsSimpleSort.put("Strict Comparison Bubble Sort", blockSetupsStrictComparison);
         blockSetupsSimpleSort.put("Strict Comparison Insertion Sort", blockSetupsStrictComparison);
+        blockSetupsSimpleSort.put("Strict Comparison Bubbles Sort", blockSetupsStrictComparison);
 
         Hashtable<String, SubTopic> functionsStrictComparison = new Hashtable<>();
         SubTopic strictComparisonBubbleSort = new StrictComparisonBubbleSort();
+        SubTopic strictComparisonInsertionSort = new StrictComparisonBubbleSort();
 
 
         functionsStrictComparison.put("Strict Comparison Bubble Sort", strictComparisonBubbleSort);
+        functionsStrictComparison.put("Strict Comparison Insertion Sort", strictComparisonInsertionSort);
 
         BookLoader.loadedBooks();
 

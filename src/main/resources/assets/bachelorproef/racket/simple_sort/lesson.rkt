@@ -46,7 +46,6 @@
   (vector-set! vector idx block))
 
 (define (let-loop name)
-    ;TODO: define send to java client to highlight a line
     (define letLoop (method "letLoop" "siheynde.bachelorproefmod.util.FunctionCalledByScheme" "java.lang.String"))
     (letLoop (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme") (.toString name))
     0
@@ -58,8 +57,6 @@
 )
 
 (define (get-block vector idx)
-    ;TODO: move robot to the block
-    ;TODO: send to java client to highlight a line
     (define getBlock (method "getBlock" "siheynde.bachelorproefmod.util.FunctionCalledByScheme" "java.lang.Integer"))
     (getBlock (new "siheynde.bachelorproefmod.util.FunctionCalledByScheme") (new "java.lang.Integer" idx))
     (vector-ref vector idx))
@@ -88,12 +85,60 @@
                (else             ;of inner-idx > idx current
                                  ;             < => swap vorige inner met inner
                 (set-block! vector (- inner-idx 1)
-                    (get-block vector inner-idx) 90)
+                    (get-block vector inner-idx) 88)
                 (inner-loop (+ inner-idx 1))))) ;inner loop + 1
-           current 79) ;swap current met inner-idx -1 (vorig)
+           current 76) ;swap current met inner-idx -1 (vorig)
           (if (> outer-idx 0)
               (outer-loop (- outer-idx 1)))))
           (end))
+
+(define (non-strict-insertion-sort vector <=?)
+	
+  (define (>=? x y) (not (<=? x y)))
+  (let outer-loop ((outer-idx (- (amount-of-blocks vector) 2)))
+    (let-loop 'outer-loop-non-strict)
+    (let ((current (get-block vector outer-idx)))
+      (set-block! vector
+        (let inner-loop ((inner-idx (+ 1 outer-idx)))
+          (let-loop 'inner-loop-non-strict)
+          (cond
+            ((or (>= inner-idx (amount-of-blocks vector))
+                 (>=? (get-block vector inner-idx) current))
+             (- inner-idx 1))
+            (else
+             (set-block! vector (- inner-idx 1) (get-block vector inner-idx) 109)
+             (inner-loop (+ inner-idx 1)))))
+        current 101)
+      (if (> outer-idx 0)
+          (outer-loop (- outer-idx 1)))))
+	(end))
+
+(define (selection-sort vector <<?)
+      (define (swap vector i j)
+        (let ((keep (get-block vector i)))
+          (set-block! vector i (vector-ref vector j) 119)
+          (set-block! vector j keep 120)))
+      (let outer-loop
+        ((outer-idx 0))
+        (let-loop 'outer-loop-selection)
+        (swap vector
+              outer-idx 
+              (let inner-loop
+                ((inner-idx (+ outer-idx 1))
+                 (smallest-idx outer-idx))
+                (let-loop 'inner-loop-selection)
+
+                (cond 
+                  ((>= inner-idx (vector-length vector))
+                   smallest-idx)
+                  ((<<? (get-block vector inner-idx)
+                        (get-block vector smallest-idx))
+                   (inner-loop (+ inner-idx 1) inner-idx))
+                  (else
+                   (inner-loop (+ inner-idx 1) smallest-idx)))))
+        (if (< outer-idx (- (vector-length vector) 1))
+            (outer-loop (+ outer-idx 1))))
+  (end))
 
 
 (define (predict)

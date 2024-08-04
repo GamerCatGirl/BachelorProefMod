@@ -28,9 +28,9 @@ public class ExecuteFunctionC2S {
         } else if (runID.equals("Investigate")) {
             functions.runInvestigate();
         } else if (runID.equals("Modify")) {
-            functions.runModify();
+            functions.runModify(player);
         } else if (runID.equals("Make")) {
-            functions.runMake();
+            functions.runMake(player);
         }
 
     }
